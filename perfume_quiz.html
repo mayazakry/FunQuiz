@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Scent Soul — Perfume Personality Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F9F4EE;
+    --gold: #C9A84C;
+    --gold-light: #E8D5A3;
+    --dark: #1A1208;
+    --muted: #7A6A55;
+    --rose: #D4A8A0;
+    --green: #8A9E8C;
+    --blue: #8A9EB5;
+    --amber: #C97C3A;
+    --ink: #2C2418;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--cream);
+    color: var(--dark);
+    font-family: 'Montserrat', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* DECORATIVE BG */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 10% 20%, rgba(201,168,76,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 90% 80%, rgba(212,168,160,0.1) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(138,158,140,0.05) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+    animation: fadeDown 0.8s ease both;
+  }
+
+  .header-ornament {
+    font-size: 1.4rem;
+    color: var(--gold);
+    letter-spacing: 12px;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.2rem, 6vw, 3.2rem);
+    font-weight: 300;
+    line-height: 1.15;
+    color: var(--ink);
+    margin-bottom: 12px;
+  }
+
+  .header h1 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .header p {
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 24px 0;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
+  }
+  .divider span {
+    color: var(--gold);
+    font-size: 1rem;
+  }
+
+  /* PROGRESS */
+  .progress-wrap {
+    margin-bottom: 36px;
+    animation: fadeIn 0.6s ease both;
+  }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .progress-track {
+    height: 2px;
+    background: var(--gold-light);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--amber));
+    border-radius: 2px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* QUESTION CARD */
+  .question-card {
+    background: white;
+    border-radius: 2px;
+    padding: 40px 36px;
+    box-shadow: 0 2px 40px rgba(26,18,8,0.06), 0 0 0 1px rgba(201,168,76,0.15);
+    animation: fadeUp 0.5s ease both;
+    margin-bottom: 20px;
+  }
+
+  .q-number {
+    font-size: 0.6rem;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .q-emoji {
+    font-size: 2rem;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .q-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.2rem, 3.5vw, 1.55rem);
+    font-weight: 300;
+    line-height: 1.5;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .q-sub {
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+    margin-bottom: 28px;
+    line-height: 1.6;
+  }
+
+  /* OPTIONS */
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 18px;
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    background: transparent;
+    text-align: left;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .option::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(201,168,76,0.05), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .option:hover {
+    border-color: var(--gold);
+    transform: translateX(4px);
+  }
+
+  .option:hover::before { opacity: 1; }
+
+  .option.selected {
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.06);
+  }
+
+  .option.selected::before { opacity: 1; }
+
+  .opt-icon {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .opt-content {}
+
+  .opt-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem;
+    font-weight: 400;
+    color: var(--ink);
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .opt-desc {
+    font-size: 0.68rem;
+    color: var(--muted);
+    letter-spacing: 0.3px;
+    line-height: 1.5;
+  }
+
+  .opt-check {
+    margin-left: auto;
+    width: 18px;
+    height: 18px;
+    border: 1px solid var(--gold-light);
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-size: 0.6rem;
+    color: transparent;
+    margin-top: 2px;
+  }
+
+  .option.selected .opt-check {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: white;
+  }
+
+  /* NAV BUTTONS */
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+  }
+
+  .btn {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 12px 28px;
+    cursor: pointer;
+    transition: all 0.25s;
+    border-radius: 1px;
+  }
+
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--gold-light);
+    color: var(--muted);
+  }
+  .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+  .btn-primary {
+    background: var(--gold);
+    border: 1px solid var(--gold);
+    color: white;
+  }
+  .btn-primary:hover { background: var(--amber); border-color: var(--amber); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(201,168,76,0.3); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  /* ── RESULT ── */
+  .result {
+    animation: fadeUp 0.7s ease both;
+    display: none;
+  }
+
+  .result-hero {
+    background: white;
+    border-radius: 2px;
+    padding: 48px 36px 36px;
+    box-shadow: 0 2px 40px rgba(26,18,8,0.06), 0 0 0 1px rgba(201,168,76,0.15);
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .result-badge {
+    display: inline-block;
+    font-size: 0.6rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    padding: 6px 18px;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    margin-bottom: 24px;
+  }
+
+  .result-emoji {
+    font-size: 3.5rem;
+    display: block;
+    margin-bottom: 16px;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .result-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.8rem, 5vw, 2.6rem);
+    font-weight: 300;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  .result-subtitle {
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .result-desc {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 300;
+    line-height: 1.8;
+    color: var(--muted);
+    max-width: 480px;
+    margin: 0 auto 28px;
+  }
+
+  /* SCENT NOTES */
+  .notes-section {
+    background: white;
+    border-radius: 2px;
+    padding: 28px 36px;
+    box-shadow: 0 2px 40px rgba(26,18,8,0.06), 0 0 0 1px rgba(201,168,76,0.15);
+    margin-bottom: 16px;
+  }
+
+  .notes-title {
+    font-size: 0.6rem;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .notes-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .note-group { text-align: center; }
+
+  .note-label {
+    font-size: 0.58rem;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .note-items {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .note-item {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.95rem;
+    font-style: italic;
+    color: var(--ink);
+    padding: 4px 8px;
+    background: var(--cream);
+    border-radius: 1px;
+  }
+
+  /* RECOMMENDATIONS */
+  .recs-title {
+    font-size: 0.6rem;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .rec-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .rec-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    background: var(--cream);
+    border-left: 2px solid var(--gold-light);
+  }
+
+  .rec-house {
+    font-size: 0.6rem;
+    letter-spacing: 1px;
+    color: var(--muted);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .rec-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    color: var(--ink);
+  }
+
+  /* TRAIT BARS */
+  .traits-section {
+    background: white;
+    border-radius: 2px;
+    padding: 28px 36px;
+    box-shadow: 0 2px 40px rgba(26,18,8,0.06), 0 0 0 1px rgba(201,168,76,0.15);
+    margin-bottom: 16px;
+  }
+
+  .trait-row {
+    margin-bottom: 14px;
+  }
+
+  .trait-label-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+  }
+
+  .trait-name {
+    font-size: 0.68rem;
+    letter-spacing: 1px;
+    color: var(--ink);
+    text-transform: uppercase;
+  }
+
+  .trait-val {
+    font-size: 0.68rem;
+    color: var(--gold);
+  }
+
+  .trait-track {
+    height: 3px;
+    background: var(--cream);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .trait-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold-light), var(--gold));
+    border-radius: 2px;
+    width: 0;
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .restart-btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 16px;
+    background: transparent;
+    border: 1px solid var(--gold-light);
+    color: var(--muted);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.25s;
+    border-radius: 1px;
+  }
+  .restart-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <span class="header-ornament">✦ ✦ ✦</span>
+    <h1>Discover Your<br><em>Scent Soul</em></h1>
+    <div class="divider"><span>✦</span></div>
+    <p>A curated journey to your perfect fragrance</p>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="quiz">
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span id="prog-text">Question 1 of 10</span>
+        <span id="prog-pct">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="prog-fill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div class="question-card" id="q-card">
+      <div class="q-number" id="q-num">Question 01</div>
+      <span class="q-emoji" id="q-emoji"></span>
+      <div class="q-text" id="q-text"></div>
+      <div class="q-sub" id="q-sub"></div>
+      <div class="options" id="options"></div>
+    </div>
+
+    <div class="nav">
+      <button class="btn btn-ghost" id="btn-back" onclick="goBack()">← Back</button>
+      <button class="btn btn-primary" id="btn-next" onclick="goNext()" disabled>Continue →</button>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div id="result" class="result">
+    <div class="result-hero">
+      <div class="result-badge">Your Scent Profile</div>
+      <span class="result-emoji" id="r-emoji"></span>
+      <div class="result-title" id="r-title"></div>
+      <div class="result-subtitle" id="r-subtitle"></div>
+      <div class="result-desc" id="r-desc"></div>
+    </div>
+
+    <div class="notes-section">
+      <div class="notes-title">✦ Your Signature Scent Notes</div>
+      <div class="notes-grid">
+        <div class="note-group">
+          <span class="note-label">Top Notes</span>
+          <div class="note-items" id="r-top"></div>
+        </div>
+        <div class="note-group">
+          <span class="note-label">Heart Notes</span>
+          <div class="note-items" id="r-heart"></div>
+        </div>
+        <div class="note-group">
+          <span class="note-label">Base Notes</span>
+          <div class="note-items" id="r-base"></div>
+        </div>
+      </div>
+
+      <div class="recs-title">✦ Fragrances To Explore</div>
+      <div class="rec-list" id="r-recs"></div>
+    </div>
+
+    <div class="traits-section">
+      <div class="notes-title">✦ Your Fragrance Personality Traits</div>
+      <div id="r-traits"></div>
+    </div>
+
+    <button class="restart-btn" onclick="restart()">✦ Retake the Quiz ✦</button>
+  </div>
+
+</div>
+
+<script>
+// ─── QUESTIONS ────────────────────────────────────────────
+const questions = [
+  {
+    emoji: "🌅",
+    text: "What does your ideal morning feel like?",
+    sub: "Close your eyes and picture it.",
+    options: [
+      { icon: "🌿", label: "Quiet & grounding", desc: "Herbal tea, open windows, birdsong — peace before the world wakes", tags: { fresh:2, green:2 } },
+      { icon: "☕", label: "Warm & cosy", desc: "Coffee, soft blankets, golden light filtering through curtains", tags: { warm:2, sweet:1 } },
+      { icon: "🌊", label: "Crisp & energising", desc: "Cold air, a brisk walk, the feeling of being truly awake", tags: { fresh:2, aqua:2 } },
+      { icon: "🕯️", label: "Slow & sensual", desc: "No rush, candlelight, lingering in the moment", tags: { woody:1, oriental:2 } },
+    ]
+  },
+  {
+    emoji: "🌍",
+    text: "If you could disappear anywhere right now, where would it be?",
+    sub: "Your gut answer reveals your scent soul.",
+    options: [
+      { icon: "🏔️", label: "Alpine forest at dawn", desc: "Pine, cold air, damp earth — wild and untouched nature", tags: { green:2, fresh:1, woody:1 } },
+      { icon: "🏛️", label: "A Moroccan souk", desc: "Spices, rose petals, incense smoke curling upward", tags: { oriental:2, floral:1, spicy:1 } },
+      { icon: "🌊", label: "Mediterranean coast", desc: "Salt air, white walls, sun-warmed citrus groves", tags: { aqua:2, fresh:2, citrus:1 } },
+      { icon: "🌆", label: "A Parisian boutique hotel", desc: "Leather armchairs, polished wood, a vase of white flowers", tags: { woody:2, floral:1, powdery:1 } },
+    ]
+  },
+  {
+    emoji: "🕐",
+    text: "When do you feel most like yourself?",
+    sub: "Think about that moment when everything just clicks.",
+    options: [
+      { icon: "🌙", label: "Late evenings, when things go quiet", desc: "The world slows, and you finally breathe", tags: { oriental:2, woody:1, musky:1 } },
+      { icon: "☀️", label: "Midday in full energy", desc: "Productive, sharp, in flow — everything firing", tags: { fresh:2, citrus:2 } },
+      { icon: "🌸", label: "A lazy weekend afternoon", desc: "Nowhere to be, soft music, a good book", tags: { floral:2, powdery:1, sweet:1 } },
+      { icon: "🌧️", label: "Rainy days indoors", desc: "Petrichor, warmth, that comforting feeling of shelter", tags: { green:1, woody:2, earthy:1 } },
+    ]
+  },
+  {
+    emoji: "👗",
+    text: "How would you describe your personal style?",
+    sub: "Not what you wear — how you want to be perceived.",
+    options: [
+      { icon: "🖤", label: "Effortlessly minimal", desc: "Clean lines, quality over quantity, nothing extra", tags: { fresh:1, woody:2, musky:1 } },
+      { icon: "🌺", label: "Romantic and feminine", desc: "Soft textures, floral prints, a certain dreaminess", tags: { floral:3, powdery:1 } },
+      { icon: "✨", label: "Bold and magnetic", desc: "Statement pieces, you walk in and people notice", tags: { oriental:2, spicy:2 } },
+      { icon: "🌿", label: "Natural and relaxed", desc: "Linen, earth tones, authenticity above all", tags: { green:2, earthy:2 } },
+    ]
+  },
+  {
+    emoji: "🍽️",
+    text: "You're hosting a dinner. What's the atmosphere?",
+    sub: "The vibe you create says everything about your scent profile.",
+    options: [
+      { icon: "🕯️", label: "Candlelit, intimate, wine and deep conversation", desc: "Moody, warm, connections that go somewhere real", tags: { oriental:2, woody:1, musky:1 } },
+      { icon: "🌿", label: "Sunlit, garden table, fresh herbs and laughter", desc: "Light, alive, unpretentious — food from the earth", tags: { green:2, fresh:1, citrus:1 } },
+      { icon: "🌸", label: "Elegant, florals everywhere, a special occasion feel", desc: "Beautiful table setting, everything considered", tags: { floral:2, powdery:1, sweet:1 } },
+      { icon: "🔥", label: "Lively, eclectic, spiced food and unexpected guests", desc: "Loud music at some point, stories that run late", tags: { spicy:2, oriental:1, woody:1 } },
+    ]
+  },
+  {
+    emoji: "🧴",
+    text: "What draws you to a fragrance first?",
+    sub: "Be honest — we all have a guilty bias.",
+    options: [
+      { icon: "🫧", label: "That clean, just-showered feeling", desc: "Crisp, transparent, like fresh linen or morning air", tags: { fresh:3, aqua:1 } },
+      { icon: "🌹", label: "Rich floral depth that lingers", desc: "Rose, jasmine, peony — glamorous and feminine", tags: { floral:3, powdery:1 } },
+      { icon: "🌲", label: "Deep, earthy, grounding base notes", desc: "Sandalwood, vetiver, cedar — something you feel in your chest", tags: { woody:3, earthy:1 } },
+      { icon: "🧡", label: "Warm sweetness that wraps around you", desc: "Vanilla, amber, tonka — comforting and seductive", tags: { oriental:2, sweet:2 } },
+    ]
+  },
+  {
+    emoji: "💭",
+    text: "A scent unexpectedly transports you. Where does it take you?",
+    sub: "Fragrance memory is the strongest memory.",
+    options: [
+      { icon: "👵", label: "Someone's grandmother's garden", desc: "Rose bushes, lavender, the safety of childhood", tags: { floral:2, green:1, powdery:1 } },
+      { icon: "🏖️", label: "A beach somewhere warm and foreign", desc: "Coconut, salt, sunscreen on hot skin", tags: { aqua:2, sweet:1, fresh:1 } },
+      { icon: "📚", label: "An old library or antique shop", desc: "Paper, leather, cedar, a hint of dust", tags: { woody:2, earthy:2 } },
+      { icon: "🌃", label: "A rooftop bar at midnight", desc: "Night-blooming jasmine, warm skin, mystery", tags: { oriental:2, floral:1, musky:1 } },
+    ]
+  },
+  {
+    emoji: "🌡️",
+    text: "What's your relationship with intensity?",
+    sub: "How do you like your presence felt?",
+    options: [
+      { icon: "🪶", label: "Barely there — a whisper, not a statement", desc: "I prefer subtlety; my scent is for those who come close", tags: { fresh:2, powdery:1, musky:1 } },
+      { icon: "🌊", label: "Moderate — present but never overwhelming", desc: "I want people to notice without being sure why", tags: { floral:1, fresh:1, woody:1 } },
+      { icon: "🔥", label: "Bold — a true signature scent", desc: "I want to be remembered", tags: { oriental:2, spicy:1 } },
+      { icon: "⚡", label: "It depends on my mood entirely", desc: "I layer, I switch, I refuse to be defined by one thing", tags: { fresh:1, oriental:1, woody:1, floral:1 } },
+    ]
+  },
+  {
+    emoji: "🌿",
+    text: "Which ingredient excites you most?",
+    sub: "Close your eyes and imagine each one.",
+    options: [
+      { icon: "🌹", label: "Bulgarian Rose", desc: "Rich, honeyed, the queen of all florals", tags: { floral:3 } },
+      { icon: "🪵", label: "Oud Wood", desc: "Smoky, resinous, ancient and complex", tags: { woody:2, oriental:2 } },
+      { icon: "🍋", label: "Bergamot & Citrus", desc: "Bright, sparkling, instantly uplifting", tags: { citrus:3, fresh:1 } },
+      { icon: "🌿", label: "Vetiver & Patchouli", desc: "Earthy, grounding, with unexpected elegance", tags: { earthy:2, woody:1, green:1 } },
+    ]
+  },
+  {
+    emoji: "💌",
+    text: "What do you want your scent to say about you?",
+    sub: "This is your final answer — trust your instinct.",
+    options: [
+      { icon: "🌸", label: "\"She's warm, approachable, and kind\"", desc: "Soft and inviting — people feel comfortable around you", tags: { floral:2, sweet:1, powdery:1 } },
+      { icon: "🌿", label: "\"She's grounded, real, and authentic\"", desc: "No pretence — what you see is what you get", tags: { green:2, earthy:2 } },
+      { icon: "💫", label: "\"She's intriguing — I can't quite place her\"", desc: "A little mysterious, definitely memorable", tags: { oriental:2, musky:2 } },
+      { icon: "✨", label: "\"She's polished, confident, unstoppable\"", desc: "Professional presence, quiet power", tags: { woody:2, fresh:1, citrus:1 } },
+    ]
+  }
+];
+
+// ─── SCENT PROFILES ──────────────────────────────────────
+const profiles = {
+  fresh: {
+    emoji: "🌊", title: "The Free Spirit",
+    subtitle: "Fresh · Aquatic · Green",
+    desc: "You carry the energy of open spaces — whether ocean breeze or morning dew on grass. Your scent is clean, transparent, and deeply alive. You don't need complexity to make an impression; your clarity is the statement.",
+    top: ["Bergamot", "Sea Salt", "Lemon Verbena"],
+    heart: ["White Tea", "Cucumber", "Green Leaves"],
+    base: ["Musk", "Cedarwood", "Driftwood"],
+    recs: [
+      { house: "Chanel", name: "Chance Eau Fraîche" },
+      { house: "Issey Miyake", name: "L'Eau d'Issey" },
+      { house: "Jo Malone", name: "Wood Sage & Sea Salt" },
+      { house: "Acqua di Parma", name: "Colonia" },
+    ],
+    traits: { "Fresh & Airy": 95, "Natural": 85, "Approachable": 80, "Sensual": 35, "Mysterious": 30 }
+  },
+  floral: {
+    emoji: "🌸", title: "The Romantic",
+    subtitle: "Floral · Powdery · Elegant",
+    desc: "You are drawn to beauty in its softest form — petals, silk, the quiet luxury of a perfect bloom. Your fragrance speaks of femininity without apology, romance without naivety. You leave a trail people actually stop and notice.",
+    top: ["Pink Pepper", "Pear", "Aldehydes"],
+    heart: ["Bulgarian Rose", "Jasmine Sambac", "Peony"],
+    base: ["Musk", "Sandalwood", "White Amber"],
+    recs: [
+      { house: "Chanel", name: "No. 5 L'Eau" },
+      { house: "Guerlain", name: "Mon Guerlain" },
+      { house: "Lancôme", name: "La Vie est Belle" },
+      { house: "Maison Margiela", name: "Flower Market" },
+    ],
+    traits: { "Romantic": 95, "Feminine": 90, "Soft": 80, "Bold": 40, "Edgy": 20 }
+  },
+  oriental: {
+    emoji: "🌙", title: "The Enchantress",
+    subtitle: "Oriental · Spicy · Sensual",
+    desc: "You are unforgettable. Warm, complex, layered with depth that reveals itself slowly. Your scent enters a room before you do and lingers long after you've left. You don't just wear fragrance — you become it.",
+    top: ["Cardamom", "Saffron", "Black Pepper"],
+    heart: ["Rose Absolute", "Jasmine", "Ylang Ylang"],
+    base: ["Oud", "Amber", "Vanilla", "Musk"],
+    recs: [
+      { house: "YSL", name: "Black Opium" },
+      { house: "Tom Ford", name: "Black Orchid" },
+      { house: "Guerlain", name: "Shalimar" },
+      { house: "Amouage", name: "Interlude Woman" },
+    ],
+    traits: { "Mysterious": 95, "Sensual": 90, "Bold": 85, "Warm": 80, "Fresh": 20 }
+  },
+  woody: {
+    emoji: "🌲", title: "The Quiet Power",
+    subtitle: "Woody · Earthy · Sophisticated",
+    desc: "You have the kind of confidence that doesn't need to announce itself. Grounded, considered, with layers that reward those who pay attention. Your fragrance is a conversation for people who know how to listen.",
+    top: ["Bergamot", "Grapefruit", "Cardamom"],
+    heart: ["Iris", "Violet", "Geranium"],
+    base: ["Cedarwood", "Vetiver", "Sandalwood", "Moss"],
+    recs: [
+      { house: "Le Labo", name: "Santal 33" },
+      { house: "Hermès", name: "Terre d'Hermès" },
+      { house: "Diptyque", name: "Tam Dao" },
+      { house: "Byredo", name: "Gypsy Water" },
+    ],
+    traits: { "Sophisticated": 95, "Grounded": 90, "Timeless": 85, "Playful": 30, "Sweet": 20 }
+  },
+  green: {
+    emoji: "🌿", title: "The Earth Lover",
+    subtitle: "Green · Herbal · Naturel",
+    desc: "You are drawn to what is real — the smell of rain on soil, crushed herbs, sunlight on leaves. Your fragrance feels like stepping outside. Unpretentious, authentic, and quietly beautiful.",
+    top: ["Basil", "Galbanum", "Green Apple"],
+    heart: ["Violet Leaf", "Geranium", "Fern"],
+    base: ["Vetiver", "Oakmoss", "Patchouli"],
+    recs: [
+      { house: "Hermès", name: "Un Jardin sur le Nil" },
+      { house: "Gucci", name: "The Ritual of Sakura" },
+      { house: "Diptyque", name: "Do Son" },
+      { house: "L'Artisan Parfumeur", name: "Timbuktu" },
+    ],
+    traits: { "Natural": 95, "Authentic": 90, "Grounded": 85, "Sensual": 45, "Powdery": 20 }
+  }
+};
+
+// ─── STATE ───────────────────────────────────────────────
+let current = 0;
+let answers = new Array(questions.length).fill(null);
+
+// ─── RENDER ──────────────────────────────────────────────
+function render() {
+  const q = questions[current];
+  const total = questions.length;
+
+  document.getElementById('prog-text').textContent = `Question ${current + 1} of ${total}`;
+  document.getElementById('prog-pct').textContent = Math.round((current / total) * 100) + '%';
+  document.getElementById('prog-fill').style.width = ((current / total) * 100) + '%';
+
+  document.getElementById('q-num').textContent = `Question ${String(current + 1).padStart(2, '0')}`;
+  document.getElementById('q-emoji').textContent = q.emoji;
+  document.getElementById('q-text').textContent = q.text;
+  document.getElementById('q-sub').textContent = q.sub;
+
+  const opts = document.getElementById('options');
+  opts.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option' + (answers[current] === i ? ' selected' : '');
+    btn.innerHTML = `
+      <span class="opt-icon">${opt.icon}</span>
+      <div class="opt-content">
+        <span class="opt-label">${opt.label}</span>
+        <span class="opt-desc">${opt.desc}</span>
+      </div>
+      <div class="opt-check">✓</div>`;
+    btn.onclick = () => selectOption(i);
+    opts.appendChild(btn);
+  });
+
+  document.getElementById('btn-back').style.visibility = current === 0 ? 'hidden' : 'visible';
+  document.getElementById('btn-next').disabled = answers[current] === null;
+  document.getElementById('btn-next').textContent = current === total - 1 ? 'See My Scent Soul ✦' : 'Continue →';
+
+  // Animate card
+  const card = document.getElementById('q-card');
+  card.style.animation = 'none';
+  void card.offsetWidth;
+  card.style.animation = 'fadeUp 0.4s ease both';
+}
+
+function selectOption(i) {
+  answers[current] = i;
+  document.querySelectorAll('.option').forEach((el, idx) => {
+    el.classList.toggle('selected', idx === i);
+  });
+  document.getElementById('btn-next').disabled = false;
+}
+
+function goNext() {
+  if (answers[current] === null) return;
+  if (current < questions.length - 1) {
+    current++;
+    render();
+  } else {
+    showResult();
+  }
+}
+
+function goBack() {
+  if (current > 0) { current--; render(); }
+}
+
+// ─── SCORING ─────────────────────────────────────────────
+function showResult() {
+  const scores = {};
+  answers.forEach((ai, qi) => {
+    if (ai === null) return;
+    const tags = questions[qi].options[ai].tags;
+    Object.entries(tags).forEach(([k, v]) => { scores[k] = (scores[k] || 0) + v; });
+  });
+
+  // Map to profile
+  const map = {
+    fresh: (scores.fresh||0) + (scores.aqua||0) + (scores.citrus||0),
+    floral: (scores.floral||0) + (scores.powdery||0),
+    oriental: (scores.oriental||0) + (scores.spicy||0) + (scores.sweet||0),
+    woody: (scores.woody||0) + (scores.musky||0),
+    green: (scores.green||0) + (scores.earthy||0),
+  };
+
+  const top = Object.entries(map).sort((a,b) => b[1]-a[1])[0][0];
+  const p = profiles[top];
+
+  document.getElementById('quiz').style.display = 'none';
+  const res = document.getElementById('result');
+  res.style.display = 'block';
+
+  document.getElementById('r-emoji').textContent = p.emoji;
+  document.getElementById('r-title').textContent = p.title;
+  document.getElementById('r-subtitle').textContent = p.subtitle;
+  document.getElementById('r-desc').textContent = p.desc;
+
+  document.getElementById('r-top').innerHTML = p.top.map(n => `<span class="note-item">${n}</span>`).join('');
+  document.getElementById('r-heart').innerHTML = p.heart.map(n => `<span class="note-item">${n}</span>`).join('');
+  document.getElementById('r-base').innerHTML = p.base.map(n => `<span class="note-item">${n}</span>`).join('');
+  document.getElementById('r-recs').innerHTML = p.recs.map(r => `
+    <div class="rec-item">
+      <div>
+        <span class="rec-house">${r.house}</span>
+        <span class="rec-name">${r.name}</span>
+      </div>
+    </div>`).join('');
+
+  const traitsEl = document.getElementById('r-traits');
+  traitsEl.innerHTML = Object.entries(p.traits).map(([name, val]) => `
+    <div class="trait-row">
+      <div class="trait-label-row">
+        <span class="trait-name">${name}</span>
+        <span class="trait-val">${val}%</span>
+      </div>
+      <div class="trait-track">
+        <div class="trait-fill" style="width:0%" data-val="${val}"></div>
+      </div>
+    </div>`).join('');
+
+  // Animate trait bars
+  setTimeout(() => {
+    document.querySelectorAll('.trait-fill').forEach(el => {
+      el.style.width = el.dataset.val + '%';
+    });
+  }, 300);
+}
+
+function restart() {
+  current = 0;
+  answers = new Array(questions.length).fill(null);
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('quiz').style.display = 'block';
+  render();
+}
+
+// ─── INIT ────────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>
