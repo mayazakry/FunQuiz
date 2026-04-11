@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔮 Birthday Soul Reading</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #08070f;
+    --surface: #100e1d;
+    --card: #161328;
+    --border: rgba(255,255,255,0.07);
+    --text: #ede8f5;
+    --muted: #7b6f99;
+    --faint: #2a2440;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
+    padding: 32px 16px 60px;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: -200px; left: 50%;
+    transform: translateX(-50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(ellipse, rgba(130,80,255,0.18) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -100px; right: -100px;
+    width: 400px; height: 400px;
+    background: radial-gradient(ellipse, rgba(255,100,150,0.1) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page {
+    position: relative;
+    z-index: 1;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .form-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 48px 36px;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+  }
+
+  .form-top { text-align: center; margin-bottom: 40px; }
+
+  .orb {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #8250ff, #ff5fa0);
+    margin: 0 auto 20px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px;
+    box-shadow: 0 0 40px rgba(130,80,255,0.5);
+    animation: pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%,100% { box-shadow: 0 0 40px rgba(130,80,255,0.5); }
+    50% { box-shadow: 0 0 70px rgba(130,80,255,0.8), 0 0 120px rgba(255,95,160,0.3); }
+  }
+
+  .form-top h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.2rem; font-weight: 700;
+    color: var(--text); line-height: 1.2; margin-bottom: 8px;
+  }
+
+  .form-top p { color: var(--muted); font-size: 0.9rem; font-weight: 300; }
+
+  .field { margin-bottom: 20px; }
+
+  .field label {
+    display: block; font-size: 0.72rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--muted); margin-bottom: 8px;
+  }
+
+  .field input[type="text"],
+  .field select,
+  .field input[type="number"] {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text);
+    padding: 14px 18px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    transition: border-color 0.25s, box-shadow 0.25s;
+    appearance: none; -webkit-appearance: none;
+  }
+
+  .field input:focus, .field select:focus {
+    outline: none;
+    border-color: rgba(130,80,255,0.6);
+    box-shadow: 0 0 0 3px rgba(130,80,255,0.12);
+  }
+
+  .field input::placeholder { color: var(--muted); }
+  .field select option { background: #161328; }
+
+  .date-row { display: flex; gap: 12px; }
+  .date-row select { flex: 2; }
+  .date-row input { flex: 1; }
+
+  .err { color: #ff6b8a; font-size: 0.8rem; margin-top: 6px; display: none; }
+
+  .submit-btn {
+    width: 100%; padding: 16px; border: none; border-radius: 14px;
+    background: linear-gradient(135deg, #8250ff 0%, #ff5fa0 100%);
+    color: #fff; font-family: 'Outfit', sans-serif;
+    font-size: 1rem; font-weight: 600; cursor: pointer;
+    margin-top: 8px; letter-spacing: 0.02em;
+    transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 8px 32px rgba(130,80,255,0.35);
+  }
+
+  .submit-btn:hover {
+    opacity: 0.9; transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(130,80,255,0.5);
+  }
+
+  #result { display: none; }
+
+  .result-hero {
+    background: linear-gradient(160deg, #1a1535 0%, #0f0c20 100%);
+    border: 1px solid rgba(130,80,255,0.2);
+    border-radius: 24px;
+    padding: 40px 32px 32px;
+    text-align: center;
+    margin-bottom: 16px;
+    position: relative; overflow: hidden;
+  }
+
+  .result-hero::before {
+    content: '';
+    position: absolute; top: -60px; left: 50%; transform: translateX(-50%);
+    width: 300px; height: 200px;
+    background: radial-gradient(ellipse, rgba(130,80,255,0.25) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-emoji {
+    font-size: 72px; display: block; margin-bottom: 4px;
+    animation: floatBig 4s ease-in-out infinite; position: relative;
+  }
+
+  @keyframes floatBig {
+    0%,100% { transform: translateY(0) rotate(-3deg); }
+    50% { transform: translateY(-10px) rotate(3deg); }
+  }
+
+  .zodiac-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(130,80,255,0.2);
+    border: 1px solid rgba(130,80,255,0.35);
+    border-radius: 999px; padding: 4px 14px;
+    font-size: 0.78rem; font-weight: 500; color: #c4a8ff;
+    margin-bottom: 16px;
+  }
+
+  .hero-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem; font-weight: 600; color: var(--muted); margin-bottom: 4px;
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem; font-weight: 700;
+    background: linear-gradient(135deg, #d4b8ff, #ffb3d0, #ffd89b);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; line-height: 1.2; margin-bottom: 8px;
+  }
+
+  .hero-subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic; color: var(--muted); font-size: 1rem;
+  }
+
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 24px 28px;
+    margin-bottom: 14px;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-label {
+    font-size: 0.7rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--muted); margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .section-label::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  .traits-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .trait-pill {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px 14px;
+  }
+
+  .trait-pill .tl {
+    font-size: 0.68rem; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--muted); margin-bottom: 3px;
+  }
+
+  .trait-pill .tv { font-size: 0.88rem; font-weight: 500; color: var(--text); }
+
+  .horoscope-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem; line-height: 1.9; color: #ccc3e0; font-style: italic;
+  }
+
+  .love-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .love-card {
+    background: var(--card); border-radius: 12px;
+    padding: 14px; border: 1px solid var(--border);
+  }
+
+  .love-card .lc-label {
+    font-size: 0.68rem; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--muted); margin-bottom: 4px;
+  }
+
+  .love-card .lc-val { font-size: 0.88rem; font-weight: 500; color: var(--text); line-height: 1.4; }
+
+  .career-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+
+  .ctag {
+    background: rgba(130,80,255,0.12);
+    border: 1px solid rgba(130,80,255,0.25);
+    border-radius: 999px; padding: 6px 14px;
+    font-size: 0.82rem; font-weight: 500; color: #c4a8ff;
+  }
+
+  .career-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.6; }
+
+  .shadow-box {
+    background: rgba(255,80,100,0.06);
+    border: 1px solid rgba(255,80,100,0.15);
+    border-radius: 14px; padding: 18px; margin-bottom: 12px;
+  }
+
+  .shadow-box p { font-size: 0.88rem; line-height: 1.6; color: #e8b4c0; }
+
+  .shadow-growth { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+  .shadow-growth strong { color: #a8d5b5; }
+
+  .famous-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .famous-person {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px 16px;
+  }
+
+  .famous-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    background: linear-gradient(135deg, #2a1f4a, #1a2040);
+    flex-shrink: 0;
+  }
+
+  .famous-info .fn { font-weight: 600; font-size: 0.9rem; }
+  .famous-info .fd { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+
+  .lucky-strip { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  .lucky-chip {
+    flex: 1; min-width: 100px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px; text-align: center;
+  }
+
+  .lucky-chip .lce { font-size: 20px; margin-bottom: 4px; }
+  .lucky-chip .lcl { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 2px; }
+  .lucky-chip .lcv { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+
+  .reset-btn {
+    width: 100%; padding: 14px; border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: transparent; color: var(--muted);
+    font-family: 'Outfit', sans-serif; font-size: 0.9rem;
+    cursor: pointer; transition: all 0.2s; margin-top: 6px;
+  }
+
+  .reset-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+
+  @media (max-width: 480px) {
+    .form-wrap { padding: 32px 20px; }
+    .result-hero { padding: 32px 20px 24px; }
+    .section { padding: 20px; }
+    .traits-row, .love-grid { grid-template-columns: 1fr; }
+    .hero-title { font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="form-wrap" id="formWrap">
+    <div class="form-top">
+      <div class="orb">🔮</div>
+      <h1>Your Birthday Soul Reading</h1>
+      <p>Zodiac wisdom meets birth energy — discover who you truly are</p>
+    </div>
+    <div class="field">
+      <label>Your Name</label>
+      <input type="text" id="nameIn" placeholder="e.g. Maya" maxlength="30">
+    </div>
+    <div class="field">
+      <label>Your Birthday</label>
+      <div class="date-row">
+        <select id="monthIn">
+          <option value="">Select Month</option>
+          <option value="1">January</option><option value="2">February</option>
+          <option value="3">March</option><option value="4">April</option>
+          <option value="5">May</option><option value="6">June</option>
+          <option value="7">July</option><option value="8">August</option>
+          <option value="9">September</option><option value="10">October</option>
+          <option value="11">November</option><option value="12">December</option>
+        </select>
+        <input type="number" id="dayIn" placeholder="Day" min="1" max="31">
+      </div>
+      <p class="err" id="errMsg">Please pick a valid month and day ✨</p>
+    </div>
+    <button class="submit-btn" onclick="reveal()">🔮 Read My Soul</button>
+  </div>
+
+  <div id="result">
+    <div class="result-hero">
+      <span class="hero-emoji" id="heroEmoji"></span>
+      <div class="zodiac-badge" id="zodiacBadge"></div>
+      <div class="hero-name" id="heroName"></div>
+      <div class="hero-title" id="heroTitle"></div>
+      <div class="hero-subtitle" id="heroSub"></div>
+    </div>
+
+    <div class="section" style="animation-delay:0.05s">
+      <div class="section-label">✦ Core Traits</div>
+      <div class="traits-row" id="traitsRow"></div>
+    </div>
+
+    <div class="section" style="animation-delay:0.1s">
+      <div class="section-label">🌙 Your Soul Reading</div>
+      <p class="horoscope-text" id="horoscope"></p>
+    </div>
+
+    <div class="section" style="animation-delay:0.15s">
+      <div class="section-label">💫 Love & Relationships</div>
+      <div class="love-grid" id="loveGrid"></div>
+    </div>
+
+    <div class="section" style="animation-delay:0.2s">
+      <div class="section-label">⚡ Career Strengths</div>
+      <div class="career-tags" id="careerTags"></div>
+      <p class="career-desc" id="careerDesc"></p>
+    </div>
+
+    <div class="section" style="animation-delay:0.25s">
+      <div class="section-label">🌑 Shadow Side</div>
+      <div class="shadow-box"><p id="shadowText"></p></div>
+      <p class="shadow-growth" id="shadowGrowth"></p>
+    </div>
+
+    <div class="section" style="animation-delay:0.3s">
+      <div class="section-label">⭐ Famous People Born This Month</div>
+      <div class="famous-list" id="famousList"></div>
+    </div>
+
+    <div class="section" style="animation-delay:0.35s">
+      <div class="section-label">🍀 Lucky Charms</div>
+      <div class="lucky-strip" id="luckyStrip"></div>
+    </div>
+
+    <button class="reset-btn" onclick="reset()">↩ Read Another Birthday</button>
+  </div>
+
+</div>
+<script>
+function getZodiac(m,d){
+  if((m===1&&d>=20)||(m===2&&d<=18))return{sign:"Aquarius",sym:"♒",el:"Air"};
+  if((m===2&&d>=19)||(m===3&&d<=20))return{sign:"Pisces",sym:"♓",el:"Water"};
+  if((m===3&&d>=21)||(m===4&&d<=19))return{sign:"Aries",sym:"♈",el:"Fire"};
+  if((m===4&&d>=20)||(m===5&&d<=20))return{sign:"Taurus",sym:"♉",el:"Earth"};
+  if((m===5&&d>=21)||(m===6&&d<=20))return{sign:"Gemini",sym:"♊",el:"Air"};
+  if((m===6&&d>=21)||(m===7&&d<=22))return{sign:"Cancer",sym:"♋",el:"Water"};
+  if((m===7&&d>=23)||(m===8&&d<=22))return{sign:"Leo",sym:"♌",el:"Fire"};
+  if((m===8&&d>=23)||(m===9&&d<=22))return{sign:"Virgo",sym:"♍",el:"Earth"};
+  if((m===9&&d>=23)||(m===10&&d<=22))return{sign:"Libra",sym:"♎",el:"Air"};
+  if((m===10&&d>=23)||(m===11&&d<=21))return{sign:"Scorpio",sym:"♏",el:"Water"};
+  if((m===11&&d>=22)||(m===12&&d<=21))return{sign:"Sagittarius",sym:"♐",el:"Fire"};
+  return{sign:"Capricorn",sym:"♑",el:"Earth"};
+}
+
+const ZD={
+  Aries:{emoji:"🐏",title:"The Fearless Pioneer",sub:"Born to lead, built to win",
+    traits:[{l:"Energy",v:"Explosive & unstoppable"},{l:"Thinking Style",v:"Fast, decisive, instinctive"},{l:"At Your Best",v:"Courageous trailblazer"},{l:"Secret Weapon",v:"Unshakeable self-belief"}],
+    horoscope:"You arrived in this world during the cosmic new year — and the universe made you its opening act. There is a fire in you that doesn't need permission to burn. You don't wait for doors to open; you build new ones. People are drawn to your electric confidence, though few realise how much of it you've had to forge through sheer will. You feel things fast and act even faster — and while that occasionally leads you somewhere unexpected, it has also taken you to places others never dared to go. Your life is not a slow burn; it is a series of brilliant ignitions.",
+    love:{style:"Passionate & all-or-nothing",need:"Excitement & genuine admiration",offer:"Fierce loyalty & electric energy",challenge:"Slowing down for emotional depth"},
+    career:{tags:["Leadership","Entrepreneurship","Sports","Crisis Management","Military"],desc:"You thrive where decisions matter and speed is rewarded. You need autonomy — being micromanaged drains your fire. Best in roles where you can charge ahead and own the outcome completely."},
+    shadow:"Your boldness can tip into impatience — you may steamroll others without realising it. The need to win sometimes means you pick battles that don't need fighting. When frustrated, you can be sharp-tongued in ways you later regret.",
+    growth:"<strong>Your growth edge:</strong> Practice sitting in discomfort without acting immediately. The pause before the leap is where wisdom lives.",
+    lucky:{color:"🔴 Crimson Red",number:"9",day:"Tuesday",gem:"Diamond"}},
+
+  Taurus:{emoji:"🐂",title:"The Luxurious Architect",sub:"Patient, powerful, and built to last",
+    traits:[{l:"Energy",v:"Steady & magnetic"},{l:"Thinking Style",v:"Methodical & sensory-driven"},{l:"At Your Best",v:"Unshakeable anchor"},{l:"Secret Weapon",v:"Outlasting everyone"}],
+    horoscope:"While others sprint past, you move with the quiet confidence of someone who knows the destination is worth the journey. You are drawn to beauty in all its forms — a perfectly brewed coffee, a room that feels like a hug, music that reaches the chest before the ears. This is not indulgence; it is your way of understanding that life is meant to be savoured. You build things slowly and beautifully — relationships, careers, homes — and what you build tends to outlast everything else. Patience is not something you practice; it is something you are.",
+    love:{style:"Sensual & deeply devoted",need:"Security & consistency",offer:"Steadfast loyalty & warmth",challenge:"Letting go when things end"},
+    career:{tags:["Finance","Architecture","Music","Culinary Arts","Real Estate"],desc:"You excel where quality and patience are rewarded. You have a rare ability to see long-term value where others see risk. Environments that are chaotic and ever-changing drain your power significantly."},
+    shadow:"Stubbornness is your shadow's favourite disguise. What starts as principle can calcify into rigidity — refusing to bend even when the situation has changed. You can also anchor yourself so deeply in comfort that growth feels threatening.",
+    growth:"<strong>Your growth edge:</strong> Ask yourself: 'Am I holding on because it still serves me, or because change feels scary?' Flexibility is not weakness — it is wisdom.",
+    lucky:{color:"💚 Forest Green",number:"6",day:"Friday",gem:"Emerald"}},
+
+  Gemini:{emoji:"🌀",title:"The Brilliant Shapeshifter",sub:"A universe of ideas in a single mind",
+    traits:[{l:"Energy",v:"Electric & ever-shifting"},{l:"Thinking Style",v:"Lateral, quick & associative"},{l:"At Your Best",v:"Dazzling communicator"},{l:"Secret Weapon",v:"Seeing all sides at once"}],
+    horoscope:"You were born with two minds in one body — and for most of your life, that has been both your greatest gift and your deepest puzzle. You can hold five conversations at once and mean every word. You move through ideas the way water moves through a landscape: finding the unexpected route, never staying still for long. People sometimes mistake your adaptability for shallowness, but the truth is the opposite — you have the capacity to love, learn, and live on multiple frequencies simultaneously. The world is your intellectual playground, and you never run out of things to explore.",
+    love:{style:"Playful, intellectual & surprising",need:"Mental stimulation & freedom",offer:"Wit, curiosity & joyful spontaneity",challenge:"Emotional depth & long-term consistency"},
+    career:{tags:["Journalism","Marketing","Writing","Teaching","Sales","Comedy"],desc:"You are exceptional anywhere language, ideas, or communication are the currency. You need variety — routine is your kryptonite. You do your best work when you can pivot, explore, and experiment freely."},
+    shadow:"Your mind moves so fast that follow-through sometimes evaporates. You may start ten things and finish three — not from laziness, but from the hunger for the next new thing. In relationships, your need for freedom can read as emotional unavailability.",
+    growth:"<strong>Your growth edge:</strong> Choose one thing to complete before starting the next. Depth requires you to stay in one place long enough to dig.",
+    lucky:{color:"💛 Bright Yellow",number:"5",day:"Wednesday",gem:"Agate"}},
+
+  Cancer:{emoji:"🌊",title:"The Intuitive Protector",sub:"Feeling everything, holding everyone",
+    traits:[{l:"Energy",v:"Deep, nurturing & tidal"},{l:"Thinking Style",v:"Intuitive & emotionally led"},{l:"At Your Best",v:"The one everyone runs to"},{l:"Secret Weapon",v:"Reading between every line"}],
+    horoscope:"You arrived in this world with your heart already wide open — and life has been teaching you ever since how to protect it without closing it. You feel the undercurrents in every room, sense the unspoken in every conversation, and carry people's pain with a tenderness that few understand. Your home, in all its forms, is sacred to you. You are not simply emotional — you are emotionally intelligent in a way that makes you rare, irreplaceable, and deeply needed by the people lucky enough to know you well.",
+    love:{style:"Devoted, nurturing & intensely loyal",need:"Emotional safety & reassurance",offer:"A love that feels like home",challenge:"Not losing yourself in others"},
+    career:{tags:["Psychology","Healthcare","Education","Social Work","Interior Design","Hospitality"],desc:"You thrive in roles where human connection and care are central. You have a gift for creating environments where people feel seen and safe. Leadership roles that require empathy are where you quietly become indispensable."},
+    shadow:"Your sensitivity, when unprotected, becomes reactivity. Past hurts can calcify into walls that even well-meaning people cannot scale. You sometimes nurture others while quietly running on empty — giving so freely that resentment builds without you even noticing.",
+    growth:"<strong>Your growth edge:</strong> Receiving care is not weakness. Let someone hold you for a change — you've been carrying everyone long enough.",
+    lucky:{color:"🤍 Pearl White",number:"2",day:"Monday",gem:"Moonstone"}},
+
+  Leo:{emoji:"🦁",title:"The Radiant Sovereign",sub:"Born to shine, made to inspire",
+    traits:[{l:"Energy",v:"Warm, bold & magnetic"},{l:"Thinking Style",v:"Big picture & vision-first"},{l:"At Your Best",v:"Generous leader who lifts all"},{l:"Secret Weapon",v:"Making everyone feel seen"}],
+    horoscope:"You carry sunlight in your chest — and the world has always known it, even when you doubted it. There is a warmth and largeness to you that draws people in without effort. You were made for grand gestures, epic loves, and stories worth telling. But what people underestimate is the heart beneath the mane: a Leo's loyalty is fierce, their generosity boundless, and their courage quiet in a crisis. You don't just want to shine — you want everyone around you to shine too. That is your real power.",
+    love:{style:"Romantic, generous & dramatic",need:"Genuine admiration & devotion",offer:"Grand love that sweeps you off your feet",challenge:"Sharing the spotlight equally"},
+    career:{tags:["Performing Arts","Executive Leadership","Fashion","Politics","Film & Media"],desc:"You are at your best on a stage — metaphorical or literal. You have a natural authority that commands rooms without demanding it. Best in roles with visibility, creative control, and real stakes that match your ambition."},
+    shadow:"The need for recognition, when unmet, can tip into pride or insecurity dressed as arrogance. You can become performative when you feel unseen — needing the validation you should be giving yourself. Criticism lands harder than you let on.",
+    growth:"<strong>Your growth edge:</strong> Your light doesn't require an audience. Find the version of you that shines in the dark, for no one's applause but your own.",
+    lucky:{color:"🟡 Royal Gold",number:"1",day:"Sunday",gem:"Ruby"}},
+
+  Virgo:{emoji:"🌿",title:"The Masterful Analyst",sub:"Quiet genius with impossible standards",
+    traits:[{l:"Energy",v:"Precise, grounded & focused"},{l:"Thinking Style",v:"Detail-first, systems-oriented"},{l:"At Your Best",v:"The one who actually fixes things"},{l:"Secret Weapon",v:"Seeing what everyone else misses"}],
+    horoscope:"You have a mind like a fine instrument — calibrated, sensitive, and capable of extraordinary precision. While others see the finished painting, you see the brushstrokes, the underdrawing, the places where the composition could be stronger. This is not criticism; it is love in its most exacting form. You give your best to everything you touch, and you quietly expect the world to meet you there. The gap between what is and what could be is where you live — and it is, in its own way, a beautiful and relentless place to call home.",
+    love:{style:"Devoted, attentive & quietly romantic",need:"Reliability & intellectual respect",offer:"Thoughtful devotion & acts of service",challenge:"Letting go of perfection in relationships"},
+    career:{tags:["Data Analysis","Medicine","Research","Editing","Project Management","Quality Assurance"],desc:"You are invaluable in any role that requires precision, systems thinking, and the ability to improve what already exists. Your analytical nature and relentless work ethic make you the person organisations quietly depend on for everything."},
+    shadow:"Your inner critic is relentless — and it rarely restricts itself to your own flaws. The standards you set for yourself you unconsciously project onto others. Anxiety and over-analysis can paralyse the very action your intelligence is preparing you for.",
+    growth:"<strong>Your growth edge:</strong> Done is often better than perfect. The world needs your work, not just your endless preparation for it.",
+    lucky:{color:"💚 Sage Green",number:"6",day:"Wednesday",gem:"Sapphire"}},
+
+  Libra:{emoji:"⚖️",title:"The Elegant Harmoniser",sub:"Beauty seeker, peace weaver, truth holder",
+    traits:[{l:"Energy",v:"Graceful, balanced & magnetic"},{l:"Thinking Style",v:"Comparative & nuance-driven"},{l:"At Your Best",v:"The diplomat who changes minds"},{l:"Secret Weapon",v:"Making hard things feel effortless"}],
+    horoscope:"You arrived in the world with an innate understanding that beauty and justice are the same thing — and you have spent your life trying to prove it. There is a natural grace to the way you move through rooms, conversations, and conflicts that people often mistake for ease. What they don't see is the constant internal calibration: the weighing, the considering, the endless search for the position that holds everything in balance. You are not indecisive — you are thorough. And when you finally choose, you choose beautifully.",
+    love:{style:"Romantic, aesthetic & partnership-driven",need:"Harmony, equality & beauty",offer:"A love that feels refined and considered",challenge:"Saying the hard thing to preserve the peace"},
+    career:{tags:["Law","Diplomacy","Design","Fashion","Counselling","Public Relations"],desc:"You are at your best where fairness, aesthetics, and communication intersect. You have a rare ability to see all sides — making you exceptional in negotiation, mediation, and creative direction. Conflict-heavy environments drain you quickly."},
+    shadow:"Indecision is your oldest companion. The desire to keep the peace can mean you disappear into what others need, losing your own position in the process. You can stay too long in situations that no longer serve you, just to avoid confrontation.",
+    growth:"<strong>Your growth edge:</strong> Your opinion matters. The most beautiful thing you can offer someone is your honest self — not your curated, pleasing one.",
+    lucky:{color:"🩷 Dusty Rose",number:"6",day:"Friday",gem:"Opal"}},
+
+  Scorpio:{emoji:"🦂",title:"The Transformative Force",sub:"Depth without end, power without apology",
+    traits:[{l:"Energy",v:"Intense, magnetic & penetrating"},{l:"Thinking Style",v:"Beneath the surface, always"},{l:"At Your Best",v:"The one who sees truth clearly"},{l:"Secret Weapon",v:"Transforming pain into power"}],
+    horoscope:"You were built for depth. While others skim the surface, you dive — into ideas, relationships, truths that most people prefer to leave unexamined. You have an almost supernatural ability to read people: their motivations, their fears, the things they cannot say out loud. This makes you both magnetic and slightly terrifying to those who have something to hide. You have died and been reborn more times than most people know — and every time, you have emerged more powerful, more distilled, more entirely yourself. That is the Scorpio gift: you do not just survive — you transform.",
+    love:{style:"All-consuming & fiercely loyal",need:"Total honesty & emotional depth",offer:"A love that transforms both people",challenge:"Vulnerability without needing to control"},
+    career:{tags:["Psychology","Surgery","Investigation","Finance","Research","Strategy"],desc:"You excel wherever depth, focus, and the ability to see beneath the surface are required. You are exceptional at finding what's hidden — in data, in people, in systems. High-stakes environments bring out your absolute best."},
+    shadow:"Jealousy and control can emerge when your deep need for trust feels threatened. You can hold grudges with an almost geological patience — waiting, watching, remembering. In your worst moments, manipulation replaces communication because vulnerability feels like danger.",
+    growth:"<strong>Your growth edge:</strong> Trust is built by being vulnerable first, not by demanding it from others. Let someone in before they have fully earned it.",
+    lucky:{color:"🖤 Obsidian Black",number:"9",day:"Tuesday",gem:"Topaz"}},
+
+  Sagittarius:{emoji:"🏹",title:"The Boundless Seeker",sub:"Chasing horizons, collecting wisdom",
+    traits:[{l:"Energy",v:"Expansive, wild & philosophical"},{l:"Thinking Style",v:"Big ideas, global perspective"},{l:"At Your Best",v:"The one who shows the way forward"},{l:"Secret Weapon",v:"Infectious, unstoppable optimism"}],
+    horoscope:"You came into this world with one eye already on the horizon. Freedom is not just something you want — it is something you physically need, like oxygen. You have a philosopher's hunger for truth and an adventurer's compulsion to find it firsthand. People love being around you because your presence expands what feels possible. You remind people that the world is larger and more generous than their current view of it — and then you invite them to come see for themselves. Your life is your greatest lecture, and you are always mid-adventure.",
+    love:{style:"Free-spirited, fun & philosophical",need:"Adventure & intellectual sparring",offer:"Laughter, honesty & grand experiences",challenge:"Committing without feeling caged"},
+    career:{tags:["Travel","Academia","Publishing","Philosophy","Comedy","International Business"],desc:"You are energised by ideas, cultures, and the search for meaning. You thrive in roles that require breadth rather than depth, movement rather than stillness. The classroom, the stage, the open road — these are your natural habitats."},
+    shadow:"Commitment is your quiet adversary. The grass can always look greener from your vantage point. Bluntness, delivered without cushioning, can wound the people you love most — and you often don't notice until it's too late.",
+    growth:"<strong>Your growth edge:</strong> The most profound journey you will ever take is the one that stays in one place long enough to go truly deep.",
+    lucky:{color:"💜 Royal Purple",number:"3",day:"Thursday",gem:"Turquoise"}},
+
+  Capricorn:{emoji:"🏔️",title:"The Relentless Achiever",sub:"Climbing while others sleep",
+    traits:[{l:"Energy",v:"Disciplined, dry & determined"},{l:"Thinking Style",v:"Strategic & long-horizon"},{l:"At Your Best",v:"The architect of legacies"},{l:"Secret Weapon",v:"Turning time into your advantage"}],
+    horoscope:"You came out of the womb with a plan. While other signs are still deciding what they want, you are already three steps ahead, building the infrastructure that will get you there. There is a steeliness in you that people often mistake for coldness — but those who know you understand it is armour, not ice. Beneath the ambition is a profound sense of responsibility: to your family, your craft, your legacy. You are playing a longer game than anyone around you realises, and you will almost certainly win it.",
+    love:{style:"Loyal, slow-burn & deeply committed",need:"Ambition compatibility & respect",offer:"Unwavering stability & long-term devotion",challenge:"Opening up before everything is 'sorted'"},
+    career:{tags:["Executive Leadership","Engineering","Law","Finance","Architecture","Government"],desc:"You are built for the long game. Organisations that need someone to build something lasting — a system, a culture, a legacy — need you. You do your best work when given real authority and held to the highest standards."},
+    shadow:"The relentless drive, without rest, becomes a prison. You can be so focused on the summit that you forget to notice the view from halfway up. Emotional expression can feel inefficient — leading you to bury feelings until they surface as frustration or cold withdrawal.",
+    growth:"<strong>Your growth edge:</strong> Rest is not failure. Joy is not distraction. You are allowed to enjoy the life you are working so hard to build.",
+    lucky:{color:"🤎 Deep Brown",number:"8",day:"Saturday",gem:"Garnet"}},
+
+  Aquarius:{emoji:"⚡",title:"The Visionary Rebel",sub:"Here to change the world, not fit into it",
+    traits:[{l:"Energy",v:"Unconventional & electric"},{l:"Thinking Style",v:"Ahead of its time, always"},{l:"At Your Best",v:"The one who sees what's coming"},{l:"Secret Weapon",v:"Ideas that age into genius"}],
+    horoscope:"You were born slightly out of phase with your era — and your whole life has been the process of figuring out what to do about that. You see systems others accept as permanent and immediately begin redesigning them. You care about humanity in its broadest sense; individual connection can sometimes feel smaller than your vision. This is your paradox: you love people collectively, fiercely, and abstractly — and the one person standing in front of you occasionally gets less of you than they deserve. But when you are at your best, you change things that were supposed to be unchangeable.",
+    love:{style:"Unconventional, intellectual & free",need:"Independence & true meeting of minds",offer:"A love that is genuinely original",challenge:"Emotional presence in the everyday"},
+    career:{tags:["Technology","Social Innovation","Science","Activism","Futurism","Design"],desc:"You belong at the frontier. Wherever there is a broken system that needs redesigning or a future that needs imagining — that is your workplace. Traditional hierarchies frustrate you deeply; flat structures where ideas win on merit are your oxygen."},
+    shadow:"Detachment is the shadow of independence. You can intellectualise your way out of feeling — turning to logic precisely when emotion is what the moment requires. Contrarianism can become identity: disagreeing not because you've thought it through, but because agreement feels like conformity.",
+    growth:"<strong>Your growth edge:</strong> The revolution starts inside. The world you want to build externally requires the emotional work you have been quietly postponing.",
+    lucky:{color:"🔵 Electric Blue",number:"4",day:"Saturday",gem:"Amethyst"}},
+
+  Pisces:{emoji:"🐟",title:"The Mystical Dreamer",sub:"Half in this world, half in another",
+    traits:[{l:"Energy",v:"Fluid, empathic & otherworldly"},{l:"Thinking Style",v:"Associative, symbolic & intuitive"},{l:"At Your Best",v:"The artist who captures the unnamed"},{l:"Secret Weapon",v:"Feeling the truth before it arrives"}],
+    horoscope:"You were born at the end of the cosmic year, when the universe is both exhausted and full of everything it has learned. You carry that accumulated wisdom — the grief, the wonder, the beauty — in your body. You absorb the emotions of rooms, people, cities. Art, music, silence, rain on a window: these are not small things to you. They are the language your soul speaks most fluently. You feel things before they happen, understand people before they speak, and hold the world's full complexity with a tenderness that quietly changes everyone you touch.",
+    love:{style:"Romantic, selfless & deeply feeling",need:"Emotional merging & spiritual connection",offer:"A love that feels like poetry in motion",challenge:"Boundaries — knowing where you end and others begin"},
+    career:{tags:["Music","Visual Art","Healing Arts","Film","Writing","Spirituality","Nursing"],desc:"You are drawn to work that touches the invisible — emotion, beauty, meaning, healing. Your gifts live in the places where logic runs out. You need an environment that honours intuition as a form of intelligence equal to data."},
+    shadow:"The boundary between you and the world can dissolve entirely — leaving you absorbing pain that was never yours to carry. Escapism beckons when reality grows harsh. You can sacrifice yourself so completely for others that you quietly disappear.",
+    growth:"<strong>Your growth edge:</strong> You cannot pour from an empty ocean. Protecting your energy is not selfishness — it is what allows your extraordinary gifts to survive.",
+    lucky:{color:"🩵 Sea Blue",number:"7",day:"Thursday",gem:"Aquamarine"}}
+};
+
+const MF={
+  1:[{e:"🎤",n:"David Bowie",d:"Rock icon & reinvention master"},{e:"🎬",n:"Oprah Winfrey",d:"Media mogul & philanthropist"},{e:"✍️",n:"J.R.R. Tolkien",d:"Author of The Lord of the Rings"}],
+  2:[{e:"🔬",n:"Albert Einstein",d:"Father of modern physics"},{e:"🎤",n:"Rihanna",d:"Singer & beauty entrepreneur"},{e:"✊",n:"Rosa Parks",d:"Civil rights activist & icon"}],
+  3:[{e:"🎨",n:"Michelangelo",d:"Renaissance sculptor & painter"},{e:"🎬",n:"Reese Witherspoon",d:"Actress & producer"},{e:"🏀",n:"Shaquille O'Neal",d:"NBA legend & businessman"}],
+  4:[{e:"💡",n:"Leonardo da Vinci",d:"Renaissance polymath & genius"},{e:"👑",n:"Queen Elizabeth II",d:"Britain's longest-reigning monarch"},{e:"🎸",n:"Kurt Cobain",d:"Nirvana frontman & rock legend"}],
+  5:[{e:"⚽",n:"David Beckham",d:"Football icon & style legend"},{e:"🎤",n:"Adele",d:"Record-breaking singer-songwriter"},{e:"✊",n:"Malcolm X",d:"Civil rights leader & activist"}],
+  6:[{e:"🎤",n:"Ariana Grande",d:"Pop megastar"},{e:"🎸",n:"Paul McCartney",d:"Beatle & music legend"},{e:"🖊️",n:"Anne Frank",d:"Diarist & enduring symbol of hope"}],
+  7:[{e:"⚡",n:"Nikola Tesla",d:"Inventor & visionary engineer"},{e:"🏆",n:"Serena Williams",d:"Tennis GOAT"},{e:"💻",n:"Elon Musk",d:"Entrepreneur & tech disruptor"}],
+  8:[{e:"👑",n:"Barack Obama",d:"44th President of the United States"},{e:"🎤",n:"Michael Jackson",d:"King of Pop"},{e:"🎬",n:"Halle Berry",d:"Academy Award-winning actress"}],
+  9:[{e:"🎤",n:"Beyoncé",d:"Music icon & cultural force"},{e:"🔬",n:"Michael Faraday",d:"Pioneer of electromagnetism"},{e:"🎬",n:"Keanu Reeves",d:"Actor & internet's favourite person"}],
+  10:[{e:"⚽",n:"Cristiano Ronaldo",d:"Football legend"},{e:"🎤",n:"Bruno Mars",d:"Multi-Grammy singer & performer"},{e:"✊",n:"Mahatma Gandhi",d:"Father of non-violent resistance"}],
+  11:[{e:"🎬",n:"Leonardo DiCaprio",d:"Oscar-winning actor & activist"},{e:"💡",n:"Marie Curie",d:"Nobel Prize-winning scientist"},{e:"🎤",n:"Björk",d:"Avant-garde music icon"}],
+  12:[{e:"🎤",n:"Jay-Z",d:"Rapper, producer & entrepreneur"},{e:"🔭",n:"Isaac Newton",d:"Father of modern physics & mathematics"},{e:"🎬",n:"Scarlett Johansson",d:"Actress & Hollywood powerhouse"}]
+};
+
+function reveal(){
+  const name=document.getElementById('nameIn').value.trim()||"Stargazer";
+  const m=parseInt(document.getElementById('monthIn').value);
+  const d=parseInt(document.getElementById('dayIn').value);
+  const err=document.getElementById('errMsg');
+  if(!m||!d||d<1||d>31){err.style.display='block';return;}
+  err.style.display='none';
+
+  const z=getZodiac(m,d);
+  const zd=ZD[z.sign];
+  const famous=MF[m];
+
+  document.getElementById('heroEmoji').textContent=zd.emoji;
+  document.getElementById('zodiacBadge').textContent=`${z.sym} ${z.sign} · ${z.el} Sign`;
+  document.getElementById('heroName').textContent=name+"'s Reading";
+  document.getElementById('heroTitle').textContent=zd.title;
+  document.getElementById('heroSub').textContent=zd.sub;
+
+  document.getElementById('traitsRow').innerHTML=zd.traits.map(t=>`
+    <div class="trait-pill"><div class="tl">${t.l}</div><div class="tv">${t.v}</div></div>`).join('');
+
+  document.getElementById('horoscope').textContent=zd.horoscope;
+
+  const lv=zd.love;
+  document.getElementById('loveGrid').innerHTML=`
+    <div class="love-card"><div class="lc-label">💞 Love Style</div><div class="lc-val">${lv.style}</div></div>
+    <div class="love-card"><div class="lc-label">🌹 What You Need</div><div class="lc-val">${lv.need}</div></div>
+    <div class="love-card"><div class="lc-label">🎁 What You Offer</div><div class="lc-val">${lv.offer}</div></div>
+    <div class="love-card"><div class="lc-label">⚠️ Your Challenge</div><div class="lc-val">${lv.challenge}</div></div>`;
+
+  document.getElementById('careerTags').innerHTML=zd.career.tags.map(t=>`<span class="ctag">${t}</span>`).join('');
+  document.getElementById('careerDesc').textContent=zd.career.desc;
+
+  document.getElementById('shadowText').textContent=zd.shadow;
+  document.getElementById('shadowGrowth').innerHTML=zd.growth;
+
+  document.getElementById('famousList').innerHTML=famous.map(f=>`
+    <div class="famous-person">
+      <div class="famous-avatar">${f.e}</div>
+      <div class="famous-info"><div class="fn">${f.n}</div><div class="fd">${f.d}</div></div>
+    </div>`).join('');
+
+  const lk=zd.lucky;
+  document.getElementById('luckyStrip').innerHTML=`
+    <div class="lucky-chip"><div class="lce">🎨</div><div class="lcl">Color</div><div class="lcv">${lk.color}</div></div>
+    <div class="lucky-chip"><div class="lce">🔢</div><div class="lcl">Number</div><div class="lcv">${lk.number}</div></div>
+    <div class="lucky-chip"><div class="lce">📅</div><div class="lcl">Day</div><div class="lcv">${lk.day}</div></div>
+    <div class="lucky-chip"><div class="lce">💎</div><div class="lcl">Gem</div><div class="lcv">${lk.gem}</div></div>`;
+
+  document.getElementById('formWrap').style.display='none';
+  document.getElementById('result').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function reset(){
+  document.getElementById('formWrap').style.display='block';
+  document.getElementById('result').style.display='none';
+  document.getElementById('nameIn').value='';
+  document.getElementById('monthIn').value='';
+  document.getElementById('dayIn').value='';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
