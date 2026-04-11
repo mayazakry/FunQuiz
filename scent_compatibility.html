@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scent Compatibility — Are Your Fragrances Written in the Stars?</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Raleway:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0D0A14;
+    --panel: #13101E;
+    --border: #2A2040;
+    --gold: #D4AF6A;
+    --gold-dim: #7A6035;
+    --rose: #C97F8A;
+    --lavender: #9B8EC4;
+    --cream: #F0E8D8;
+    --muted: #7A708A;
+    --text: #E8E0F0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Raleway', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* STARFIELD */
+  .stars {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .star {
+    position: absolute;
+    border-radius: 50%;
+    background: white;
+    animation: twinkle var(--d, 3s) ease-in-out infinite var(--delay, 0s);
+  }
+  @keyframes twinkle {
+    0%,100% { opacity: var(--min, 0.1); transform: scale(1); }
+    50% { opacity: var(--max, 0.8); transform: scale(1.3); }
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 30%, rgba(155,142,196,0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 70%, rgba(201,127,138,0.1) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    margin-bottom: 52px;
+    animation: fadeDown 0.8s ease both;
+  }
+
+  .header-stars {
+    font-size: 1.2rem;
+    letter-spacing: 16px;
+    color: var(--gold);
+    margin-bottom: 20px;
+    display: block;
+    animation: drift 4s ease-in-out infinite;
+  }
+  @keyframes drift { 0%,100%{letter-spacing:16px} 50%{letter-spacing:20px} }
+
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.9rem, 5.5vw, 3rem);
+    font-weight: 400;
+    line-height: 1.2;
+    color: var(--cream);
+    margin-bottom: 14px;
+  }
+  .header h1 em { font-style: italic; color: var(--gold); }
+
+  .header p {
+    font-size: 0.72rem;
+    letter-spacing: 2.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 22px auto;
+    max-width: 300px;
+  }
+  .divider::before,.divider::after {
+    content:''; flex:1; height:1px;
+    background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+  }
+  .divider span { color: var(--gold); font-size: 0.9rem; }
+
+  /* CARDS */
+  .persons-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  @media(max-width: 540px) {
+    .persons-grid { grid-template-columns: 1fr; }
+  }
+
+  .person-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 28px 24px;
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .person-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+  .person-card.card-a::before { background: linear-gradient(90deg, transparent, var(--rose), transparent); }
+  .person-card.card-b::before { background: linear-gradient(90deg, transparent, var(--lavender), transparent); }
+
+  .card-label {
+    font-size: 0.58rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-a .card-label { color: var(--rose); }
+  .card-b .card-label { color: var(--lavender); }
+
+  .card-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+  }
+  .card-a .card-dot { background: var(--rose); box-shadow: 0 0 6px var(--rose); }
+  .card-b .card-dot { background: var(--lavender); box-shadow: 0 0 6px var(--lavender); }
+
+  .form-group { margin-bottom: 16px; }
+
+  label {
+    display: block;
+    font-size: 0.62rem;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 7px;
+  }
+
+  input[type="text"], input[type="date"], select {
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 11px 14px;
+    color: var(--text);
+    font-family: 'Raleway', sans-serif;
+    font-size: 0.85rem;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+
+  input[type="text"]:focus, input[type="date"]:focus, select:focus {
+    outline: none;
+    border-color: var(--gold-dim);
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.5);
+    cursor: pointer;
+  }
+
+  select option { background: #1a1530; }
+
+  /* CONNECTOR */
+  .connector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 4px 0;
+  }
+  .connector-symbol {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    border: 1px solid var(--gold-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    color: var(--gold);
+    background: var(--panel);
+    animation: rotateSlow 8s linear infinite;
+  }
+  @keyframes rotateSlow { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+
+  /* REVEAL BUTTON */
+  .reveal-btn {
+    display: block;
+    width: 100%;
+    padding: 18px;
+    background: transparent;
+    border: 1px solid var(--gold-dim);
+    border-radius: 2px;
+    color: var(--gold);
+    font-family: 'Raleway', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .reveal-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(212,175,106,0.1), rgba(201,127,138,0.08));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .reveal-btn:hover { border-color: var(--gold); box-shadow: 0 0 24px rgba(212,175,106,0.15); }
+  .reveal-btn:hover::before { opacity: 1; }
+
+  /* ── RESULT ── */
+  #result { display: none; animation: fadeUp 0.8s ease both; }
+
+  /* COMPATIBILITY RING */
+  .compat-ring-wrap {
+    text-align: center;
+    padding: 48px 32px 36px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .compat-ring-wrap::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 4px;
+    padding: 1px;
+    background: linear-gradient(135deg, var(--rose), var(--gold), var(--lavender));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0.5;
+  }
+
+  .ring-container {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    margin: 0 auto 28px;
+  }
+
+  .ring-svg { width: 160px; height: 160px; transform: rotate(-90deg); }
+
+  .ring-bg { fill: none; stroke: var(--border); stroke-width: 8; }
+  .ring-fill {
+    fill: none;
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-dasharray: 440;
+    stroke-dashoffset: 440;
+    transition: stroke-dashoffset 1.5s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .ring-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ring-pct {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.4rem;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .ring-label {
+    font-size: 0.58rem;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .compat-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.5rem, 4vw, 2.1rem);
+    font-weight: 400;
+    color: var(--cream);
+    margin-bottom: 6px;
+  }
+
+  .compat-subtitle {
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .compat-desc {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1rem;
+    color: var(--muted);
+    line-height: 1.8;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  /* PROFILES SIDE BY SIDE */
+  .profiles-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  @media(max-width: 540px) { .profiles-grid { grid-template-columns: 1fr; } }
+
+  .profile-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 24px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .profile-card.pcard-a::before {
+    content: ''; position: absolute;
+    top:0;left:0;right:0;height:2px;
+    background: linear-gradient(90deg, transparent, var(--rose), transparent);
+  }
+  .profile-card.pcard-b::before {
+    content: ''; position: absolute;
+    top:0;left:0;right:0;height:2px;
+    background: linear-gradient(90deg, transparent, var(--lavender), transparent);
+  }
+
+  .profile-name {
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .pcard-a .profile-name { color: var(--rose); }
+  .pcard-b .profile-name { color: var(--lavender); }
+
+  .profile-sign {
+    font-size: 2rem;
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .profile-zodiac {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--cream);
+    margin-bottom: 4px;
+  }
+
+  .profile-season {
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 1px;
+    margin-bottom: 14px;
+  }
+
+  .profile-scent-title {
+    font-size: 0.58rem;
+    letter-spacing: 2px;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .profile-notes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 12px;
+  }
+
+  .note-tag {
+    font-size: 0.62rem;
+    padding: 3px 9px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  .profile-rec {
+    font-size: 0.62rem;
+    color: var(--muted);
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+  .profile-rec strong {
+    display: block;
+    color: var(--cream);
+    font-family: 'Playfair Display', serif;
+    font-size: 0.9rem;
+    font-weight: 400;
+    margin-top: 3px;
+  }
+
+  /* BLEND SUGGESTION */
+  .blend-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 28px 28px;
+    margin-bottom: 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .blend-card::before {
+    content: '';
+    position: absolute;
+    top:0;left:0;right:0;height:2px;
+    background: linear-gradient(90deg, var(--rose), var(--gold), var(--lavender));
+  }
+
+  .blend-title {
+    font-size: 0.6rem;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .blend-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: var(--cream);
+    margin-bottom: 8px;
+  }
+
+  .blend-desc {
+    font-size: 0.75rem;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 18px;
+  }
+
+  .blend-notes {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .blend-note {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 0.85rem;
+    padding: 5px 14px;
+    border: 1px solid var(--gold-dim);
+    border-radius: 20px;
+    color: var(--gold);
+  }
+
+  /* DIMENSION BARS */
+  .dims-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+
+  .dims-title {
+    font-size: 0.6rem;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .dim-row { margin-bottom: 16px; }
+
+  .dim-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 0.62rem;
+    letter-spacing: 1px;
+  }
+
+  .dim-a { color: var(--rose); }
+  .dim-b { color: var(--lavender); }
+
+  .dim-track {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .dim-fill-a {
+    position: absolute;
+    left: 0; top: 0; height: 100%;
+    background: linear-gradient(90deg, var(--rose), rgba(201,127,138,0.4));
+    border-radius: 2px;
+    transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .dim-fill-b {
+    position: absolute;
+    right: 0; top: 0; height: 100%;
+    background: linear-gradient(270deg, var(--lavender), rgba(155,142,196,0.4));
+    border-radius: 2px;
+    transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .dim-center-label {
+    text-align: center;
+    font-size: 0.6rem;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* RESTART */
+  .restart-btn {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: var(--muted);
+    font-family: 'Raleway', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.25s;
+  }
+  .restart-btn:hover { border-color: var(--gold-dim); color: var(--gold); }
+
+  @keyframes fadeDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fadeUp   { from{opacity:0;transform:translateY(24px)}  to{opacity:1;transform:translateY(0)} }
+</style>
+</head>
+<body>
+
+<!-- STARFIELD -->
+<div class="stars" id="stars"></div>
+
+<div class="container">
+
+  <div class="header">
+    <span class="header-stars">★ ✦ ★</span>
+    <h1>Are Your Scents<br><em>Written in the Stars?</em></h1>
+    <div class="divider"><span>✦</span></div>
+    <p>Discover your fragrance compatibility through the cosmos</p>
+  </div>
+
+  <!-- INPUT FORM -->
+  <div id="form-section">
+    <div class="persons-grid">
+
+      <!-- PERSON A -->
+      <div class="person-card card-a">
+        <div class="card-label"><div class="card-dot"></div> Person One</div>
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" id="name-a" placeholder="e.g. Sofia" />
+        </div>
+        <div class="form-group">
+          <label>Date of Birth</label>
+          <input type="date" id="dob-a" />
+        </div>
+        <div class="form-group">
+          <label>Gender</label>
+          <select id="gender-a">
+            <option value="">Select...</option>
+            <option value="f">Woman</option>
+            <option value="m">Man</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- PERSON B -->
+      <div class="person-card card-b" style="animation-delay:0.15s">
+        <div class="card-label"><div class="card-dot"></div> Person Two</div>
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" id="name-b" placeholder="e.g. Aryan" />
+        </div>
+        <div class="form-group">
+          <label>Date of Birth</label>
+          <input type="date" id="dob-b" />
+        </div>
+        <div class="form-group">
+          <label>Gender</label>
+          <select id="gender-b">
+            <option value="">Select...</option>
+            <option value="f">Woman</option>
+            <option value="m">Man</option>
+          </select>
+        </div>
+      </div>
+
+    </div>
+
+    <button class="reveal-btn" onclick="reveal()">✦ Reveal Our Scent Compatibility ✦</button>
+  </div>
+
+  <!-- RESULT -->
+  <div id="result">
+    <div class="compat-ring-wrap">
+      <div class="ring-container">
+        <svg class="ring-svg" viewBox="0 0 160 160">
+          <circle class="ring-bg" cx="80" cy="80" r="70"/>
+          <circle class="ring-fill" id="ring-fill" cx="80" cy="80" r="70"
+            stroke="url(#ringGrad)"/>
+          <defs>
+            <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" style="stop-color:#C97F8A"/>
+              <stop offset="50%" style="stop-color:#D4AF6A"/>
+              <stop offset="100%" style="stop-color:#9B8EC4"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="ring-center">
+          <div class="ring-pct" id="r-pct">0%</div>
+          <div class="ring-label">Compatible</div>
+        </div>
+      </div>
+
+      <div class="compat-title" id="r-title"></div>
+      <div class="compat-subtitle" id="r-subtitle"></div>
+      <div class="divider"><span>✦</span></div>
+      <div class="compat-desc" id="r-desc"></div>
+    </div>
+
+    <div class="profiles-grid">
+      <div class="profile-card pcard-a">
+        <div class="profile-name" id="pa-name"></div>
+        <span class="profile-sign" id="pa-sign"></span>
+        <div class="profile-zodiac" id="pa-zodiac"></div>
+        <div class="profile-season" id="pa-season"></div>
+        <div class="profile-scent-title">✦ Scent Personality</div>
+        <div class="profile-notes" id="pa-notes"></div>
+        <div class="profile-rec">
+          Recommended for you
+          <strong id="pa-rec"></strong>
+        </div>
+      </div>
+      <div class="profile-card pcard-b">
+        <div class="profile-name" id="pb-name"></div>
+        <span class="profile-sign" id="pb-sign"></span>
+        <div class="profile-zodiac" id="pb-zodiac"></div>
+        <div class="profile-season" id="pb-season"></div>
+        <div class="profile-scent-title">✦ Scent Personality</div>
+        <div class="profile-notes" id="pb-notes"></div>
+        <div class="profile-rec">
+          Recommended for you
+          <strong id="pb-rec"></strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="blend-card">
+      <div class="blend-title">✦ Your Signature Couple Scent</div>
+      <div class="blend-name" id="r-blend-name"></div>
+      <div class="blend-desc" id="r-blend-desc"></div>
+      <div class="blend-notes" id="r-blend-notes"></div>
+    </div>
+
+    <div class="dims-card">
+      <div class="dims-title">✦ Scent Dimension Compatibility</div>
+      <div id="r-dims"></div>
+    </div>
+
+    <button class="restart-btn" onclick="restart()">✦ Try Different Dates ✦</button>
+  </div>
+
+</div>
+
+<script>
+// ── STARFIELD ──────────────────────────────────────────
+(function() {
+  const wrap = document.getElementById('stars');
+  for (let i = 0; i < 120; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 2.5 + 0.5;
+    s.style.cssText = `
+      width:${size}px;height:${size}px;
+      top:${Math.random()*100}%;left:${Math.random()*100}%;
+      --d:${2+Math.random()*4}s;--delay:${Math.random()*4}s;
+      --min:${0.05+Math.random()*0.2};--max:${0.4+Math.random()*0.6};
+    `;
+    wrap.appendChild(s);
+  }
+})();
+
+// ── ZODIAC DATA ────────────────────────────────────────
+const zodiac = [
+  { sign: 'Capricorn', emoji: '♑', el: 'earth', dates: [[1,1],[1,19]] },
+  { sign: 'Aquarius',  emoji: '♒', el: 'air',   dates: [[1,20],[2,18]] },
+  { sign: 'Pisces',    emoji: '♓', el: 'water',  dates: [[2,19],[3,20]] },
+  { sign: 'Aries',     emoji: '♈', el: 'fire',   dates: [[3,21],[4,19]] },
+  { sign: 'Taurus',    emoji: '♉', el: 'earth',  dates: [[4,20],[5,20]] },
+  { sign: 'Gemini',    emoji: '♊', el: 'air',    dates: [[5,21],[6,20]] },
+  { sign: 'Cancer',    emoji: '♋', el: 'water',  dates: [[6,21],[7,22]] },
+  { sign: 'Leo',       emoji: '♌', el: 'fire',   dates: [[7,23],[8,22]] },
+  { sign: 'Virgo',     emoji: '♍', el: 'earth',  dates: [[8,23],[9,22]] },
+  { sign: 'Libra',     emoji: '♎', el: 'air',    dates: [[9,23],[10,22]] },
+  { sign: 'Scorpio',   emoji: '♏', el: 'water',  dates: [[10,23],[11,21]] },
+  { sign: 'Sagittarius',emoji:'♐', el: 'fire',   dates: [[11,22],[12,21]] },
+  { sign: 'Capricorn', emoji: '♑', el: 'earth',  dates: [[12,22],[12,31]] },
+];
+
+function getZodiac(date) {
+  const m = date.getMonth() + 1, d = date.getDate();
+  return zodiac.find(z => {
+    const [s, e] = z.dates;
+    return (m === s[0] && d >= s[1]) || (m === e[0] && d <= e[1]);
+  }) || zodiac[0];
+}
+
+function getSeason(date) {
+  const m = date.getMonth() + 1;
+  if (m >= 3 && m <= 5) return { name: 'Spring', emoji: '🌸', desc: 'Blooming & fresh' };
+  if (m >= 6 && m <= 8) return { name: 'Summer', emoji: '☀️', desc: 'Warm & vibrant' };
+  if (m >= 9 && m <= 11) return { name: 'Autumn', emoji: '🍂', desc: 'Rich & earthy' };
+  return { name: 'Winter', emoji: '❄️', desc: 'Deep & mysterious' };
+}
+
+// ── SCENT PROFILES BY ZODIAC + SEASON ─────────────────
+const scentProfiles = {
+  fire: {
+    notes: ['Saffron', 'Oud', 'Black Pepper', 'Rose', 'Amber'],
+    style: 'Bold & Magnetic',
+    intensity: 90, warmth: 85, freshness: 30, sweetness: 50,
+    recs: {
+      f: ['Tom Ford — Black Orchid', 'YSL — Black Opium', 'Guerlain — Shalimar'],
+      m: ['Dior — Sauvage', 'Creed — Royal Oud', 'Tom Ford — Oud Wood']
+    }
+  },
+  earth: {
+    notes: ['Vetiver', 'Patchouli', 'Sandalwood', 'Iris', 'Moss'],
+    style: 'Grounded & Sophisticated',
+    intensity: 70, warmth: 75, freshness: 45, sweetness: 35,
+    recs: {
+      f: ['Le Labo — Santal 33', 'Hermès — Terre d\'Hermès', 'Byredo — Gypsy Water'],
+      m: ['Creed — Bois du Portugal', 'Dior — Fahrenheit', 'Guerlain — Vetiver']
+    }
+  },
+  air: {
+    notes: ['Bergamot', 'White Tea', 'Jasmine', 'Violet', 'Musk'],
+    style: 'Airy & Intellectual',
+    intensity: 55, warmth: 50, freshness: 85, sweetness: 55,
+    recs: {
+      f: ['Chanel — Chance Eau Tendre', 'Jo Malone — Peony & Blush', 'Issey Miyake — L\'Eau d\'Issey'],
+      m: ['Acqua di Parma — Colonia', 'Bleu de Chanel', 'Dior — Eau Sauvage']
+    }
+  },
+  water: {
+    notes: ['Sea Salt', 'Lily', 'Ambergris', 'Jasmine', 'Cedarwood'],
+    style: 'Intuitive & Mysterious',
+    intensity: 65, warmth: 60, freshness: 70, sweetness: 65,
+    recs: {
+      f: ['Diptyque — Eau des Sens', 'Chloé — Nomade', 'Maison Margiela — Replica Beach Walk'],
+      m: ['Davidoff — Cool Water', 'Acqua di Giò', 'Creed — Aventus']
+    }
+  }
+};
+
+const seasonBonus = {
+  Spring: { freshness: 15, sweetness: 10 },
+  Summer: { freshness: 20, intensity: -10 },
+  Autumn: { warmth: 15, intensity: 10 },
+  Winter: { warmth: 20, intensity: 15 },
+};
+
+const monthPersonality = [
+  'Ambitious & determined', 'Sensitive & romantic', 'Imaginative & compassionate',
+  'Bold & pioneering', 'Sensual & loyal', 'Curious & expressive',
+  'Nurturing & intuitive', 'Confident & dramatic', 'Analytical & refined',
+  'Charming & balanced', 'Intense & transformative', 'Adventurous & philosophical'
+];
+
+// ── ELEMENT COMPATIBILITY ──────────────────────────────
+const elementCompat = {
+  fire:  { fire:75, earth:55, air:85, water:60 },
+  earth: { earth:80, fire:55, air:60, water:85 },
+  air:   { air:70,  fire:85, earth:60, water:65 },
+  water: { water:75, earth:85, fire:60, air:65 },
+};
+
+// ── COUPLE BLENDS ──────────────────────────────────────
+const coupleBlends = {
+  high: [
+    { name: 'Eternal Bloom', desc: 'Your combined energies create a luminous, romantic fragrance — warm florals meeting deep woods in perfect balance.', notes: ['Rose Absolute', 'Sandalwood', 'Amber', 'White Musk'] },
+    { name: 'Celestial Accord', desc: 'Like two stars orbiting each other — your scents create something the universe designed specifically for you.', notes: ['Oud', 'Jasmine', 'Bergamot', 'Vanilla'] },
+  ],
+  mid: [
+    { name: 'The Contrast', desc: 'Your differences create intrigue. Like night meeting day, your fragrances create a captivating tension that draws people in.', notes: ['Vetiver', 'Peony', 'Pepper', 'Amber'] },
+    { name: 'Curious Harmony', desc: 'Not immediately obvious, but deeply interesting. Your scents reward those who pay attention — much like your relationship.', notes: ['Iris', 'Cedarwood', 'Bergamot', 'Musk'] },
+  ],
+  low: [
+    { name: 'Beautiful Opposites', desc: 'Fire and water. Your scent personalities are delightfully different — which means together you create something completely unique.', notes: ['Saffron', 'Sea Salt', 'Sandalwood', 'Rose'] },
+  ]
+};
+
+// ── COMPATIBILITY LEVELS ───────────────────────────────
+function getCompatLevel(score) {
+  if (score >= 80) return { title: 'A Rare Cosmic Match', subtitle: 'Your Scents Were Made For Each Other', desc: 'The stars aligned long before you met. Your fragrance personalities complement each other with an ease that feels almost fated — warm where the other is bright, deep where the other is airy. Together you create a scent story that is greater than either alone.', blend: 'high' };
+  if (score >= 65) return { title: 'A Beautiful Harmony', subtitle: 'Complementary Souls', desc: 'Your scent profiles find each other naturally. Like two notes in a chord, you bring out qualities in each other that neither would discover alone. There is warmth here, and possibility.', blend: 'mid' };
+  if (score >= 50) return { title: 'An Intriguing Contrast', subtitle: 'Opposites That Attract', desc: 'Your fragrance personalities dance around each other with delightful tension. What you lack, the other carries. Your differences are not obstacles — they are the most interesting part of your story.', blend: 'mid' };
+  return { title: 'A Rare Adventure', subtitle: 'Beautifully Unexpected', desc: 'The cosmos rarely brings together two such distinct scent souls. Your differences create a fragrance story full of surprise and discovery — the kind of relationship that keeps both people endlessly curious.', blend: 'low' };
+}
+
+// ── MAIN LOGIC ─────────────────────────────────────────
+function buildProfile(dob, gender) {
+  const z = getZodiac(dob);
+  const s = getSeason(dob);
+  const mp = monthPersonality[dob.getMonth()];
+  const sp = { ...scentProfiles[z.el] };
+  const bonus = seasonBonus[s.name] || {};
+  Object.entries(bonus).forEach(([k,v]) => { if (sp[k] !== undefined) sp[k] = Math.min(100, sp[k] + v); });
+  const recArr = sp.recs[gender] || sp.recs['f'];
+  const rec = recArr[Math.floor(Math.random() * recArr.length)];
+  return { zodiac: z, season: s, monthPersonality: mp, scent: sp, rec };
+}
+
+function reveal() {
+  const nameA = document.getElementById('name-a').value.trim() || 'Person One';
+  const nameB = document.getElementById('name-b').value.trim() || 'Person Two';
+  const dobA  = document.getElementById('dob-a').value;
+  const dobB  = document.getElementById('dob-b').value;
+  const genA  = document.getElementById('gender-a').value || 'f';
+  const genB  = document.getElementById('gender-b').value || 'f';
+
+  if (!dobA || !dobB) { alert('Please enter both birthdates ✦'); return; }
+
+  const dateA = new Date(dobA), dateB = new Date(dobB);
+  const pA = buildProfile(dateA, genA);
+  const pB = buildProfile(dateB, genB);
+
+  const baseScore = elementCompat[pA.zodiac.el][pB.zodiac.el];
+  const seasonMod = pA.season.name === pB.season.name ? 8 : ((['Spring','Autumn'].includes(pA.season.name) && ['Spring','Autumn'].includes(pB.season.name)) ? 4 : 0);
+  const score = Math.min(98, baseScore + seasonMod);
+
+  const level = getCompatLevel(score);
+  const blendPool = coupleBlends[level.blend];
+  const blend = blendPool[Math.floor(Math.random() * blendPool.length)];
+
+  // RENDER
+  document.getElementById('form-section').style.display = 'none';
+  document.getElementById('result').style.display = 'block';
+
+  // Ring
+  const circumference = 2 * Math.PI * 70;
+  const offset = circumference - (score / 100) * circumference;
+  setTimeout(() => {
+    document.getElementById('ring-fill').style.strokeDashoffset = offset;
+    animateNumber('r-pct', 0, score, '%', 1500);
+  }, 200);
+
+  document.getElementById('r-title').textContent = level.title;
+  document.getElementById('r-subtitle').textContent = level.subtitle;
+  document.getElementById('r-desc').textContent = level.desc;
+
+  // Profile A
+  document.getElementById('pa-name').textContent = nameA;
+  document.getElementById('pa-sign').textContent = pA.zodiac.emoji;
+  document.getElementById('pa-zodiac').textContent = pA.zodiac.sign + ' · ' + pA.zodiac.el.charAt(0).toUpperCase() + pA.zodiac.el.slice(1) + ' sign';
+  document.getElementById('pa-season').textContent = pA.season.emoji + ' ' + pA.season.name + ' born · ' + pA.monthPersonality;
+  document.getElementById('pa-notes').innerHTML = pA.scent.notes.map(n => `<span class="note-tag">${n}</span>`).join('');
+  document.getElementById('pa-rec').textContent = pA.rec;
+
+  // Profile B
+  document.getElementById('pb-name').textContent = nameB;
+  document.getElementById('pb-sign').textContent = pB.zodiac.emoji;
+  document.getElementById('pb-zodiac').textContent = pB.zodiac.sign + ' · ' + pB.zodiac.el.charAt(0).toUpperCase() + pB.zodiac.el.slice(1) + ' sign';
+  document.getElementById('pb-season').textContent = pB.season.emoji + ' ' + pB.season.name + ' born · ' + pB.monthPersonality;
+  document.getElementById('pb-notes').innerHTML = pB.scent.notes.map(n => `<span class="note-tag">${n}</span>`).join('');
+  document.getElementById('pb-rec').textContent = pB.rec;
+
+  // Blend
+  document.getElementById('r-blend-name').textContent = blend.name;
+  document.getElementById('r-blend-desc').textContent = blend.desc;
+  document.getElementById('r-blend-notes').innerHTML = blend.notes.map(n => `<span class="blend-note">${n}</span>`).join('');
+
+  // Dimension bars
+  const dims = [
+    { label: 'Warmth', a: pA.scent.warmth, b: pB.scent.warmth },
+    { label: 'Intensity', a: pA.scent.intensity, b: pB.scent.intensity },
+    { label: 'Freshness', a: pA.scent.freshness, b: pB.scent.freshness },
+    { label: 'Sweetness', a: pA.scent.sweetness, b: pB.scent.sweetness },
+  ];
+
+  document.getElementById('r-dims').innerHTML = dims.map(d => `
+    <div class="dim-row">
+      <div class="dim-labels">
+        <span class="dim-a">${nameA} · ${d.a}%</span>
+        <span style="color:var(--muted);font-size:0.6rem;letter-spacing:1px;text-transform:uppercase">${d.label}</span>
+        <span class="dim-b">${d.b}% · ${nameB}</span>
+      </div>
+      <div class="dim-track">
+        <div class="dim-fill-a" style="width:0%" data-val="${d.a/2}%"></div>
+        <div class="dim-fill-b" style="width:0%" data-val="${d.b/2}%"></div>
+      </div>
+    </div>`).join('');
+
+  setTimeout(() => {
+    document.querySelectorAll('.dim-fill-a,.dim-fill-b').forEach(el => {
+      el.style.width = el.dataset.val;
+    });
+  }, 400);
+}
+
+function animateNumber(id, from, to, suffix, duration) {
+  const el = document.getElementById(id);
+  const start = performance.now();
+  function step(now) {
+    const p = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.round(from + (to - from) * ease) + suffix;
+    if (p < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function restart() {
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('form-section').style.display = 'block';
+  document.getElementById('ring-fill').style.strokeDashoffset = 440;
+}
+</script>
+</body>
+</html>
