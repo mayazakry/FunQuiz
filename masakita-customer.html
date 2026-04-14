@@ -953,9 +953,7 @@ async function placeOrder() {
   try {
     await fetch(MAKE_WEBHOOK, {
       method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(orderData),
-      mode: 'no-cors'
+      body: JSON.stringify(orderData)
     });
   } catch(e) {
     console.warn('Webhook error:', e);
