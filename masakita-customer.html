@@ -951,16 +951,10 @@ async function placeOrder() {
   btn.disabled = true;
 
   try {
-    // Use Image trick to send data without CORS issues
-    const encoded = encodeURIComponent(JSON.stringify(orderData));
     await fetch(MAKE_WEBHOOK, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(orderData),
-    }).catch(() => {
-      // Fallback: send via GET with params
-      const img = new Image();
-      img.src = MAKE_WEBHOOK + '?data=' + encoded;
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(orderData)
     });
   } catch(e) {
     console.warn('Webhook error:', e);
