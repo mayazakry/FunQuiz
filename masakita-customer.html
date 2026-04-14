@@ -588,7 +588,7 @@ footer{background:var(--bark);border-top:1px solid rgba(255,255,255,0.06);paddin
     <div class="success-title">Order Placed!</div>
     <p class="success-sub">Your order has been confirmed and your cook has been notified. A Lalamove rider will pick up when it's ready. Track updates via WhatsApp.</p>
     <div class="tracking-card">
-      <div class="track-title">📦 Order #MK-20250414-042</div>
+      <div class="track-title">📦 <span id="successOrderId">MK-20250414-042</span></div>
       <div class="track-steps">
         <div class="track-step"><div class="track-dot done">✓</div><div class="track-info"><div class="track-label">Order Confirmed</div><div class="track-desc">Payment received · Cook notified via WhatsApp</div></div></div>
         <div class="track-step"><div class="track-dot active">🍳</div><div class="track-info"><div class="track-label">Being Prepared</div><div class="track-desc">Cook is preparing your food now</div></div></div>
@@ -909,10 +909,64 @@ function selectPay(el) {
   el.classList.add('selected');
 }
 
-function placeOrder() {
+// ── MAKE WEBHOOK ──
+const MAKE_WEBHOOK = 'https://hook.eu1.make.com/g2yomaez178wo17310zn4lqgdqi57vpr';
+
+async function placeOrder() {
+  const name     = document.querySelector('input[placeholder="e.g. Ahmad Firdaus"]')?.value || 'Customer';
+  const phone    = document.querySelector('input[placeholder="+60 12-345 6789"]')?.value || '';
+  const address  = document.getElementById('deliveryAddress')?.value || '';
+  const city     = document.querySelector('input[placeholder="e.g. George Town"]')?.value || '';
+  const notes    = document.querySelector('input[placeholder*="spicy"]')?.value || '';
+  const payMethod = document.querySelector('.pay-opt.selected .pay-opt-name')?.textContent || 'TNG eWallet';
+  const subtotal = cart.reduce((s,c) => s + c.price * c.qty, 0);
+  const orderID  = 'MK-' + new Date().toISOString().slice(0,10).replace(/-/g,'') + '-' + (Math.floor(Math.random()*900)+100);
+
+  const orderData = {
+    order_id:  orderID,
+    timestamp: new Date().toISOString(),
+    customer:  { name, phone, address, city, notes },
+    items: cart.map(c => ({
+      dish_name:  c.name,
+      cook:       c.cook,
+      cook_location: c.location,
+      qty:        c.qty,
+      unit_price: c.price,
+      subtotal:   c.price * c.qty
+    })),
+    payment: {
+      method:        payMethod,
+      food_subtotal: subtotal,
+      delivery_fee:  deliveryFee,
+      total:         subtotal + deliveryFee,
+      platform_fee:  parseFloat((subtotal * 0.08).toFixed(2)),
+      cook_earnings: parseFloat((subtotal * 0.92).toFixed(2)),
+      lalamove_quote_id: lalamoveQuoteId || 'pending'
+    },
+    status: 'new'
+  };
+
+  const btn = document.querySelector('.place-order-btn');
+  btn.textContent = '⏳ Placing order...';
+  btn.disabled = true;
+
+  try {
+    await fetch(MAKE_WEBHOOK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderData),
+      mode: 'no-cors'
+    });
+  } catch(e) {
+    console.warn('Webhook error:', e);
+  }
+
   cart = [];
   updateCartUI();
+  document.getElementById('successOrderId').textContent = orderID;
   goPage('success');
+  btn.textContent = 'Place Order & Pay →';
+  btn.disabled = false;
 }
 
 // ── NAV ──
