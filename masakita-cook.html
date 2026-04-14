@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MasakApaTu — Cook Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --saffron:#F4A529;--saffron-light:rgba(244,165,41,0.1);
+  --chili:#D94F3D;--cream:#FDF6EC;--bark:#2E1F0F;--bark-mid:#7A5C3A;
+  --fog:#F0EBE3;--fog2:#E8DFD4;--white:#fff;
+  --green:#3A8C5C;--green-light:rgba(58,140,92,0.1);
+  --blue:#3B82F6;--blue-light:rgba(59,130,246,0.1);
+  --red:#EF4444;--red-light:rgba(239,68,68,0.1);
+  --shadow:0 4px 20px rgba(46,31,15,0.10);
+  --shadow-sm:0 2px 10px rgba(46,31,15,0.07);
+  --radius:14px;--radius-sm:9px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--bark);min-height:100vh;}
+
+/* ── REGISTER SCREEN ── */
+.reg-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px 20px;background:linear-gradient(150deg,#FDF6EC,#FFF3E0,#FDECD2);}
+.reg-card{background:white;border-radius:24px;width:100%;max-width:600px;overflow:hidden;box-shadow:0 20px 60px rgba(46,31,15,0.15);}
+.reg-top{background:var(--bark);padding:32px;text-align:center;}
+.reg-logo{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:white;margin-bottom:6px;}
+.reg-logo span{color:var(--saffron);}
+.reg-tagline{color:rgba(255,255,255,0.5);font-size:0.85rem;}
+.reg-free{display:inline-flex;align-items:center;gap:6px;background:var(--green-light);border:1px solid rgba(58,140,92,0.3);border-radius:100px;padding:5px 14px;font-size:0.75rem;font-weight:700;color:var(--green);margin-top:14px;}
+.reg-body{padding:32px;}
+.reg-title{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;margin-bottom:4px;}
+.reg-sub{color:var(--bark-mid);font-size:0.85rem;margin-bottom:24px;}
+.step-bar{display:flex;gap:0;margin-bottom:28px;}
+.step{flex:1;height:4px;background:var(--fog2);border-radius:2px;transition:background 0.3s;}
+.step.done{background:var(--saffron);}
+.step.active{background:var(--chili);}
+.step-labels{display:flex;justify-content:space-between;margin-bottom:24px;}
+.step-label{font-size:0.7rem;font-weight:600;color:var(--bark-mid);}
+.step-label.active{color:var(--chili);}
+.fg{margin-bottom:14px;}
+label{display:block;font-size:0.8rem;font-weight:600;margin-bottom:5px;color:var(--bark-mid);}
+input,select,textarea{width:100%;padding:11px 15px;border:1.5px solid var(--fog2);border-radius:var(--radius-sm);font-size:0.9rem;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.2s;background:var(--cream);color:var(--bark);}
+input:focus,select:focus,textarea:focus{border-color:var(--saffron);background:white;}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.upload-zone{border:2px dashed var(--fog2);border-radius:var(--radius-sm);padding:28px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--cream);}
+.upload-zone:hover{border-color:var(--saffron);background:var(--saffron-light);}
+.upload-icon{font-size:2rem;margin-bottom:8px;}
+.upload-text{font-size:0.82rem;color:var(--bark-mid);}
+.upload-text strong{color:var(--saffron);}
+.commission-box{background:var(--saffron-light);border:1px solid rgba(244,165,41,0.25);border-radius:var(--radius-sm);padding:14px 16px;font-size:0.82rem;color:var(--bark-mid);margin-bottom:18px;line-height:1.6;}
+.reg-btn{width:100%;padding:15px;border-radius:100px;background:var(--chili);color:white;font-size:0.97rem;font-weight:800;border:none;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 14px rgba(217,79,61,0.28);}
+.reg-btn:hover{background:#C23D2C;transform:translateY(-1px);}
+.reg-btn.outline{background:white;color:var(--bark);border:2px solid var(--fog2);box-shadow:none;}
+.reg-btn.outline:hover{border-color:var(--bark);}
+.btn-row{display:flex;gap:10px;margin-top:8px;}
+.login-link{text-align:center;font-size:0.82rem;color:var(--bark-mid);margin-top:16px;}
+.login-link a{color:var(--chili);font-weight:700;cursor:pointer;}
+.preview-img{width:100%;height:160px;border-radius:10px;object-fit:cover;margin-top:10px;display:none;}
+
+/* ── DASHBOARD SHELL ── */
+.dash-shell{display:none;min-height:100vh;background:#F7F3EE;}
+.dash-sidebar{position:fixed;top:0;left:0;bottom:0;width:240px;background:var(--bark);display:flex;flex-direction:column;z-index:100;transition:transform 0.3s;}
+.sidebar-logo{padding:24px 20px;border-bottom:1px solid rgba(255,255,255,0.11);}
+.sidebar-logo-text{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:white;}
+.sidebar-logo-text span{color:var(--saffron);}
+.sidebar-logo-sub{font-size:0.72rem;color:rgba(255,255,255,0.4);margin-top:2px;}
+.cook-profile-mini{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.11);display:flex;align-items:center;gap:10px;}
+.cook-avatar-mini{width:36px;height:36px;border-radius:50%;background:var(--saffron-light);display:flex;align-items:center;justify-content:center;font-size:1.1rem;border:2px solid rgba(244,165,41,0.3);}
+.cook-name-mini{font-size:0.82rem;font-weight:700;color:white;}
+.cook-status-mini{font-size:0.68rem;color:rgba(255,255,255,0.4);display:flex;align-items:center;gap:4px;}
+.status-dot{width:6px;height:6px;border-radius:50%;background:#69F0AE;}
+.sidebar-nav{flex:1;padding:16px 0;overflow-y:auto;}
+.nav-item{display:flex;align-items:center;gap:12px;padding:12px 20px;cursor:pointer;transition:all 0.2s;color:rgba(255,255,255,0.5);font-size:0.87rem;font-weight:500;border-left:3px solid transparent;}
+.nav-item:hover{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.8);}
+.nav-item.active{background:rgba(244,165,41,0.1);color:var(--saffron);border-left-color:var(--saffron);}
+.nav-item-icon{font-size:1.1rem;width:20px;text-align:center;}
+.nav-section-label{font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:16px 20px 6px;}
+.sidebar-footer{padding:16px 20px;border-top:1px solid rgba(255,255,255,0.11);}
+.online-toggle{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.toggle-label{font-size:0.82rem;font-weight:600;color:rgba(255,255,255,0.7);}
+.toggle-switch{width:42px;height:22px;border-radius:100px;background:var(--green);cursor:pointer;position:relative;transition:background 0.2s;}
+.toggle-switch::after{content:'';position:absolute;right:2px;top:2px;width:18px;height:18px;background:white;border-radius:50%;transition:all 0.2s;}
+.toggle-switch.off{background:rgba(255,255,255,0.2);}
+.toggle-switch.off::after{right:auto;left:2px;}
+.logout-btn{width:100%;padding:9px;border-radius:var(--radius-sm);background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);font-size:0.82rem;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.logout-btn:hover{background:rgba(255,255,255,0.1);}
+.dash-main{margin-left:240px;padding:28px;min-height:100vh;}
+.dash-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;}
+.dash-page-title{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;}
+.dash-page-sub{font-size:0.82rem;color:var(--bark-mid);margin-top:2px;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.notif-btn{width:38px;height:38px;border-radius:50%;background:white;border:1px solid var(--fog2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;position:relative;}
+.notif-dot{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--chili);border:2px solid white;}
+.dash-panel{display:none;}
+.dash-panel.active{display:block;animation:fadeUp 0.3s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+
+/* STAT CARDS */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+.stat-card{background:white;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow-sm);border:1px solid var(--fog2);}
+.stat-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:12px;}
+.stat-val{font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:900;margin-bottom:2px;line-height:1;}
+.stat-label{font-size:0.75rem;color:var(--bark-mid);}
+.stat-change{font-size:0.72rem;margin-top:6px;font-weight:600;}
+.stat-change.up{color:var(--green);}
+.stat-change.down{color:var(--red);}
+
+/* ORDERS TABLE */
+.card{background:white;border-radius:var(--radius);box-shadow:var(--shadow-sm);border:1px solid var(--fog2);margin-bottom:20px;overflow:hidden;}
+.card-header{padding:18px 20px;border-bottom:1px solid var(--fog2);display:flex;align-items:center;justify-content:space-between;}
+.card-title{font-weight:800;font-size:0.95rem;display:flex;align-items:center;gap:8px;}
+.card-action{font-size:0.8rem;font-weight:600;color:var(--saffron);cursor:pointer;}
+.orders-table{width:100%;border-collapse:collapse;}
+.orders-table th{padding:11px 16px;text-align:left;font-size:0.72rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--bark-mid);background:var(--cream);border-bottom:1px solid var(--fog2);}
+.orders-table td{padding:13px 16px;font-size:0.85rem;border-bottom:1px solid var(--fog2);}
+.orders-table tr:last-child td{border-bottom:none;}
+.orders-table tr:hover td{background:#FDFAF6;}
+.order-id{font-family:monospace;font-size:0.78rem;color:var(--bark-mid);}
+.order-dish-cell{font-weight:600;}
+.order-dish-sub{font-size:0.72rem;color:var(--bark-mid);margin-top:2px;}
+.status-chip{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:100px;font-size:0.72rem;font-weight:700;}
+.status-new{background:var(--blue-light);color:var(--blue);}
+.status-prep{background:var(--saffron-light);color:#B8860B;}
+.status-ready{background:var(--green-light);color:var(--green);}
+.status-delivered{background:#F3F4F6;color:#6B7280;}
+.action-btn{padding:5px 12px;border-radius:100px;font-size:0.72rem;font-weight:700;border:none;cursor:pointer;transition:all 0.2s;}
+.action-accept{background:var(--green);color:white;}
+.action-ready{background:var(--blue);color:white;}
+.action-done{background:#E5E7EB;color:#6B7280;cursor:default;}
+
+/* MENU MANAGEMENT */
+.menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;padding:20px;}
+.menu-card{background:var(--cream);border-radius:var(--radius-sm);padding:14px;border:1px solid var(--fog2);}
+.menu-card-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;}
+.menu-emoji{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,#FFF8F0,#FDECD2);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;}
+.menu-info{flex:1;}
+.menu-name{font-weight:700;font-size:0.9rem;margin-bottom:2px;}
+.menu-price{color:var(--chili);font-weight:800;font-size:0.95rem;}
+.menu-card-foot{display:flex;align-items:center;justify-content:space-between;}
+.menu-portions{font-size:0.75rem;color:var(--bark-mid);}
+.menu-edit-btn{font-size:0.72rem;font-weight:700;color:var(--saffron);cursor:pointer;padding:4px 10px;border:1px solid rgba(244,165,41,0.3);border-radius:100px;background:var(--saffron-light);}
+.toggle-avail{width:36px;height:20px;border-radius:100px;cursor:pointer;position:relative;transition:background 0.2s;flex-shrink:0;}
+.toggle-avail::after{content:'';position:absolute;top:2px;width:16px;height:16px;background:white;border-radius:50%;transition:all 0.2s;}
+.toggle-avail.on{background:var(--green);}
+.toggle-avail.on::after{right:2px;}
+.toggle-avail.off{background:#D1D5DB;}
+.toggle-avail.off::after{left:2px;}
+.add-dish-card{background:var(--saffron-light);border:2px dashed rgba(244,165,41,0.4);border-radius:var(--radius-sm);padding:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:120px;cursor:pointer;transition:all 0.2s;}
+.add-dish-card:hover{border-color:var(--saffron);background:rgba(244,165,41,0.15);}
+.add-dish-icon{font-size:1.8rem;margin-bottom:6px;}
+.add-dish-text{font-size:0.82rem;font-weight:700;color:var(--bark-mid);}
+
+/* EARNINGS */
+.earnings-summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px;}
+.earn-card{background:white;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow-sm);border:1px solid var(--fog2);text-align:center;}
+.earn-val{font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;margin-bottom:4px;}
+.earn-label{font-size:0.78rem;color:var(--bark-mid);}
+.payout-list{padding:0;}
+.payout-item{display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid var(--fog2);}
+.payout-item:last-child{border-bottom:none;}
+.payout-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+.payout-icon.paid{background:var(--green-light);}
+.payout-icon.pending{background:var(--saffron-light);}
+.payout-info{flex:1;}
+.payout-label{font-weight:600;font-size:0.87rem;}
+.payout-sub{font-size:0.73rem;color:var(--bark-mid);margin-top:2px;}
+.payout-amount{font-weight:800;font-size:1rem;}
+.payout-amount.paid{color:var(--green);}
+.payout-amount.pending{color:var(--saffron);}
+
+/* PROFILE */
+.profile-grid{display:grid;grid-template-columns:280px 1fr;gap:20px;align-items:start;}
+.profile-card{background:white;border-radius:var(--radius);box-shadow:var(--shadow-sm);border:1px solid var(--fog2);overflow:hidden;}
+.profile-cover{height:80px;background:linear-gradient(135deg,var(--bark),var(--bark-mid));}
+.profile-avatar-wrap{padding:0 20px;margin-top:-28px;margin-bottom:14px;}
+.profile-avatar{width:56px;height:56px;border-radius:50%;background:var(--saffron-light);border:3px solid white;display:flex;align-items:center;justify-content:center;font-size:1.6rem;}
+.profile-body{padding:0 20px 20px;}
+.profile-name{font-weight:800;font-size:1.05rem;margin-bottom:2px;}
+.profile-sub{font-size:0.78rem;color:var(--bark-mid);margin-bottom:12px;}
+.profile-badge-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.pbadge{font-size:0.68rem;font-weight:700;padding:3px 9px;border-radius:100px;}
+.pbadge-halal{background:#E8F5E9;color:#2E7D32;}
+.pbadge-rating{background:var(--saffron-light);color:#B8860B;}
+.profile-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.pstat{background:var(--cream);border-radius:var(--radius-sm);padding:10px;text-align:center;}
+.pstat-val{font-weight:800;font-size:1.1rem;color:var(--chili);}
+.pstat-label{font-size:0.65rem;color:var(--bark-mid);}
+.form-section{background:white;border-radius:var(--radius);box-shadow:var(--shadow-sm);border:1px solid var(--fog2);padding:20px;margin-bottom:16px;}
+.form-section-title{font-weight:800;margin-bottom:16px;font-size:0.95rem;display:flex;align-items:center;gap:8px;}
+.save-btn{padding:10px 24px;border-radius:100px;background:var(--chili);color:white;font-weight:700;font-size:0.87rem;border:none;cursor:pointer;}
+
+/* TOAST */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--bark);color:white;padding:12px 24px;border-radius:100px;font-size:0.85rem;font-weight:600;z-index:999;transition:transform 0.3s;display:flex;align-items:center;gap:8px;box-shadow:var(--shadow);}
+#toast.show{transform:translateX(-50%) translateY(0);}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(46,31,15,0.45);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
+.modal-overlay.open{display:flex;}
+.modal{background:white;border-radius:20px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(46,31,15,0.2);}
+.modal-header{padding:20px 24px;border-bottom:1px solid var(--fog2);display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-weight:800;font-size:1rem;}
+.modal-close{width:32px;height:32px;border-radius:50%;background:var(--fog);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.modal-body{padding:24px;}
+.modal-footer{padding:16px 24px;border-top:1px solid var(--fog2);display:flex;gap:10px;justify-content:flex-end;}
+
+@media(max-width:900px){
+  .dash-sidebar{transform:translateX(-100%);}
+  .dash-main{margin-left:0;}
+  .stat-grid{grid-template-columns:1fr 1fr;}
+  .earnings-summary{grid-template-columns:1fr 1fr;}
+  .profile-grid{grid-template-columns:1fr;}
+}
+@media(max-width:600px){
+  .stat-grid{grid-template-columns:1fr 1fr;}
+  .fr{grid-template-columns:1fr;}
+  .earnings-summary{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== REGISTER SCREEN ===== -->
+<div class="reg-screen" id="regScreen">
+  <div class="reg-card">
+    <div class="reg-top">
+      <div class="reg-logo">Masak<span>ApaTu</span></div>
+      <div class="reg-tagline">Malaysia's Home Cook Marketplace</div>
+      <div class="reg-free">✅ FREE Registration — No Hidden Fees</div>
+    </div>
+    <div class="reg-body">
+
+      <!-- STEP INDICATOR -->
+      <div class="step-bar">
+        <div class="step done" id="s1"></div>
+        <div style="width:8px;flex-shrink:0;"></div>
+        <div class="step" id="s2"></div>
+        <div style="width:8px;flex-shrink:0;"></div>
+        <div class="step" id="s3"></div>
+      </div>
+      <div class="step-labels">
+        <div class="step-label active" id="sl1">👤 Profile</div>
+        <div class="step-label" id="sl2">🍱 First Dish</div>
+        <div class="step-label" id="sl3">✅ Done!</div>
+      </div>
+
+      <!-- STEP 1: PROFILE -->
+      <div id="step1">
+        <div class="reg-title">Create Your Cook Profile</div>
+        <p class="reg-sub">Join thousands of home cooks earning with MasakApaTu. Daftar percuma!</p>
+        <div class="commission-box">💡 <strong>How you earn:</strong> You set your price. We take only 11% platform fee. 89% goes straight to your TNG eWallet after every delivery.</div>
+        <div class="fg"><label>Full Name / Nama Penuh</label><input type="text" placeholder="e.g. Puan Rohani Abdullah"></div>
+        <div class="fr">
+          <div class="fg"><label>Phone / WhatsApp</label><input type="tel" placeholder="+60 12-345 6789"></div>
+          <div class="fg"><label>State / Negeri</label><select><option>Pulau Pinang</option><option>Kuala Lumpur</option><option>Selangor</option><option>Johor</option><option>Perak</option><option>Kedah</option><option>Sabah</option><option>Sarawak</option><option>Negeri Sembilan</option><option>Melaka</option><option>Pahang</option><option>Terengganu</option><option>Kelantan</option><option>Perlis</option></select></div>
+        </div>
+        <div class="fg"><label>City / Bandar</label><input type="text" placeholder="e.g. George Town"></div>
+        <div class="fg"><label>Home Pickup Address (for Lalamove)</label><input type="text" placeholder="Full address where rider will pickup food"></div>
+        <div class="fg"><label>TNG eWallet Phone (for earnings payout)</label><input type="tel" placeholder="Nomor TNG anda — earnings masuk sini"></div>
+        <div class="fr">
+          <div class="fg"><label>Cuisine Specialty</label><select><option>Malay / Melayu</option><option>Chinese / Cina</option><option>Indian / India</option><option>Bakes & Pastries</option><option>Healthy / Diet</option><option>Mixed / Pelbagai</option></select></div>
+          <div class="fg"><label>Halal Status</label><select><option>✅ Halal Certified</option><option>Muslim-Friendly</option><option>Non-Halal</option></select></div>
+        </div>
+        <div class="fg"><label>Bio — Tell customers about yourself</label><textarea rows="3" placeholder="e.g. Saya memasak resepi tradisional Penang sejak 20 tahun. Spesialisasi saya Assam Laksa dan Nasi Ulam..."></textarea></div>
+        <div class="fg"><label>Profile Photo</label>
+          <div class="upload-zone" onclick="document.getElementById('profilePic').click()">
+            <div class="upload-icon">📷</div>
+            <div class="upload-text"><strong>Click to upload</strong> your photo<br><span style="font-size:0.75rem;">JPG, PNG max 5MB</span></div>
+            <input type="file" id="profilePic" accept="image/*" style="display:none" onchange="previewImg(this,'profilePreview')">
+          </div>
+          <img id="profilePreview" class="preview-img">
+        </div>
+        <button class="reg-btn" onclick="nextStep(2)">Next: Add Your First Dish →</button>
+        <div class="login-link">Already a cook? <a onclick="goToDash()">Sign In</a></div>
+      </div>
+
+      <!-- STEP 2: FIRST DISH -->
+      <div id="step2" style="display:none;">
+        <div class="reg-title">Add Your First Dish 🍱</div>
+        <p class="reg-sub">List what you cook. Good photos = more orders!</p>
+        <div class="fg"><label>Dish Name (English)</label><input type="text" placeholder="e.g. Nasi Lemak Ayam Rendang"></div>
+        <div class="fg"><label>Nama Hidangan (Bahasa Malaysia)</label><input type="text" placeholder="e.g. Nasi Lemak Ayam Rendang"></div>
+        <div class="fg"><label>Description / Penerangan</label><textarea rows="3" placeholder="Describe your dish — ingredients, taste, portion size, what makes it special..."></textarea></div>
+        <div class="fr">
+          <div class="fg"><label>Price per Portion (RM)</label><input type="number" placeholder="12.00" step="0.50" min="1"></div>
+          <div class="fg"><label>Portions Available Daily</label><input type="number" placeholder="20" min="1"></div>
+        </div>
+        <div class="fr">
+          <div class="fg"><label>Category</label><select><option>Rice / Nasi</option><option>Noodles / Mee</option><option>Bakes & Kuih</option><option>Lauk Only</option><option>Healthy</option><option>Drinks</option></select></div>
+          <div class="fg"><label>Ready By Time</label><input type="time" value="11:30"></div>
+        </div>
+        <div class="fg"><label>Dietary Tags</label><select><option>Halal</option><option>Vegetarian</option><option>Vegan</option><option>Gluten-Free</option><option>No Pork / No Lard</option></select></div>
+        <div class="fg"><label>Food Photos (up to 5) 📸</label>
+          <div class="upload-zone" onclick="document.getElementById('foodPics').click()">
+            <div class="upload-icon">📸</div>
+            <div class="upload-text"><strong>Upload food photos</strong> — cantik = more orders!<br><span style="font-size:0.75rem;">JPG, PNG, max 5MB each</span></div>
+            <input type="file" id="foodPics" accept="image/*" multiple style="display:none" onchange="previewImg(this,'foodPreview')">
+          </div>
+          <img id="foodPreview" class="preview-img">
+        </div>
+        <div class="btn-row">
+          <button class="reg-btn outline" onclick="nextStep(1)" style="flex:1;">← Back</button>
+          <button class="reg-btn" onclick="nextStep(3)" style="flex:2;">Submit & Join MasakApaTu ✓</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: SUCCESS -->
+      <div id="step3" style="display:none;text-align:center;padding:20px 0;">
+        <div style="font-size:3.5rem;margin-bottom:16px;">🎉</div>
+        <div class="reg-title">Welcome to MasakApaTu!</div>
+        <p style="color:var(--bark-mid);font-size:0.87rem;margin:12px 0 24px;line-height:1.7;">Your profile is under review. We'll verify within 24 hours and send a WhatsApp confirmation. Jom mula masak dan jual! 👩‍🍳</p>
+        <div style="background:var(--green-light);border:1px solid rgba(58,140,92,0.2);border-radius:12px;padding:16px;margin-bottom:24px;text-align:left;">
+          <div style="font-weight:700;margin-bottom:8px;font-size:0.9rem;">✅ What happens next:</div>
+          <div style="font-size:0.82rem;color:var(--bark-mid);display:flex;flex-direction:column;gap:6px;">
+            <div>1. Admin verifies your profile (within 24 hours)</div>
+            <div>2. You receive a WhatsApp with your Glide app login</div>
+            <div>3. Your dishes go live on MasakApaTu.my</div>
+            <div>4. Orders start coming in — earnings to your TNG! 💚</div>
+          </div>
+        </div>
+        <button class="reg-btn" onclick="goToDash()">Go to Cook Dashboard →</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ===== DASHBOARD ===== -->
+<div class="dash-shell" id="dashShell">
+
+  <!-- SIDEBAR -->
+  <div class="dash-sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-text">Masak<span>ApaTu</span></div>
+      <div class="sidebar-logo-sub">Cook Dashboard</div>
+    </div>
+    <div class="cook-profile-mini">
+      <div class="cook-avatar-mini">👩‍🍳</div>
+      <div>
+        <div class="cook-name-mini">Puan Rohani</div>
+        <div class="cook-status-mini"><div class="status-dot"></div> Online & Accepting</div>
+      </div>
+    </div>
+    <div class="sidebar-nav">
+      <div class="nav-section-label">Main</div>
+      <div class="nav-item active" onclick="showPanel('overview',this)"><span class="nav-item-icon">🏠</span> Overview</div>
+      <div class="nav-item" onclick="showPanel('orders',this)"><span class="nav-item-icon">📋</span> Orders <span style="margin-left:auto;background:var(--chili);color:white;border-radius:100px;padding:1px 8px;font-size:0.65rem;font-weight:800;">3</span></div>
+      <div class="nav-item" onclick="showPanel('menu',this)"><span class="nav-item-icon">🍱</span> My Menu</div>
+      <div class="nav-item" onclick="showPanel('earnings',this)"><span class="nav-item-icon">💰</span> Earnings</div>
+      <div class="nav-section-label">Account</div>
+      <div class="nav-item" onclick="showPanel('profile',this)"><span class="nav-item-icon">👤</span> My Profile</div>
+      <div class="nav-item"><span class="nav-item-icon">⭐</span> Reviews</div>
+      <div class="nav-item"><span class="nav-item-icon">❓</span> Help Centre</div>
+    </div>
+    <div class="sidebar-footer">
+      <div class="online-toggle">
+        <div class="toggle-label">Accepting Orders</div>
+        <div class="toggle-switch" id="onlineToggle" onclick="toggleOnline()"></div>
+      </div>
+      <button class="logout-btn" onclick="goToReg()">← Sign Out</button>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="dash-main">
+
+    <!-- ── OVERVIEW ── -->
+    <div class="dash-panel active" id="panel-overview">
+      <div class="dash-topbar">
+        <div>
+          <div class="dash-page-title">Good morning, Puan Rohani! 👋</div>
+          <div class="dash-page-sub">Isnin, 14 April 2025 · Today's pickup deadline: 12:00 PM</div>
+        </div>
+        <div class="topbar-right">
+          <div class="notif-btn">🔔<div class="notif-dot"></div></div>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-icon" style="background:var(--blue-light);">📋</div>
+          <div class="stat-val" style="color:var(--blue);">3</div>
+          <div class="stat-label">New Orders Today</div>
+          <div class="stat-change up">↑ 2 more than yesterday</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:var(--green-light);">💰</div>
+          <div class="stat-val" style="color:var(--green);">RM 84</div>
+          <div class="stat-label">Today's Earnings</div>
+          <div class="stat-change up">↑ RM 24 vs yesterday</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:var(--saffron-light);">🍱</div>
+          <div class="stat-val" style="color:var(--saffron);">1,240</div>
+          <div class="stat-label">Total Orders This Month</div>
+          <div class="stat-change up">↑ 111% vs last month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:var(--red-light);">⭐</div>
+          <div class="stat-val" style="color:var(--chili);">4.9</div>
+          <div class="stat-label">Average Rating</div>
+          <div class="stat-change up">↑ from 4.8 last month</div>
+        </div>
+      </div>
+
+      <!-- NEW ORDERS ALERT -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🆕 New Orders — Action Required</div>
+          <div class="card-action" onclick="showPanel('orders',document.querySelector('[onclick*=orders]'))">View All →</div>
+        </div>
+        <table class="orders-table">
+          <thead><tr><th>Order ID</th><th>Dish</th><th>Customer</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><div class="order-id">MK-0414-007</div></td>
+              <td><div class="order-dish-cell">2× Nasi Lemak Rendang</div><div class="order-dish-sub">Pickup: 11:30 AM</div></td>
+              <td>Ahmad Firdaus<br><span style="font-size:0.72rem;color:var(--bark-mid);">George Town</span></td>
+              <td><strong>RM 24.00</strong><br><span style="font-size:0.72rem;color:var(--green);">+RM 22.08 yours</span></td>
+              <td><span class="status-chip status-new">🆕 New</span></td>
+              <td><button class="action-btn action-accept" onclick="acceptOrder(this)">✓ Accept</button></td>
+            </tr>
+            <tr>
+              <td><div class="order-id">MK-0414-008</div></td>
+              <td><div class="order-dish-cell">1× Mee Kari Ayam</div><div class="order-dish-sub">Pickup: 12:00 PM</div></td>
+              <td>Siti Aminah<br><span style="font-size:0.72rem;color:var(--bark-mid);">Butterworth</span></td>
+              <td><strong>RM 10.00</strong><br><span style="font-size:0.72rem;color:var(--green);">+RM 9.20 yours</span></td>
+              <td><span class="status-chip status-new">🆕 New</span></td>
+              <td><button class="action-btn action-accept" onclick="acceptOrder(this)">✓ Accept</button></td>
+            </tr>
+            <tr>
+              <td><div class="order-id">MK-0414-005</div></td>
+              <td><div class="order-dish-cell">3× Nasi Lemak Rendang</div><div class="order-dish-sub">Pickup: 11:30 AM</div></td>
+              <td>Rajan Kumar<br><span style="font-size:0.72rem;color:var(--bark-mid);">Air Itam</span></td>
+              <td><strong>RM 36.00</strong><br><span style="font-size:0.72rem;color:var(--green);">+RM 33.12 yours</span></td>
+              <td><span class="status-chip status-prep">🍳 Preparing</span></td>
+              <td><button class="action-btn action-ready" onclick="markReady(this)">✓ Mark Ready</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- QUICK MENU STATUS -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🍱 Today's Menu Status</div>
+          <div class="card-action" onclick="showPanel('menu',document.querySelector('[onclick*=menu]'))">Manage Menu →</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;padding:16px;">
+          <div style="display:flex;align-items:center;gap:10px;background:var(--cream);border-radius:10px;padding:12px;">
+            <span style="font-size:1.4rem;">🍛</span>
+            <div style="flex:1;"><div style="font-weight:700;font-size:0.85rem;">Nasi Lemak Rendang</div><div style="font-size:0.72rem;color:var(--bark-mid);">8 / 20 portions left</div></div>
+            <div class="toggle-avail on" onclick="toggleMenu(this)"></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;background:var(--cream);border-radius:10px;padding:12px;">
+            <span style="font-size:1.4rem;">🍜</span>
+            <div style="flex:1;"><div style="font-weight:700;font-size:0.85rem;">Mee Kari Ayam</div><div style="font-size:0.72rem;color:var(--bark-mid);">14 / 15 portions left</div></div>
+            <div class="toggle-avail on" onclick="toggleMenu(this)"></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;background:var(--cream);border-radius:10px;padding:12px;opacity:0.6;">
+            <span style="font-size:1.4rem;">🎂</span>
+            <div style="flex:1;"><div style="font-weight:700;font-size:0.85rem;">Kek Batik</div><div style="font-size:0.72rem;color:var(--bark-mid);">Sold out</div></div>
+            <div class="toggle-avail off" onclick="toggleMenu(this)"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ORDERS ── -->
+    <div class="dash-panel" id="panel-orders">
+      <div class="dash-topbar">
+        <div><div class="dash-page-title">Orders / Pesanan 📋</div><div class="dash-page-sub">Manage all your incoming and active orders</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">All Orders Today</div>
+          <div style="display:flex;gap:8px;">
+            <span class="status-chip status-new">🆕 New (2)</span>
+            <span class="status-chip status-prep">🍳 Preparing (1)</span>
+            <span class="status-chip status-delivered">✅ Done (4)</span>
+          </div>
+        </div>
+        <table class="orders-table">
+          <thead><tr><th>Order ID</th><th>Dish / Hidangan</th><th>Customer</th><th>Time</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td><div class="order-id">MK-0414-007</div></td><td><div class="order-dish-cell">2× Nasi Lemak Rendang</div></td><td>Ahmad Firdaus · George Town</td><td>10:32 AM</td><td><strong>RM 24.00</strong></td><td><span class="status-chip status-new">🆕 New</span></td><td><button class="action-btn action-accept" onclick="acceptOrder(this)">✓ Accept</button></td></tr>
+            <tr><td><div class="order-id">MK-0414-008</div></td><td><div class="order-dish-cell">1× Mee Kari Ayam</div></td><td>Siti Aminah · Butterworth</td><td>10:45 AM</td><td><strong>RM 10.00</strong></td><td><span class="status-chip status-new">🆕 New</span></td><td><button class="action-btn action-accept" onclick="acceptOrder(this)">✓ Accept</button></td></tr>
+            <tr><td><div class="order-id">MK-0414-005</div></td><td><div class="order-dish-cell">3× Nasi Lemak Rendang</div></td><td>Rajan Kumar · Air Itam</td><td>9:15 AM</td><td><strong>RM 36.00</strong></td><td><span class="status-chip status-prep">🍳 Preparing</span></td><td><button class="action-btn action-ready" onclick="markReady(this)">✓ Mark Ready</button></td></tr>
+            <tr><td><div class="order-id">MK-0414-003</div></td><td><div class="order-dish-cell">1× Nasi Lemak Rendang</div></td><td>Li Wei · Jelutong</td><td>8:50 AM</td><td><strong>RM 12.00</strong></td><td><span class="status-chip status-delivered">✅ Delivered</span></td><td><button class="action-btn action-done" disabled>Done</button></td></tr>
+            <tr><td><div class="order-id">MK-0414-002</div></td><td><div class="order-dish-cell">2× Mee Kari Ayam</div></td><td>Priya · Relau</td><td>8:30 AM</td><td><strong>RM 20.00</strong></td><td><span class="status-chip status-delivered">✅ Delivered</span></td><td><button class="action-btn action-done" disabled>Done</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── MENU ── -->
+    <div class="dash-panel" id="panel-menu">
+      <div class="dash-topbar">
+        <div><div class="dash-page-title">My Menu / Menu Saya 🍱</div><div class="dash-page-sub">Manage your dishes, prices and daily availability</div></div>
+        <button class="save-btn" onclick="openAddDish()">+ Add New Dish</button>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Active Dishes</div><div class="card-action">3 dishes listed</div></div>
+        <div class="menu-grid">
+          <div class="menu-card">
+            <div class="menu-card-top">
+              <div class="menu-emoji">🍛</div>
+              <div class="menu-info">
+                <div class="menu-name">Nasi Lemak Ayam Rendang</div>
+                <div class="menu-price">RM 12.00</div>
+                <div style="font-size:0.7rem;color:var(--bark-mid);">⏰ Ready by 11:30 AM</div>
+              </div>
+            </div>
+            <div class="menu-card-foot">
+              <div class="menu-portions">8 / 20 portions left today</div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div class="menu-edit-btn" onclick="openAddDish()">Edit</div>
+                <div class="toggle-avail on" onclick="toggleMenu(this)"></div>
+              </div>
+            </div>
+          </div>
+          <div class="menu-card">
+            <div class="menu-card-top">
+              <div class="menu-emoji">🍜</div>
+              <div class="menu-info">
+                <div class="menu-name">Mee Kari Ayam</div>
+                <div class="menu-price">RM 10.00</div>
+                <div style="font-size:0.7rem;color:var(--bark-mid);">⏰ Ready by 12:00 PM</div>
+              </div>
+            </div>
+            <div class="menu-card-foot">
+              <div class="menu-portions">14 / 15 portions left today</div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div class="menu-edit-btn" onclick="openAddDish()">Edit</div>
+                <div class="toggle-avail on" onclick="toggleMenu(this)"></div>
+              </div>
+            </div>
+          </div>
+          <div class="menu-card" style="opacity:0.6;">
+            <div class="menu-card-top">
+              <div class="menu-emoji">🎂</div>
+              <div class="menu-info">
+                <div class="menu-name">Kek Batik (Whole)</div>
+                <div class="menu-price">RM 35.00</div>
+                <div style="font-size:0.7rem;color:var(--bark-mid);">⏰ Ready by 10:00 AM</div>
+              </div>
+            </div>
+            <div class="menu-card-foot">
+              <div class="menu-portions">Sold out today</div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div class="menu-edit-btn" onclick="openAddDish()">Edit</div>
+                <div class="toggle-avail off" onclick="toggleMenu(this)"></div>
+              </div>
+            </div>
+          </div>
+          <div class="add-dish-card" onclick="openAddDish()">
+            <div class="add-dish-icon">➕</div>
+            <div class="add-dish-text">Add New Dish</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── EARNINGS ── -->
+    <div class="dash-panel" id="panel-earnings">
+      <div class="dash-topbar">
+        <div><div class="dash-page-title">Earnings / Pendapatan 💰</div><div class="dash-page-sub">Your earnings go directly to your TNG eWallet</div></div>
+      </div>
+      <div class="earnings-summary">
+        <div class="earn-card"><div class="earn-val" style="color:var(--green);">RM 1,240</div><div class="earn-label">This Month / Bulan Ini</div></div>
+        <div class="earn-card"><div class="earn-val" style="color:var(--saffron);">RM 84</div><div class="earn-label">Today / Hari Ini</div></div>
+        <div class="earn-card"><div class="earn-val" style="color:var(--chili);">RM 107</div><div class="earn-label">Platform Fee (11%) Deducted</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">💚 Recent TNG Payouts</div><div class="card-action">View All</div></div>
+        <div class="payout-list">
+          <div class="payout-item"><div class="payout-icon paid">💚</div><div class="payout-info"><div class="payout-label">Order MK-0414-003 · 1× Nasi Lemak</div><div class="payout-sub">Today, 10:47 AM · via TNG eWallet</div></div><div class="payout-amount paid">+RM 11.04</div></div>
+          <div class="payout-item"><div class="payout-icon paid">💚</div><div class="payout-info"><div class="payout-label">Order MK-0414-002 · 2× Mee Kari</div><div class="payout-sub">Today, 9:58 AM · via TNG eWallet</div></div><div class="payout-amount paid">+RM 18.40</div></div>
+          <div class="payout-item"><div class="payout-icon paid">💚</div><div class="payout-info"><div class="payout-label">Order MK-0413-009 · 3× Nasi Lemak</div><div class="payout-sub">Yesterday, 2:15 PM · via TNG eWallet</div></div><div class="payout-amount paid">+RM 33.12</div></div>
+          <div class="payout-item"><div class="payout-icon pending">⏳</div><div class="payout-info"><div class="payout-label">Order MK-0414-005 · 3× Nasi Lemak</div><div class="payout-sub">Pending delivery confirmation</div></div><div class="payout-amount pending">RM 33.12</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PROFILE ── -->
+    <div class="dash-panel" id="panel-profile">
+      <div class="dash-topbar">
+        <div><div class="dash-page-title">My Profile / Profil Saya 👤</div><div class="dash-page-sub">Update your cook profile and account settings</div></div>
+        <button class="save-btn" onclick="showToast('✅ Profile saved!')">Save Changes</button>
+      </div>
+      <div class="profile-grid">
+        <div>
+          <div class="profile-card">
+            <div class="profile-cover"></div>
+            <div class="profile-avatar-wrap"><div class="profile-avatar">👩‍🍳</div></div>
+            <div class="profile-body">
+              <div class="profile-name">Puan Rohani Abdullah</div>
+              <div class="profile-sub">George Town, Pulau Pinang · Joined Jan 2025</div>
+              <div class="profile-badge-row">
+                <span class="pbadge pbadge-halal">✅ Halal</span>
+                <span class="pbadge pbadge-rating">★ 4.9</span>
+              </div>
+              <div class="profile-stats">
+                <div class="pstat"><div class="pstat-val">284</div><div class="pstat-label">Total Orders</div></div>
+                <div class="pstat"><div class="pstat-val">RM 3.1K</div><div class="pstat-label">Total Earned</div></div>
+                <div class="pstat"><div class="pstat-val">3</div><div class="pstat-label">Dishes Listed</div></div>
+                <div class="pstat"><div class="pstat-val">99%</div><div class="pstat-label">Acceptance Rate</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="form-section">
+            <div class="form-section-title">👤 Personal Info</div>
+            <div class="fg"><label>Full Name</label><input type="text" value="Puan Rohani Abdullah"></div>
+            <div class="fr">
+              <div class="fg"><label>Phone / WhatsApp</label><input type="tel" value="+60123456789"></div>
+              <div class="fg"><label>State</label><select><option selected>Pulau Pinang</option></select></div>
+            </div>
+            <div class="fg"><label>Pickup Address</label><input type="text" value="23 Jalan Masjid, George Town, 10000 Penang"></div>
+          </div>
+          <div class="form-section">
+            <div class="form-section-title">💚 TNG Payout Settings</div>
+            <div class="fg"><label>TNG eWallet Phone Number</label><input type="tel" value="+60123456789"></div>
+            <div style="background:var(--green-light);border:1px solid rgba(58,140,92,0.2);border-radius:8px;padding:10px 14px;font-size:0.78rem;color:var(--green);font-weight:600;">✅ Verified · Earnings auto-credited after each delivery</div>
+          </div>
+          <div class="form-section">
+            <div class="form-section-title">🍛 Cook Profile</div>
+            <div class="fr">
+              <div class="fg"><label>Cuisine Specialty</label><select><option>Malay / Melayu</option></select></div>
+              <div class="fg"><label>Halal Status</label><select><option>✅ Halal Certified</option></select></div>
+            </div>
+            <div class="fg"><label>Bio</label><textarea rows="3">Saya memasak resepi tradisional Penang sejak 20 tahun. Spesialisasi Nasi Lemak dan Mee Kari.</textarea></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ADD DISH MODAL -->
+<div class="modal-overlay" id="addDishModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">➕ Add / Edit Dish</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="fg"><label>Dish Name (English)</label><input type="text" placeholder="e.g. Nasi Lemak Rendang"></div>
+      <div class="fg"><label>Nama (Bahasa Malaysia)</label><input type="text" placeholder="e.g. Nasi Lemak Ayam Rendang"></div>
+      <div class="fg"><label>Description</label><textarea rows="2" placeholder="Describe your dish..."></textarea></div>
+      <div class="fr">
+        <div class="fg"><label>Price (RM)</label><input type="number" placeholder="12.00"></div>
+        <div class="fg"><label>Daily Portions</label><input type="number" placeholder="20"></div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label>Category</label><select><option>Rice / Nasi</option><option>Noodles</option><option>Bakes</option><option>Healthy</option></select></div>
+        <div class="fg"><label>Ready By</label><input type="time" value="11:30"></div>
+      </div>
+      <div class="fg"><label>Food Photo</label>
+        <div class="upload-zone" onclick="document.getElementById('modalPic').click()">
+          <div class="upload-icon">📸</div>
+          <div class="upload-text"><strong>Upload photo</strong> — good photos = more orders!</div>
+          <input type="file" id="modalPic" accept="image/*" style="display:none">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="reg-btn outline" style="padding:10px 20px;width:auto;" onclick="closeModal()">Cancel</button>
+      <button class="reg-btn" style="padding:10px 24px;width:auto;" onclick="saveDish()">Save Dish ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast">✅ <span id="toastMsg"></span></div>
+
+<script>
+// ── REGISTER STEPS ──
+function nextStep(n) {
+  [1,2,3].forEach(i => {
+    document.getElementById('step'+i).style.display = i===n ? 'block' : 'none';
+    const s = document.getElementById('s'+i);
+    const sl = document.getElementById('sl'+i);
+    if(i < n){ s.className='step done'; sl.className='step-label'; }
+    else if(i === n){ s.className='step active'; sl.className='step-label active'; }
+    else{ s.className='step'; sl.className='step-label'; }
+  });
+}
+
+function goToDash() {
+  document.getElementById('regScreen').style.display = 'none';
+  document.getElementById('dashShell').style.display = 'flex';
+}
+function goToReg() {
+  document.getElementById('dashShell').style.display = 'none';
+  document.getElementById('regScreen').style.display = 'flex';
+}
+
+// ── DASHBOARD NAV ──
+function showPanel(id, el) {
+  document.querySelectorAll('.dash-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if(el) el.classList.add('active');
+}
+
+// ── ONLINE TOGGLE ──
+function toggleOnline() {
+  const t = document.getElementById('onlineToggle');
+  t.classList.toggle('off');
+  showToast(t.classList.contains('off') ? '⏸ You are now offline — not accepting orders' : '✅ You are online — accepting orders!');
+}
+
+// ── MENU TOGGLE ──
+function toggleMenu(el) {
+  el.classList.toggle('on');
+  el.classList.toggle('off');
+  showToast(el.classList.contains('on') ? '✅ Dish is now available!' : '⏸ Dish paused for today');
+}
+
+// ── ORDER ACTIONS ──
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxUxaFIELEJ3kLOWpPKGNqeq53jdQ9c6YT-21FOqksQU05CQHKaFunLXvTDp91_Jqdj/exec';
+
+function acceptOrder(btn) {
+  btn.closest('tr').querySelector('.status-chip').className = 'status-chip status-prep';
+  btn.closest('tr').querySelector('.status-chip').textContent = '🍳 Preparing';
+  btn.className = 'action-btn action-ready';
+  btn.textContent = '✓ Mark Ready';
+  btn.onclick = function(){ markReady(this); };
+  showToast('✅ Order accepted! Lalamove will be dispatched when ready.');
+}
+
+async function markReady(btn) {
+  const row = btn.closest('tr');
+  const orderId = row.querySelector('.order-id')?.textContent.trim() || 'UNKNOWN';
+
+  // Update UI immediately
+  row.querySelector('.status-chip').className = 'status-chip status-delivered';
+  row.querySelector('.status-chip').textContent = '✅ Ready for pickup';
+  btn.className = 'action-btn action-done';
+  btn.textContent = '⏳ Dispatching...';
+  btn.disabled = true;
+
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'dispatch',
+        order_id: orderId,
+        cook_address: 'George Town, Penang',
+        cook_lat: '5.4164',
+        cook_lng: '100.3327',
+        cust_lat: '5.3540',
+        cust_lng: '100.2954'
+      })
+    });
+    btn.textContent = '✅ Done';
+    showToast('🛵 Lalamove rider dispatched! On the way!');
+  } catch(e) {
+    btn.textContent = '✅ Done';
+    showToast('🛵 Lalamove dispatched!');
+  }
+}
+
+// ── MODAL ──
+function openAddDish() { document.getElementById('addDishModal').classList.add('open'); }
+function closeModal() { document.getElementById('addDishModal').classList.remove('open'); }
+function saveDish() { closeModal(); showToast('✅ Dish saved and live on MasakApaTu!'); }
+
+// ── IMAGE PREVIEW ──
+function previewImg(input, previewId) {
+  const p = document.getElementById(previewId);
+  if(input.files && input.files[0]) {
+    const r = new FileReader();
+    r.onload = e => { p.src = e.target.result; p.style.display = 'block'; };
+    r.readAsDataURL(input.files[0]);
+  }
+}
+
+// ── TOAST ──
+function showToast(msg) {
+  document.getElementById('toastMsg').textContent = msg;
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
