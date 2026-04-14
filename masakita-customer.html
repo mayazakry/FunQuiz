@@ -18,7 +18,7 @@
   --white: #FFFFFF;
   --green: #3A8C5C;
   --green-light: rgba(58,140,92,0.1);
-  --shadow-sm: 0 2px 12px rgba(46,31,15,0.08);
+  --shadow-sm: 0 2px 12px rgba(46,31,15,0.11);
   --shadow: 0 6px 28px rgba(46,31,15,0.12);
   --shadow-lg: 0 16px 48px rgba(46,31,15,0.18);
   --radius: 16px;
@@ -52,7 +52,7 @@ nav.scrolled{box-shadow:var(--shadow-sm);}
 /* ── HERO ── */
 .hero{position:relative;overflow:hidden;padding:72px 40px 60px;background:linear-gradient(150deg,#FDF6EC 0%,#FFF3E0 50%,#FDE8CC 100%);}
 .hero::before{content:'';position:absolute;top:-60px;right:-80px;width:500px;height:500px;background:radial-gradient(circle,rgba(244,165,41,0.15) 0%,transparent 70%);pointer-events:none;}
-.hero::after{content:'';position:absolute;bottom:-40px;left:-60px;width:300px;height:300px;background:radial-gradient(circle,rgba(217,79,61,0.08) 0%,transparent 70%);pointer-events:none;}
+.hero::after{content:'';position:absolute;bottom:-40px;left:-60px;width:300px;height:300px;background:radial-gradient(circle,rgba(217,79,61,0.11) 0%,transparent 70%);pointer-events:none;}
 .hero-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;}
 .hero-left{}
 .hero-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(58,140,92,0.12);border:1px solid rgba(58,140,92,0.25);border-radius:100px;padding:5px 14px;font-size:0.75rem;font-weight:700;color:var(--green);margin-bottom:20px;letter-spacing:0.04em;}
@@ -161,7 +161,7 @@ h1 em{color:var(--saffron);font-style:italic;}
 .cook-big-rating{margin-left:auto;text-align:right;}
 .cook-big-stars{color:var(--saffron);font-size:0.85rem;}
 .cook-big-count{font-size:0.7rem;color:var(--bark-mid);}
-.detail-desc{font-size:0.92rem;color:var(--bark-mid);line-height:1.75;margin-bottom:20px;}
+.detail-desc{font-size:0.89rem;color:var(--bark-mid);line-height:1.75;margin-bottom:20px;}
 .detail-info-row{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
 .info-chip{display:flex;align-items:center;gap:6px;background:white;border:1px solid var(--fog2);border-radius:var(--radius-sm);padding:8px 14px;font-size:0.8rem;}
 .info-chip-icon{font-size:1rem;}
@@ -274,7 +274,7 @@ h1 em{color:var(--saffron);font-style:italic;}
 .hiw-title{font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:900;color:white;margin-bottom:8px;}
 .hiw-sub{color:rgba(255,255,255,0.5);margin-bottom:48px;}
 .hiw-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px;}
-.hiw-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius);padding:28px;}
+.hiw-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.11);border-radius:var(--radius);padding:28px;}
 .hiw-num{font-family:'Playfair Display',serif;font-size:3rem;font-weight:900;color:rgba(244,165,41,0.2);line-height:1;margin-bottom:12px;}
 .hiw-icon{font-size:1.8rem;margin-bottom:12px;}
 .hiw-name{font-weight:700;color:white;margin-bottom:6px;}
@@ -531,7 +531,7 @@ footer{background:var(--bark);border-top:1px solid rgba(255,255,255,0.06);paddin
             <div class="form-group"><label>Phone Number</label><input type="tel" placeholder="+60 12-345 6789"></div>
             <div class="form-group"><label>WhatsApp (for updates)</label><input type="tel" placeholder="Same as above?"></div>
           </div>
-          <div class="form-group"><label>Delivery Address</label><input type="text" id="deliveryAddress" placeholder="Type your address — Lalamove will auto-calculate delivery fee"></div><div id="lalaFeeStatus" style="font-size:0.78rem;color:#7A5C3A;margin:-6px 0 10px;padding:8px 12px;background:rgba(244,165,41,0.08);border-radius:8px;border:1px solid rgba(244,165,41,0.2);">🛵 Enter address above to get real Lalamove quote</div>
+          <div class="form-group"><label>Delivery Address</label><input type="text" id="deliveryAddress" placeholder="Type your address — Lalamove will auto-calculate delivery fee"></div><div id="lalaFeeStatus" style="font-size:0.78rem;color:#7A5C3A;margin:-6px 0 10px;padding:8px 12px;background:rgba(244,165,41,0.11);border-radius:8px;border:1px solid rgba(244,165,41,0.2);">🛵 Enter address above to get real Lalamove quote</div>
           <div class="form-row">
             <div class="form-group"><label>City</label><input type="text" placeholder="e.g. George Town"></div>
             <div class="form-group"><label>State</label><select><option>Pulau Pinang</option><option>Selangor</option><option>Kuala Lumpur</option><option>Johor</option></select></div>
@@ -910,7 +910,7 @@ function selectPay(el) {
 }
 
 // ── MAKE WEBHOOK ──
-const MAKE_WEBHOOK = 'https://hook.eu1.make.com/g2yomaez178wo17310zn4lqgdqi57vpr';
+const MAKE_WEBHOOK = 'https://script.google.com/macros/s/AKfycbxUxaFIELEJ3kLOWpPKGNqeq53jdQ9c6YT-21FOqksQU05CQHKaFunLXvTDp91_Jqdj/exec';
 
 async function placeOrder() {
   const name     = document.querySelector('input[placeholder="e.g. Ahmad Firdaus"]')?.value || 'Customer';
@@ -939,8 +939,8 @@ async function placeOrder() {
       food_subtotal: subtotal,
       delivery_fee:  deliveryFee,
       total:         subtotal + deliveryFee,
-      platform_fee:  parseFloat((subtotal * 0.08).toFixed(2)),
-      cook_earnings: parseFloat((subtotal * 0.92).toFixed(2)),
+      platform_fee:  parseFloat((subtotal * 0.11).toFixed(2)),
+      cook_earnings: parseFloat((subtotal * 0.89).toFixed(2)),
       lalamove_quote_id: lalamoveQuoteId || 'pending'
     },
     status: 'new'
@@ -954,7 +954,8 @@ async function placeOrder() {
     await fetch(MAKE_WEBHOOK, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(orderData)
+      body: JSON.stringify(orderData),
+      mode: 'no-cors'
     });
   } catch(e) {
     console.warn('Webhook error:', e);
