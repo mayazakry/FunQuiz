@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MasakApaTu — Order Homecooked Food</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --saffron: #F4A529;
+  --saffron-light: rgba(244,165,41,0.12);
+  --chili: #D94F3D;
+  --cream: #FDF6EC;
+  --bark: #2E1F0F;
+  --bark-mid: #5C3D1E;
+  --fog: #F0EBE3;
+  --fog2: #E8DFD4;
+  --white: #FFFFFF;
+  --green: #3A8C5C;
+  --green-light: rgba(58,140,92,0.1);
+  --shadow-sm: 0 2px 12px rgba(46,31,15,0.08);
+  --shadow: 0 6px 28px rgba(46,31,15,0.12);
+  --shadow-lg: 0 16px 48px rgba(46,31,15,0.18);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--bark);min-height:100vh;overflow-x:hidden;}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;height:66px;display:flex;align-items:center;justify-content:space-between;padding:0 40px;background:rgba(253,246,236,0.94);backdrop-filter:blur(16px);border-bottom:1px solid var(--fog2);transition:box-shadow 0.3s;}
+nav.scrolled{box-shadow:var(--shadow-sm);}
+.logo{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:900;color:var(--bark);cursor:pointer;letter-spacing:-0.5px;}
+.logo span{color:var(--saffron);}
+.nav-mid{display:flex;gap:4px;}
+.nav-link{padding:8px 16px;border-radius:100px;font-size:0.875rem;font-weight:500;cursor:pointer;color:var(--bark-mid);transition:all 0.2s;border:none;background:none;}
+.nav-link:hover{background:var(--fog);color:var(--bark);}
+.nav-link.active{color:var(--bark);font-weight:600;}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.cart-btn{position:relative;width:42px;height:42px;border-radius:50%;background:var(--bark);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;transition:all 0.2s;}
+.cart-btn:hover{background:var(--chili);transform:scale(1.05);}
+.cart-count{position:absolute;top:-4px;right:-4px;width:18px;height:18px;border-radius:50%;background:var(--chili);color:white;font-size:0.6rem;font-weight:800;display:flex;align-items:center;justify-content:center;border:2px solid var(--cream);}
+.sign-btn{padding:9px 22px;border-radius:100px;background:var(--saffron);color:var(--bark);font-weight:700;font-size:0.875rem;border:none;cursor:pointer;transition:all 0.2s;}
+.sign-btn:hover{background:var(--chili);color:white;}
+
+/* ── PAGES ── */
+.page{display:none;padding-top:66px;min-height:100vh;}
+.page.active{display:block;animation:fadeUp 0.3s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+
+/* ── HERO ── */
+.hero{position:relative;overflow:hidden;padding:72px 40px 60px;background:linear-gradient(150deg,#FDF6EC 0%,#FFF3E0 50%,#FDE8CC 100%);}
+.hero::before{content:'';position:absolute;top:-60px;right:-80px;width:500px;height:500px;background:radial-gradient(circle,rgba(244,165,41,0.15) 0%,transparent 70%);pointer-events:none;}
+.hero::after{content:'';position:absolute;bottom:-40px;left:-60px;width:300px;height:300px;background:radial-gradient(circle,rgba(217,79,61,0.08) 0%,transparent 70%);pointer-events:none;}
+.hero-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;}
+.hero-left{}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(58,140,92,0.12);border:1px solid rgba(58,140,92,0.25);border-radius:100px;padding:5px 14px;font-size:0.75rem;font-weight:700;color:var(--green);margin-bottom:20px;letter-spacing:0.04em;}
+h1{font-family:'Playfair Display',serif;font-size:clamp(2.6rem,4.5vw,4rem);font-weight:900;line-height:1.08;margin-bottom:18px;letter-spacing:-1px;}
+h1 em{color:var(--saffron);font-style:italic;}
+.hero-sub{font-size:1.05rem;color:var(--bark-mid);line-height:1.75;margin-bottom:30px;max-width:460px;}
+.hero-ctas{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:32px;}
+.btn-hero{padding:14px 30px;border-radius:100px;font-size:1rem;font-weight:700;border:none;cursor:pointer;transition:all 0.25s;}
+.btn-hero.primary{background:var(--chili);color:white;box-shadow:0 6px 20px rgba(217,79,61,0.3);}
+.btn-hero.primary:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(217,79,61,0.38);}
+.btn-hero.secondary{background:white;color:var(--bark);border:2px solid var(--fog2);}
+.btn-hero.secondary:hover{border-color:var(--saffron);}
+.hero-trust{display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.trust-item{display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--bark-mid);}
+.trust-dot{width:5px;height:5px;border-radius:50%;background:var(--fog2);}
+
+/* HERO RIGHT — floating cards */
+.hero-right{position:relative;height:380px;}
+.float-card{position:absolute;background:white;border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;animation:float 4s ease-in-out infinite;}
+.float-card:nth-child(2){animation-delay:1.5s;}
+.float-card:nth-child(3){animation-delay:0.8s;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+.fc-main{top:0;left:0;width:220px;}
+.fc-main .fc-img{width:100%;height:130px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:3.5rem;background:linear-gradient(135deg,#FFF3E0,#FDECD2);margin-bottom:10px;}
+.fc-main .fc-name{font-weight:700;font-size:0.9rem;margin-bottom:3px;}
+.fc-main .fc-cook{font-size:0.75rem;color:var(--bark-mid);}
+.fc-main .fc-foot{display:flex;justify-content:space-between;align-items:center;margin-top:8px;}
+.fc-main .fc-price{font-weight:800;color:var(--chili);}
+.fc-rating{top:20px;right:0;display:flex;align-items:center;gap:8px;padding:10px 14px;background:white;border-radius:100px;}
+.fc-rating-stars{color:var(--saffron);font-size:0.8rem;}
+.fc-rating-text{font-size:0.78rem;font-weight:700;}
+.fc-order{bottom:40px;right:20px;display:flex;align-items:center;gap:10px;padding:12px 16px;}
+.fc-order-icon{width:36px;height:36px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:1rem;}
+.fc-order-text{font-size:0.78rem;}
+.fc-order-text strong{display:block;font-size:0.85rem;}
+.fc-badge{top:170px;left:10px;padding:8px 14px;display:flex;align-items:center;gap:6px;font-size:0.75rem;font-weight:700;color:var(--green);background:var(--green-light);border:1px solid rgba(58,140,92,0.2);border-radius:100px;}
+
+/* ── SEARCH BAR ── */
+.search-wrap{background:white;border-top:1px solid var(--fog2);}
+.search-inner{max-width:1100px;margin:0 auto;padding:20px 40px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+.search-box{flex:1;min-width:200px;display:flex;align-items:center;gap:10px;background:var(--cream);border:1.5px solid var(--fog2);border-radius:100px;padding:10px 20px;transition:border-color 0.2s;}
+.search-box:focus-within{border-color:var(--saffron);}
+.search-box input{border:none;background:none;font-size:0.9rem;font-family:'DM Sans',sans-serif;outline:none;width:100%;color:var(--bark);}
+.search-box input::placeholder{color:#AAA;}
+.location-select{display:flex;align-items:center;gap:8px;background:var(--cream);border:1.5px solid var(--fog2);border-radius:100px;padding:10px 20px;font-size:0.88rem;font-weight:500;cursor:pointer;transition:border-color 0.2s;}
+.location-select:hover{border-color:var(--saffron);}
+.location-select select{border:none;background:none;font-size:0.88rem;font-family:'DM Sans',sans-serif;outline:none;cursor:pointer;color:var(--bark);}
+.search-submit{padding:11px 28px;border-radius:100px;background:var(--saffron);color:var(--bark);font-weight:700;font-size:0.9rem;border:none;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.search-submit:hover{background:var(--chili);color:white;}
+
+/* ── FILTER PILLS ── */
+.filter-wrap{background:white;border-bottom:1px solid var(--fog2);position:sticky;top:66px;z-index:100;}
+.filter-inner{max-width:1100px;margin:0 auto;padding:12px 40px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;}
+.filter-inner::-webkit-scrollbar{display:none;}
+.fpill{flex-shrink:0;padding:8px 20px;border-radius:100px;border:1.5px solid var(--fog2);background:white;font-size:0.83rem;font-weight:600;cursor:pointer;transition:all 0.2s;color:var(--bark-mid);}
+.fpill:hover{border-color:var(--saffron);color:var(--bark);}
+.fpill.on{background:var(--bark);border-color:var(--bark);color:white;}
+
+/* ── FOOD GRID ── */
+.grid-wrap{max-width:1100px;margin:0 auto;padding:36px 40px;}
+.grid-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;}
+.grid-title{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;}
+.grid-count{font-size:0.83rem;color:var(--bark-mid);}
+.sort-select{border:1.5px solid var(--fog2);border-radius:100px;padding:7px 16px;font-size:0.83rem;font-family:'DM Sans',sans-serif;background:white;cursor:pointer;outline:none;}
+.food-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:22px;}
+.food-card{background:white;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm);transition:all 0.28s;cursor:pointer;border:1px solid transparent;}
+.food-card:hover{transform:translateY(-5px);box-shadow:var(--shadow);border-color:rgba(244,165,41,0.2);}
+.food-img{width:100%;height:185px;object-fit:cover;display:block;position:relative;}
+.food-emoji-bg{width:100%;height:185px;display:flex;align-items:center;justify-content:center;font-size:4.5rem;background:linear-gradient(135deg,#FFF8F0,#FDECD2);position:relative;}
+.food-badges{position:absolute;top:10px;left:10px;display:flex;gap:5px;flex-wrap:wrap;}
+.badge{font-size:0.65rem;font-weight:800;padding:3px 9px;border-radius:100px;letter-spacing:0.03em;}
+.badge-halal{background:#E8F5E9;color:#2E7D32;}
+.badge-new{background:var(--chili);color:white;}
+.badge-popular{background:var(--saffron);color:var(--bark);}
+.badge-veg{background:#F3E5F5;color:#6A1B9A;}
+.food-body{padding:15px;}
+.food-name{font-weight:700;font-size:0.97rem;margin-bottom:4px;line-height:1.3;}
+.food-name-bm{font-size:0.75rem;color:var(--bark-mid);margin-bottom:8px;font-style:italic;}
+.food-cook-row{display:flex;align-items:center;gap:6px;margin-bottom:10px;}
+.cook-avatar{width:22px;height:22px;border-radius:50%;background:var(--saffron-light);display:flex;align-items:center;justify-content:center;font-size:0.7rem;flex-shrink:0;}
+.cook-name{font-size:0.78rem;color:var(--bark-mid);}
+.cook-location{font-size:0.72rem;color:#AAA;margin-left:auto;}
+.food-meta{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+.meta-tag{background:var(--fog);border-radius:6px;padding:3px 9px;font-size:0.7rem;color:var(--bark-mid);font-weight:500;}
+.food-footer{display:flex;align-items:center;justify-content:space-between;}
+.food-price{font-size:1.15rem;font-weight:800;color:var(--chili);}
+.food-price span{font-size:0.7rem;font-weight:500;color:var(--bark-mid);}
+.food-rating{display:flex;align-items:center;gap:3px;font-size:0.78rem;color:var(--bark-mid);}
+.star-icon{color:var(--saffron);}
+.add-to-cart{width:36px;height:36px;border-radius:50%;background:var(--saffron);border:none;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s;color:var(--bark);}
+.add-to-cart:hover{background:var(--chili);color:white;transform:scale(1.1);}
+
+/* ── FOOD DETAIL PAGE ── */
+.detail-wrap{max-width:900px;margin:0 auto;padding:40px;}
+.detail-back{display:flex;align-items:center;gap:8px;font-size:0.87rem;font-weight:600;color:var(--bark-mid);cursor:pointer;margin-bottom:28px;transition:color 0.2s;}
+.detail-back:hover{color:var(--bark);}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start;}
+.detail-img{width:100%;height:320px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:7rem;background:linear-gradient(135deg,#FFF8F0,#FDECD2);}
+.detail-badges{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
+.detail-name{font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;line-height:1.2;margin-bottom:6px;}
+.detail-name-bm{font-size:0.9rem;color:var(--bark-mid);font-style:italic;margin-bottom:14px;}
+.detail-cook-card{background:var(--fog);border-radius:var(--radius-sm);padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.cook-big-avatar{width:44px;height:44px;border-radius:50%;background:var(--saffron-light);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+.cook-big-name{font-weight:700;font-size:0.95rem;}
+.cook-big-sub{font-size:0.75rem;color:var(--bark-mid);}
+.cook-big-rating{margin-left:auto;text-align:right;}
+.cook-big-stars{color:var(--saffron);font-size:0.85rem;}
+.cook-big-count{font-size:0.7rem;color:var(--bark-mid);}
+.detail-desc{font-size:0.92rem;color:var(--bark-mid);line-height:1.75;margin-bottom:20px;}
+.detail-info-row{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+.info-chip{display:flex;align-items:center;gap:6px;background:white;border:1px solid var(--fog2);border-radius:var(--radius-sm);padding:8px 14px;font-size:0.8rem;}
+.info-chip-icon{font-size:1rem;}
+.info-chip-label{color:var(--bark-mid);font-size:0.7rem;}
+.info-chip-val{font-weight:700;font-size:0.82rem;}
+.detail-price-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.detail-price{font-size:2rem;font-weight:900;color:var(--chili);}
+.qty-ctrl{display:flex;align-items:center;gap:0;border:1.5px solid var(--fog2);border-radius:100px;overflow:hidden;}
+.qty-btn{width:38px;height:38px;border:none;background:white;font-size:1.2rem;cursor:pointer;transition:background 0.2s;display:flex;align-items:center;justify-content:center;}
+.qty-btn:hover{background:var(--fog);}
+.qty-num{width:44px;text-align:center;font-weight:800;font-size:1rem;}
+.add-full-btn{width:100%;padding:16px;border-radius:100px;background:var(--chili);color:white;font-size:1rem;font-weight:800;border:none;cursor:pointer;transition:all 0.25s;box-shadow:0 6px 20px rgba(217,79,61,0.3);display:flex;align-items:center;justify-content:center;gap:10px;}
+.add-full-btn:hover{transform:translateY(-2px);background:#C23D2C;}
+
+/* ── CART SIDEBAR ── */
+.cart-overlay{position:fixed;inset:0;background:rgba(46,31,15,0.4);z-index:300;opacity:0;pointer-events:none;transition:opacity 0.3s;backdrop-filter:blur(4px);}
+.cart-overlay.open{opacity:1;pointer-events:all;}
+.cart-drawer{position:fixed;top:0;right:0;bottom:0;width:420px;max-width:100vw;background:white;z-index:301;transform:translateX(100%);transition:transform 0.35s cubic-bezier(0.16,1,0.3,1);display:flex;flex-direction:column;box-shadow:var(--shadow-lg);}
+.cart-drawer.open{transform:translateX(0);}
+.cart-header{padding:24px;border-bottom:1px solid var(--fog2);display:flex;align-items:center;justify-content:space-between;}
+.cart-title{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;}
+.cart-close{width:36px;height:36px;border-radius:50%;background:var(--fog);border:none;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;}
+.cart-items{flex:1;overflow-y:auto;padding:20px;}
+.cart-empty{text-align:center;padding:60px 20px;color:var(--bark-mid);}
+.cart-empty-icon{font-size:3rem;margin-bottom:12px;}
+.cart-item{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--fog);align-items:flex-start;}
+.cart-item:last-child{border-bottom:none;}
+.ci-emoji{width:52px;height:52px;border-radius:10px;background:linear-gradient(135deg,#FFF8F0,#FDECD2);display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0;}
+.ci-info{flex:1;}
+.ci-name{font-weight:700;font-size:0.9rem;margin-bottom:3px;}
+.ci-cook{font-size:0.75rem;color:var(--bark-mid);margin-bottom:8px;}
+.ci-ctrl{display:flex;align-items:center;gap:8px;}
+.ci-qty-btn{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--fog2);background:white;cursor:pointer;font-size:0.9rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+.ci-qty-btn:hover{border-color:var(--saffron);background:var(--saffron-light);}
+.ci-qty{font-weight:700;font-size:0.9rem;min-width:20px;text-align:center;}
+.ci-price{font-weight:800;font-size:1rem;color:var(--chili);margin-left:auto;align-self:center;}
+.cart-footer{padding:20px;border-top:1px solid var(--fog2);}
+.cart-summary{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
+.summary-row{display:flex;justify-content:space-between;font-size:0.87rem;}
+.summary-row.total{font-weight:800;font-size:1.05rem;padding-top:8px;border-top:1px solid var(--fog2);margin-top:4px;}
+.checkout-btn{width:100%;padding:16px;border-radius:100px;background:var(--chili);color:white;font-size:1rem;font-weight:800;border:none;cursor:pointer;transition:all 0.25s;box-shadow:0 4px 16px rgba(217,79,61,0.3);}
+.checkout-btn:hover{background:#C23D2C;transform:translateY(-1px);}
+.cart-note{font-size:0.72rem;color:var(--bark-mid);text-align:center;margin-top:10px;}
+
+/* ── CHECKOUT PAGE ── */
+.checkout-wrap{max-width:860px;margin:0 auto;padding:40px;}
+.checkout-grid{display:grid;grid-template-columns:1fr 380px;gap:32px;align-items:start;}
+.checkout-left{}
+.checkout-section{background:white;border-radius:var(--radius);padding:24px;margin-bottom:20px;box-shadow:var(--shadow-sm);}
+.cs-title{font-weight:800;font-size:1rem;margin-bottom:18px;display:flex;align-items:center;gap:8px;}
+.form-group{margin-bottom:14px;}
+.form-group label{display:block;font-size:0.8rem;font-weight:600;margin-bottom:6px;color:var(--bark-mid);}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:11px 16px;border:1.5px solid var(--fog2);border-radius:var(--radius-sm);font-size:0.9rem;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.2s;background:var(--cream);color:var(--bark);}
+.form-group input:focus,.form-group select:focus{border-color:var(--saffron);background:white;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.payment-opts{display:flex;flex-direction:column;gap:10px;}
+.pay-opt{display:flex;align-items:center;gap:14px;padding:14px;border:1.5px solid var(--fog2);border-radius:var(--radius-sm);cursor:pointer;transition:all 0.2s;}
+.pay-opt.selected{border-color:var(--saffron);background:var(--saffron-light);}
+.pay-opt-radio{width:18px;height:18px;border-radius:50%;border:2px solid var(--fog2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;}
+.pay-opt.selected .pay-opt-radio{border-color:var(--saffron);}
+.pay-opt-radio-dot{width:8px;height:8px;border-radius:50%;background:var(--saffron);display:none;}
+.pay-opt.selected .pay-opt-radio-dot{display:block;}
+.pay-opt-logo{font-size:1.4rem;width:36px;text-align:center;}
+.pay-opt-name{font-weight:700;font-size:0.9rem;}
+.pay-opt-desc{font-size:0.75rem;color:var(--bark-mid);}
+
+/* ORDER SUMMARY CARD */
+.order-summary-card{background:white;border-radius:var(--radius);padding:24px;box-shadow:var(--shadow-sm);position:sticky;top:100px;}
+.osc-title{font-weight:800;margin-bottom:16px;}
+.osc-items{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
+.osc-item{display:flex;justify-content:space-between;font-size:0.85rem;}
+.osc-item-name{color:var(--bark-mid);}
+.osc-item-price{font-weight:600;}
+.osc-divider{border:none;border-top:1px solid var(--fog2);margin:12px 0;}
+.osc-row{display:flex;justify-content:space-between;font-size:0.87rem;margin-bottom:8px;}
+.osc-total{display:flex;justify-content:space-between;font-weight:800;font-size:1.05rem;padding-top:10px;border-top:1px solid var(--fog2);}
+.tng-badge-co{display:flex;align-items:center;gap:8px;background:#EBF4FF;border:1px solid #BFDBFE;border-radius:var(--radius-sm);padding:10px 14px;margin:14px 0;font-size:0.78rem;color:#1D4ED8;font-weight:600;}
+.place-order-btn{width:100%;padding:16px;border-radius:100px;background:var(--chili);color:white;font-size:1rem;font-weight:800;border:none;cursor:pointer;transition:all 0.25s;box-shadow:0 4px 16px rgba(217,79,61,0.28);}
+.place-order-btn:hover{background:#C23D2C;transform:translateY(-1px);}
+.secure-note{display:flex;align-items:center;justify-content:center;gap:6px;font-size:0.72rem;color:var(--bark-mid);margin-top:10px;}
+
+/* ── SUCCESS PAGE ── */
+.success-wrap{max-width:520px;margin:0 auto;padding:60px 40px;text-align:center;}
+.success-icon{width:90px;height:90px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:2.5rem;margin:0 auto 24px;border:3px solid rgba(58,140,92,0.2);}
+.success-title{font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;margin-bottom:10px;}
+.success-sub{color:var(--bark-mid);font-size:0.95rem;line-height:1.7;margin-bottom:28px;}
+.tracking-card{background:white;border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);margin-bottom:24px;text-align:left;}
+.track-title{font-weight:700;margin-bottom:16px;font-size:0.9rem;}
+.track-steps{display:flex;flex-direction:column;gap:0;}
+.track-step{display:flex;gap:14px;padding-bottom:16px;position:relative;}
+.track-step:last-child{padding-bottom:0;}
+.track-step:not(:last-child)::before{content:'';position:absolute;left:14px;top:28px;bottom:0;width:1.5px;background:var(--fog2);}
+.track-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;flex-shrink:0;border:2px solid var(--fog2);}
+.track-dot.done{background:var(--green);border-color:var(--green);color:white;}
+.track-dot.active{background:var(--saffron);border-color:var(--saffron);color:var(--bark);}
+.track-dot.pending{background:white;}
+.track-info{padding-top:4px;}
+.track-label{font-weight:700;font-size:0.87rem;}
+.track-desc{font-size:0.75rem;color:var(--bark-mid);margin-top:2px;}
+.whatsapp-btn{width:100%;padding:14px;border-radius:100px;background:#25D366;color:white;font-size:0.95rem;font-weight:700;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px;}
+.back-home-btn{width:100%;padding:14px;border-radius:100px;background:var(--fog);color:var(--bark);font-size:0.95rem;font-weight:700;border:none;cursor:pointer;}
+
+/* TOAST */
+#toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--bark);color:white;padding:13px 26px;border-radius:100px;font-size:0.87rem;font-weight:600;z-index:500;transition:transform 0.3s;display:flex;align-items:center;gap:8px;box-shadow:var(--shadow);}
+#toast.show{transform:translateX(-50%) translateY(0);}
+
+/* ── HOW IT WORKS ── */
+.hiw-wrap{background:var(--bark);padding:72px 40px;}
+.hiw-inner{max-width:1100px;margin:0 auto;}
+.hiw-title{font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:900;color:white;margin-bottom:8px;}
+.hiw-sub{color:rgba(255,255,255,0.5);margin-bottom:48px;}
+.hiw-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px;}
+.hiw-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius);padding:28px;}
+.hiw-num{font-family:'Playfair Display',serif;font-size:3rem;font-weight:900;color:rgba(244,165,41,0.2);line-height:1;margin-bottom:12px;}
+.hiw-icon{font-size:1.8rem;margin-bottom:12px;}
+.hiw-name{font-weight:700;color:white;margin-bottom:6px;}
+.hiw-desc{font-size:0.83rem;color:rgba(255,255,255,0.5);line-height:1.65;}
+
+/* ── FOOTER ── */
+footer{background:var(--bark);border-top:1px solid rgba(255,255,255,0.06);padding:32px 40px;}
+.footer-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+.footer-logo{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:white;}
+.footer-logo span{color:var(--saffron);}
+.footer-links{display:flex;gap:20px;flex-wrap:wrap;}
+.footer-link{font-size:0.82rem;color:rgba(255,255,255,0.4);cursor:pointer;transition:color 0.2s;}
+.footer-link:hover{color:rgba(255,255,255,0.8);}
+.footer-copy{font-size:0.78rem;color:rgba(255,255,255,0.25);}
+
+/* RESPONSIVE */
+@media(max-width:800px){
+  nav{padding:0 20px;}
+  .nav-mid{display:none;}
+  .hero{padding:50px 20px 44px;}
+  .hero-inner{grid-template-columns:1fr;gap:32px;}
+  .hero-right{height:200px;}
+  .search-inner{padding:16px 20px;}
+  .filter-inner{padding:12px 20px;}
+  .grid-wrap{padding:28px 20px;}
+  .food-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;}
+  .food-emoji-bg{height:140px;font-size:3rem;}
+  .cart-drawer{width:100vw;}
+  .detail-wrap{padding:20px;}
+  .detail-grid{grid-template-columns:1fr;}
+  .checkout-wrap{padding:20px;}
+  .checkout-grid{grid-template-columns:1fr;}
+  .hiw-wrap{padding:48px 20px;}
+  footer{padding:24px 20px;}
+  .fc-main,.fc-rating,.fc-order,.fc-badge{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="logo" onclick="goPage('browse')">Masak<span>ApaTu</span></div>
+  <div class="nav-mid">
+    <div class="nav-link active" onclick="goPage('browse')">Browse Food</div>
+    <div class="nav-link" onclick="goPage('browse')">How It Works</div>
+    <div class="nav-link">Become a Cook</div>
+  </div>
+  <div class="nav-right">
+    <button class="cart-btn" onclick="toggleCart()">🛒<div class="cart-count" id="cartCount">0</div></button>
+    <button class="sign-btn">Sign In</button>
+  </div>
+</nav>
+
+<!-- CART OVERLAY -->
+<div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-header">
+    <div class="cart-title">Your Order 🛒</div>
+    <button class="cart-close" onclick="toggleCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems">
+    <div class="cart-empty"><div class="cart-empty-icon">🍽️</div><div style="font-weight:700;margin-bottom:6px;">Your cart is empty</div><div style="font-size:0.83rem;color:var(--bark-mid);">Browse and add some delicious homecooked food!</div></div>
+  </div>
+  <div class="cart-footer" id="cartFooter" style="display:none;">
+    <div class="cart-summary">
+      <div class="summary-row"><span>Food subtotal</span><span id="cartSubtotal">RM 0.00</span></div>
+      <div class="summary-row"><span>Delivery (Lalamove)</span><span id="cartDelivery">RM 8.00</span></div>
+      <div class="summary-row total"><span>Total</span><span id="cartTotal">RM 0.00</span></div>
+    </div>
+    <button class="checkout-btn" onclick="goCheckout()">Proceed to Checkout →</button>
+    <div class="cart-note">💳 Pay securely via TNG eWallet or FPX</div>
+  </div>
+</div>
+
+<!-- ===== BROWSE PAGE ===== -->
+<div class="page active" id="page-browse">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-left">
+        <div class="hero-tag">🇲🇾 Malaysia's Home Cook Marketplace</div>
+        <h1>Real food from<br>real <em>home cooks.</em></h1>
+        <p class="hero-sub">Order authentic homecooked meals made with love. Delivered to your door via Lalamove. Pay with TNG eWallet.</p>
+        <div class="hero-ctas">
+          <button class="btn-hero primary" onclick="document.querySelector('.filter-wrap').scrollIntoView({behavior:'smooth'})">Order Now 🍱</button>
+          <button class="btn-hero secondary">Become a Cook →</button>
+        </div>
+        <div class="hero-trust">
+          <div class="trust-item">✅ Halal certified options</div>
+          <div class="trust-dot"></div>
+          <div class="trust-item">🛵 Lalamove delivery</div>
+          <div class="trust-dot"></div>
+          <div class="trust-item">💳 TNG eWallet</div>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="float-card fc-main">
+          <div class="fc-img">🍛</div>
+          <div class="fc-name">Nasi Lemak Rendang</div>
+          <div class="fc-cook">👩‍🍳 Puan Rohani · Penang</div>
+          <div class="fc-foot"><span style="font-weight:800;color:var(--chili);">RM 12</span><span style="font-size:0.75rem;color:var(--saffron);">★ 4.9</span></div>
+        </div>
+        <div class="float-card fc-rating">
+          <div class="fc-rating-stars">★★★★★</div>
+          <div class="fc-rating-text">4.9 / 5.0</div>
+        </div>
+        <div class="float-card fc-badge">✅ Halal Certified</div>
+        <div class="float-card fc-order">
+          <div class="fc-order-icon">🛵</div>
+          <div class="fc-order-text"><strong>Order delivered!</strong>Ahmad, George Town</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="search-wrap">
+    <div class="search-inner">
+      <div class="search-box">
+        <span>🔍</span>
+        <input type="text" placeholder="Search dishes, cooks, cuisine..." oninput="filterFoods()" id="searchInput">
+      </div>
+      <div class="location-select">
+        📍 <select onchange="filterFoods()" id="stateSelect">
+          <option value="">All Malaysia</option>
+          <option>Pulau Pinang</option>
+          <option>Kuala Lumpur</option>
+          <option>Selangor</option>
+          <option>Johor</option>
+          <option>Perak</option>
+          <option>Kedah</option>
+          <option>Sabah</option>
+          <option>Sarawak</option>
+        </select>
+      </div>
+      <button class="search-submit" onclick="filterFoods()">Search</button>
+    </div>
+  </div>
+
+  <!-- FILTER PILLS -->
+  <div class="filter-wrap">
+    <div class="filter-inner">
+      <div class="fpill on" onclick="setFilter('all',this)">🍽 All</div>
+      <div class="fpill" onclick="setFilter('malay',this)">🍛 Malay</div>
+      <div class="fpill" onclick="setFilter('chinese',this)">🥢 Chinese</div>
+      <div class="fpill" onclick="setFilter('indian',this)">🌶️ Indian</div>
+      <div class="fpill" onclick="setFilter('bakes',this)">🍰 Bakes</div>
+      <div class="fpill" onclick="setFilter('healthy',this)">🥗 Healthy</div>
+      <div class="fpill" onclick="setFilter('halal',this)">✅ Halal</div>
+      <div class="fpill" onclick="setFilter('veg',this)">🌿 Vegetarian</div>
+    </div>
+  </div>
+
+  <!-- FOOD GRID -->
+  <div class="grid-wrap">
+    <div class="grid-header">
+      <div>
+        <div class="grid-title">Homecooked Food Near You</div>
+        <div class="grid-count" id="gridCount">Showing 8 dishes</div>
+      </div>
+      <select class="sort-select" onchange="sortFoods(this.value)">
+        <option value="popular">Most Popular</option>
+        <option value="price-low">Price: Low to High</option>
+        <option value="price-high">Price: High to Low</option>
+        <option value="rating">Highest Rated</option>
+        <option value="newest">Newest</option>
+      </select>
+    </div>
+    <div class="food-grid" id="foodGrid"></div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div class="hiw-wrap">
+    <div class="hiw-inner">
+      <div class="hiw-title">How MasakApaTu Works</div>
+      <p class="hiw-sub">From craving to doorstep — in 4 simple steps.</p>
+      <div class="hiw-grid">
+        <div class="hiw-card"><div class="hiw-num">01</div><div class="hiw-icon">🍽️</div><div class="hiw-name">Browse & Choose</div><div class="hiw-desc">Explore homecooked dishes from verified cooks across Malaysia. Filter by cuisine, location, dietary needs.</div></div>
+        <div class="hiw-card"><div class="hiw-num">02</div><div class="hiw-icon">💳</div><div class="hiw-name">Pay with TNG</div><div class="hiw-desc">Secure checkout via Touch 'n Go eWallet or FPX. Your payment is held safely until delivery is confirmed.</div></div>
+        <div class="hiw-card"><div class="hiw-num">03</div><div class="hiw-icon">👩‍🍳</div><div class="hiw-name">Cook Prepares</div><div class="hiw-desc">Your cook is notified instantly. They prepare your order fresh and mark it ready for pickup.</div></div>
+        <div class="hiw-card"><div class="hiw-num">04</div><div class="hiw-icon">🛵</div><div class="hiw-name">Lalamove Delivers</div><div class="hiw-desc">A Lalamove rider picks up from the cook and delivers straight to your door. Track in real-time via WhatsApp.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">Masak<span>ApaTu</span></div>
+      <div class="footer-links">
+        <div class="footer-link">About</div>
+        <div class="footer-link">Become a Cook</div>
+        <div class="footer-link">Help Centre</div>
+        <div class="footer-link">Privacy Policy</div>
+        <div class="footer-link">Terms</div>
+      </div>
+      <div class="footer-copy">© 2025 MasakApaTu Sdn Bhd · Made in Malaysia 🇲🇾</div>
+    </div>
+  </footer>
+</div>
+
+<!-- ===== DETAIL PAGE ===== -->
+<div class="page" id="page-detail">
+  <div class="detail-wrap">
+    <div class="detail-back" onclick="goPage('browse')">← Back to Browse</div>
+    <div class="detail-grid">
+      <div>
+        <div class="detail-img" id="detailImg">🍛</div>
+      </div>
+      <div>
+        <div class="detail-badges" id="detailBadges"></div>
+        <div class="detail-name" id="detailName">Dish Name</div>
+        <div class="detail-name-bm" id="detailNameBM">Nama dalam BM</div>
+        <div class="detail-cook-card">
+          <div class="cook-big-avatar">👩‍🍳</div>
+          <div>
+            <div class="cook-big-name" id="detailCook">Cook Name</div>
+            <div class="cook-big-sub" id="detailLocation">Location</div>
+          </div>
+          <div class="cook-big-rating">
+            <div class="cook-big-stars" id="detailStars">★★★★★</div>
+            <div class="cook-big-count" id="detailOrders">0 orders</div>
+          </div>
+        </div>
+        <p class="detail-desc" id="detailDesc">Description</p>
+        <div class="detail-info-row" id="detailInfo"></div>
+        <div class="detail-price-row">
+          <div class="detail-price" id="detailPrice">RM 0</div>
+          <div class="qty-ctrl">
+            <button class="qty-btn" onclick="changeQty(-1)">−</button>
+            <div class="qty-num" id="detailQty">1</div>
+            <button class="qty-btn" onclick="changeQty(1)">+</button>
+          </div>
+        </div>
+        <button class="add-full-btn" onclick="addCurrentToCart()">🛒 Add to Cart — <span id="detailTotal">RM 0</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CHECKOUT PAGE ===== -->
+<div class="page" id="page-checkout">
+  <div class="checkout-wrap">
+    <div class="detail-back" onclick="goPage('browse');toggleCart()">← Back to Menu</div>
+    <h2 style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;margin-bottom:28px;">Checkout</h2>
+    <div class="checkout-grid">
+      <div class="checkout-left">
+
+        <div class="checkout-section">
+          <div class="cs-title">📍 Delivery Details</div>
+          <div class="form-group"><label>Full Name</label><input type="text" placeholder="e.g. Ahmad Firdaus"></div>
+          <div class="form-row">
+            <div class="form-group"><label>Phone Number</label><input type="tel" placeholder="+60 12-345 6789"></div>
+            <div class="form-group"><label>WhatsApp (for updates)</label><input type="tel" placeholder="Same as above?"></div>
+          </div>
+          <div class="form-group"><label>Delivery Address</label><input type="text" id="deliveryAddress" placeholder="Type your address — Lalamove will auto-calculate delivery fee"></div><div id="lalaFeeStatus" style="font-size:0.78rem;color:#7A5C3A;margin:-6px 0 10px;padding:8px 12px;background:rgba(244,165,41,0.08);border-radius:8px;border:1px solid rgba(244,165,41,0.2);">🛵 Enter address above to get real Lalamove quote</div>
+          <div class="form-row">
+            <div class="form-group"><label>City</label><input type="text" placeholder="e.g. George Town"></div>
+            <div class="form-group"><label>State</label><select><option>Pulau Pinang</option><option>Selangor</option><option>Kuala Lumpur</option><option>Johor</option></select></div>
+          </div>
+          <div class="form-group"><label>Postcode</label><input type="text" placeholder="10000"></div>
+          <div class="form-group"><label>Special Instructions (optional)</label><input type="text" placeholder="e.g. No spicy, extra rice, gate code..."></div>
+        </div>
+
+        <div class="checkout-section">
+          <div class="cs-title">💳 Payment Method</div>
+          <div class="payment-opts">
+            <div class="pay-opt selected" onclick="selectPay(this)">
+              <div class="pay-opt-radio"><div class="pay-opt-radio-dot"></div></div>
+              <div class="pay-opt-logo">💙</div>
+              <div><div class="pay-opt-name">Touch 'n Go eWallet</div><div class="pay-opt-desc">Pay instantly with TNG. Fast & secure.</div></div>
+            </div>
+            <div class="pay-opt" onclick="selectPay(this)">
+              <div class="pay-opt-radio"><div class="pay-opt-radio-dot"></div></div>
+              <div class="pay-opt-logo">🏦</div>
+              <div><div class="pay-opt-name">Online Banking (FPX)</div><div class="pay-opt-desc">Maybank, CIMB, RHB, Public Bank & more.</div></div>
+            </div>
+            <div class="pay-opt" onclick="selectPay(this)">
+              <div class="pay-opt-radio"><div class="pay-opt-radio-dot"></div></div>
+              <div class="pay-opt-logo">💳</div>
+              <div><div class="pay-opt-name">Credit / Debit Card</div><div class="pay-opt-desc">Visa, Mastercard accepted.</div></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div>
+        <div class="order-summary-card">
+          <div class="osc-title">Order Summary</div>
+          <div class="osc-items" id="checkoutItems"></div>
+          <hr class="osc-divider">
+          <div class="osc-row"><span>Subtotal</span><span id="coSubtotal">RM 0.00</span></div>
+          <div class="osc-row"><span>Delivery (Lalamove)</span><span id="coDelivery">RM 8.00</span></div>
+          <div class="osc-row"><span style="color:var(--green);">Platform fee</span><span style="color:var(--green);">Included</span></div>
+          <div class="osc-total"><span>Total</span><span id="coTotal">RM 0.00</span></div>
+          <div class="tng-badge-co">💙 Secured by TNG eWallet · Payments held until delivery confirmed</div>
+          <button class="place-order-btn" onclick="placeOrder()">Place Order & Pay →</button>
+          <div class="secure-note">🔒 256-bit SSL encrypted · Safe checkout</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SUCCESS PAGE ===== -->
+<div class="page" id="page-success">
+  <div class="success-wrap">
+    <div class="success-icon">✅</div>
+    <div class="success-title">Order Placed!</div>
+    <p class="success-sub">Your order has been confirmed and your cook has been notified. A Lalamove rider will pick up when it's ready. Track updates via WhatsApp.</p>
+    <div class="tracking-card">
+      <div class="track-title">📦 Order #MK-20250414-042</div>
+      <div class="track-steps">
+        <div class="track-step"><div class="track-dot done">✓</div><div class="track-info"><div class="track-label">Order Confirmed</div><div class="track-desc">Payment received · Cook notified via WhatsApp</div></div></div>
+        <div class="track-step"><div class="track-dot active">🍳</div><div class="track-info"><div class="track-label">Being Prepared</div><div class="track-desc">Cook is preparing your food now</div></div></div>
+        <div class="track-step"><div class="track-dot pending">🛵</div><div class="track-info"><div class="track-label">Rider On The Way</div><div class="track-desc">Lalamove rider will pick up soon</div></div></div>
+        <div class="track-step"><div class="track-dot pending">🏠</div><div class="track-info"><div class="track-label">Delivered</div><div class="track-desc">Enjoy your meal!</div></div></div>
+      </div>
+    </div>
+    <button class="whatsapp-btn">💬 Track via WhatsApp</button>
+    <button class="back-home-btn" onclick="goPage('browse')">← Back to Browse</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast">✅ <span id="toastMsg">Added to cart!</span></div>
+
+<script>
+// ── DATA ──
+const foods = [
+  {id:1,name:'Nasi Lemak Ayam Rendang',nameBM:'Nasi Lemak Ayam Rendang',cook:'Puan Rohani',location:'George Town, Penang',state:'Pulau Pinang',price:12,cat:'malay',tags:['halal'],emoji:'🍛',rating:4.9,orders:284,desc:'Fragrant coconut rice cooked with pandan, served with rich rendang chicken, sambal, cucumber, and anchovies. Made from a 30-year family recipe.',isNew:true,isPopular:true,isHalal:true,readyBy:'11:30 AM',portions:15},
+  {id:2,name:'Char Koay Teow Basah',nameBM:'Char Koay Teow Basah',cook:'Uncle Ah Kow',location:'Jelutong, Penang',state:'Pulau Pinang',price:10,cat:'chinese',tags:[],emoji:'🍜',rating:4.8,orders:192,desc:'Authentic Penang-style wok-fried flat rice noodles with prawns, cockles, egg, bean sprouts, and dark soy. Wok hei perfection.',isNew:false,isPopular:true,isHalal:false,readyBy:'12:00 PM',portions:20},
+  {id:3,name:'Mutton Briyani Penang',nameBM:'Nasi Briyani Kambing',cook:'Amma Shantha',location:'Air Itam, Penang',state:'Pulau Pinang',price:16,cat:'indian',tags:['halal'],emoji:'🍚',rating:4.7,orders:156,desc:'Slow-cooked mutton briyani with aromatic basmati rice, raita, and achar. A family recipe perfected over generations.',isNew:false,isPopular:false,isHalal:true,readyBy:'12:30 PM',portions:12},
+  {id:4,name:'Banana Oat Muffin Box (6pcs)',nameBM:'Kotak Muffin Pisang Oat (6 biji)',cook:'Liyana Fit Kitchen',location:'Bayan Lepas, Penang',state:'Pulau Pinang',price:18,cat:'bakes',tags:['halal','veg'],emoji:'🧁',rating:5.0,orders:88,desc:'Healthy banana oat muffins with no refined sugar. Moist, nutritious, and perfect for breakfast or snacking. Freshly baked every morning.',isNew:true,isPopular:false,isHalal:true,readyBy:'10:00 AM',portions:30},
+  {id:5,name:'Sup Tulang Ayam + White Rice',nameBM:'Sup Tulang Ayam + Nasi Putih',cook:'Mak Long Maimunah',location:'Butterworth, Penang',state:'Pulau Pinang',price:9,cat:'malay',tags:['halal'],emoji:'🍲',rating:4.6,orders:310,desc:'Comforting chicken bone soup with herbs and spices, served with steamed white rice. The ultimate Malaysian comfort food.',isNew:false,isPopular:true,isHalal:true,readyBy:'11:00 AM',portions:25},
+  {id:6,name:'Hokkien Mee Dark Gravy',nameBM:'Mee Hokkien Kuah Hitam',cook:'Uncle Ah Lim',location:'Jelutong, Penang',state:'Pulau Pinang',price:11,cat:'chinese',tags:[],emoji:'🍝',rating:4.9,orders:205,desc:'Thick yellow noodles braised in rich dark prawn stock with pork belly, squid, and fish cake. Authentic Penang-style.',isNew:false,isPopular:true,isHalal:false,readyBy:'12:00 PM',portions:18},
+  {id:7,name:'Pandan Layer Cake (Whole)',nameBM:'Kek Lapis Pandan (Satu Loyang)',cook:'Kak Faridah',location:'Tanjung Bungah, Penang',state:'Pulau Pinang',price:38,cat:'bakes',tags:['halal','veg'],emoji:'🎂',rating:4.8,orders:64,desc:'Classic pandan coconut layer cake with a soft, pillowy texture and intense pandan fragrance. Perfect for gatherings.',isNew:true,isPopular:false,isHalal:true,readyBy:'10:00 AM',portions:5},
+  {id:8,name:'Buddha Bowl — Quinoa & Greens',nameBM:'Buddha Bowl Quinoa',cook:'Priya Health Bites',location:'Relau, Penang',state:'Pulau Pinang',price:16,cat:'healthy',tags:['veg'],emoji:'🥗',rating:4.7,orders:72,desc:'Nutrient-packed quinoa bowl with roasted vegetables, edamame, avocado, and tahini dressing. Vegan and gluten-free.',isNew:false,isPopular:false,isHalal:false,readyBy:'11:30 AM',portions:10},
+];
+
+let cart = [];
+let currentFilter = 'all';
+let currentFood = null;
+let detailQty = 1;
+
+// ── RENDER FOOD GRID ──
+function renderGrid(items) {
+  const grid = document.getElementById('foodGrid');
+  document.getElementById('gridCount').textContent = `Showing ${items.length} dish${items.length !== 1 ? 'es' : ''}`;
+  grid.innerHTML = items.map(f => `
+    <div class="food-card" onclick="openDetail(${f.id})">
+      <div style="position:relative;">
+        <div class="food-emoji-bg">${f.emoji}</div>
+        <div class="food-badges">
+          ${f.isHalal ? '<span class="badge badge-halal">✅ Halal</span>' : ''}
+          ${f.isNew ? '<span class="badge badge-new">NEW</span>' : ''}
+          ${f.isPopular ? '<span class="badge badge-popular">🔥 Popular</span>' : ''}
+        </div>
+      </div>
+      <div class="food-body">
+        <div class="food-name">${f.name}</div>
+        <div class="food-name-bm">${f.nameBM}</div>
+        <div class="food-cook-row">
+          <div class="cook-avatar">👩‍🍳</div>
+          <div class="cook-name">${f.cook}</div>
+          <div class="cook-location">📍 ${f.location.split(',')[0]}</div>
+        </div>
+        <div class="food-meta">
+          <span class="meta-tag">⏰ Ready ${f.readyBy}</span>
+          <span class="meta-tag">${f.portions} left</span>
+        </div>
+        <div class="food-footer">
+          <div>
+            <div class="food-price">RM ${f.price.toFixed(2)} <span>/ portion</span></div>
+            <div class="food-rating"><span class="star-icon">★</span> ${f.rating} (${f.orders} orders)</div>
+          </div>
+          <button class="add-to-cart" onclick="event.stopPropagation();addToCart(${f.id})">+</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function getFiltered() {
+  const q = (document.getElementById('searchInput')?.value || '').toLowerCase();
+  const state = document.getElementById('stateSelect')?.value || '';
+  return foods.filter(f => {
+    const matchCat = currentFilter === 'all' || f.cat === currentFilter || (currentFilter === 'halal' && f.isHalal) || (currentFilter === 'veg' && f.tags.includes('veg'));
+    const matchQ = !q || f.name.toLowerCase().includes(q) || f.cook.toLowerCase().includes(q);
+    const matchState = !state || f.state === state;
+    return matchCat && matchQ && matchState;
+  });
+}
+
+function filterFoods() { renderGrid(getFiltered()); }
+
+function setFilter(cat, el) {
+  currentFilter = cat;
+  document.querySelectorAll('.fpill').forEach(p => p.classList.remove('on'));
+  el.classList.add('on');
+  renderGrid(getFiltered());
+}
+
+function sortFoods(val) {
+  const items = getFiltered();
+  if(val === 'price-low') items.sort((a,b) => a.price - b.price);
+  if(val === 'price-high') items.sort((a,b) => b.price - a.price);
+  if(val === 'rating') items.sort((a,b) => b.rating - a.rating);
+  if(val === 'popular') items.sort((a,b) => b.orders - a.orders);
+  renderGrid(items);
+}
+
+// ── DETAIL ──
+function openDetail(id) {
+  const f = foods.find(x => x.id === id);
+  if(!f) return;
+  currentFood = f;
+  detailQty = 1;
+  document.getElementById('detailImg').textContent = f.emoji;
+  document.getElementById('detailName').textContent = f.name;
+  document.getElementById('detailNameBM').textContent = f.nameBM;
+  document.getElementById('detailCook').textContent = f.cook;
+  document.getElementById('detailLocation').textContent = f.location;
+  document.getElementById('detailStars').textContent = '★'.repeat(Math.round(f.rating));
+  document.getElementById('detailOrders').textContent = `${f.orders} orders`;
+  document.getElementById('detailDesc').textContent = f.desc;
+  document.getElementById('detailPrice').textContent = `RM ${f.price.toFixed(2)}`;
+  document.getElementById('detailQty').textContent = detailQty;
+  document.getElementById('detailTotal').textContent = `RM ${(f.price * detailQty).toFixed(2)}`;
+  document.getElementById('detailBadges').innerHTML = `
+    ${f.isHalal ? '<span class="badge badge-halal">✅ Halal</span>' : ''}
+    ${f.isNew ? '<span class="badge badge-new">NEW</span>' : ''}
+    ${f.isPopular ? '<span class="badge badge-popular">🔥 Popular</span>' : ''}
+  `;
+  document.getElementById('detailInfo').innerHTML = `
+    <div class="info-chip"><span class="info-chip-icon">⏰</span><div><div class="info-chip-label">Ready by</div><div class="info-chip-val">${f.readyBy}</div></div></div>
+    <div class="info-chip"><span class="info-chip-icon">🍽️</span><div><div class="info-chip-label">Portions left</div><div class="info-chip-val">${f.portions}</div></div></div>
+    <div class="info-chip"><span class="info-chip-icon">🛵</span><div><div class="info-chip-label">Delivery</div><div class="info-chip-val">via Lalamove</div></div></div>
+  `;
+  goPage('detail');
+}
+
+function changeQty(delta) {
+  detailQty = Math.max(1, detailQty + delta);
+  document.getElementById('detailQty').textContent = detailQty;
+  document.getElementById('detailTotal').textContent = `RM ${(currentFood.price * detailQty).toFixed(2)}`;
+}
+
+function addCurrentToCart() {
+  if(!currentFood) return;
+  for(let i=0; i<detailQty; i++) addToCart(currentFood.id, true);
+  showToast(`🛒 Added ${detailQty}× ${currentFood.name}!`);
+  goPage('browse');
+}
+
+// ── CART ──
+function addToCart(id, silent=false) {
+  const f = foods.find(x => x.id === id);
+  const existing = cart.find(c => c.id === id);
+  if(existing) existing.qty++;
+  else cart.push({...f, qty:1});
+  updateCartUI();
+  if(!silent) showToast(`🛒 ${f.name} added!`);
+}
+
+function updateCartUI() {
+  const total = cart.reduce((s,c) => s + c.qty, 0);
+  document.getElementById('cartCount').textContent = total;
+  const subtotal = cart.reduce((s,c) => s + c.price * c.qty, 0);
+  const delivery = 8;
+  document.getElementById('cartSubtotal').textContent = `RM ${subtotal.toFixed(2)}`;
+  document.getElementById('cartTotal').textContent = `RM ${(subtotal + delivery).toFixed(2)}`;
+  const footer = document.getElementById('cartFooter');
+  footer.style.display = cart.length ? 'block' : 'none';
+  const itemsEl = document.getElementById('cartItems');
+  if(!cart.length) {
+    itemsEl.innerHTML = '<div class="cart-empty"><div class="cart-empty-icon">🍽️</div><div style="font-weight:700;margin-bottom:6px;">Your cart is empty</div><div style="font-size:0.83rem;color:var(--bark-mid);">Browse and add some delicious homecooked food!</div></div>';
+    return;
+  }
+  itemsEl.innerHTML = cart.map(c => `
+    <div class="cart-item">
+      <div class="ci-emoji">${c.emoji}</div>
+      <div class="ci-info">
+        <div class="ci-name">${c.name}</div>
+        <div class="ci-cook">👩‍🍳 ${c.cook}</div>
+        <div class="ci-ctrl">
+          <button class="ci-qty-btn" onclick="changeCartQty(${c.id},-1)">−</button>
+          <div class="ci-qty">${c.qty}</div>
+          <button class="ci-qty-btn" onclick="changeCartQty(${c.id},1)">+</button>
+        </div>
+      </div>
+      <div class="ci-price">RM ${(c.price * c.qty).toFixed(2)}</div>
+    </div>
+  `).join('');
+}
+
+function changeCartQty(id, delta) {
+  const idx = cart.findIndex(c => c.id === id);
+  if(idx === -1) return;
+  cart[idx].qty += delta;
+  if(cart[idx].qty <= 0) cart.splice(idx, 1);
+  updateCartUI();
+}
+
+function toggleCart() {
+  document.getElementById('cartOverlay').classList.toggle('open');
+  document.getElementById('cartDrawer').classList.toggle('open');
+}
+
+// ── LALAMOVE CONFIG ──
+const LALA_API_KEY    = 'pk_test_bf62f07a9e2fe3af78a299d9a5fe50a6';
+const LALA_API_SECRET = 'sk_test_rSF9snh8UDrbXcigi72mV0gfcjMqwC7dKJ+y4Sh2tBQTeC3Jfm5Fw1vnXrU9M62R';
+const LALA_BASE       = 'https://rest.sandbox.lalamove.com';
+const LALA_MARKET     = 'MY';
+
+// Cook pickup coords (default: George Town, Penang — update per cook later)
+const COOK_COORDS = { lat: '5.4164', lng: '100.3327' };
+
+let deliveryFee = 8.00; // default fallback
+let lalamoveQuoteId = null;
+
+// Build HMAC signature for Lalamove
+async function lalamoveSign(method, path, body = '') {
+  const ts   = Date.now().toString();
+  const raw  = `${ts}\r\n${method}\r\n${path}\r\n\r\n${body}`;
+  const key  = await crypto.subtle.importKey(
+    'raw', new TextEncoder().encode(LALA_API_SECRET),
+    { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+  );
+  const sig  = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(raw));
+  const hex  = Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2,'0')).join('');
+  return { ts, sig: hex };
+}
+
+// Get Lalamove delivery quote
+async function getLalamoveQuote(toAddress) {
+  const path   = '/v3/quotations';
+  const bodyObj = {
+    data: {
+      serviceType: 'MOTORCYCLE',
+      language: 'en_MY',
+      stops: [
+        {
+          coordinates: { lat: COOK_COORDS.lat, lng: COOK_COORDS.lng },
+          address: 'Cook Pickup Location, George Town, Penang'
+        },
+        {
+          coordinates: { lat: '5.3540', lng: '100.2954' }, // fallback customer coords
+          address: toAddress || 'Customer Delivery Address, Penang'
+        }
+      ],
+      item: { quantity: '1', weight: 'LESS_THAN_3KG', categories: ['FOOD_DELIVERY'], handlingInstructions: [] }
+    }
+  };
+  const bodyStr = JSON.stringify(bodyObj);
+  const { ts, sig } = await lalamoveSign('POST', path, bodyStr);
+
+  try {
+    const res = await fetch(`${LALA_BASE}${path}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `hmac ${LALA_API_KEY}:${ts}:${sig}`,
+        'Market': LALA_MARKET,
+        'Request-ID': `masakapatU-${Date.now()}`
+      },
+      body: bodyStr
+    });
+    const data = await res.json();
+    if (data?.data?.priceBreakdown?.total) {
+      // Lalamove returns price in cents
+      const fee = parseFloat(data.data.priceBreakdown.total) / 100;
+      lalamoveQuoteId = data.data.quotationId || null;
+      return fee;
+    }
+  } catch(e) {
+    console.warn('Lalamove API error:', e);
+  }
+  return 8.00; // fallback if API fails
+}
+
+// ── CHECKOUT ──
+function goCheckout() {
+  toggleCart();
+  const subtotal = cart.reduce((s,c) => s + c.price * c.qty, 0);
+  document.getElementById('coSubtotal').textContent = `RM ${subtotal.toFixed(2)}`;
+  document.getElementById('coTotal').textContent = `RM ${(subtotal + deliveryFee).toFixed(2)}`;
+  document.getElementById('checkoutItems').innerHTML = cart.map(c =>
+    `<div class="osc-item"><span class="osc-item-name">${c.qty}× ${c.name}</span><span class="osc-item-price">RM ${(c.price * c.qty).toFixed(2)}</span></div>`
+  ).join('');
+  updateDeliveryDisplay(deliveryFee);
+  goPage('checkout');
+
+  // Auto-fetch quote when address typed
+  const addrInput = document.getElementById('deliveryAddress');
+  if(addrInput) {
+    let debounce;
+    addrInput.addEventListener('input', () => {
+      clearTimeout(debounce);
+      debounce = setTimeout(() => fetchQuote(addrInput.value), 1200);
+    });
+  }
+}
+
+async function fetchQuote(address) {
+  if(!address || address.length < 8) return;
+  const feeEl = document.getElementById('lalaFeeStatus');
+  if(feeEl) feeEl.innerHTML = '🛵 Getting Lalamove quote...';
+  deliveryFee = await getLalamoveQuote(address);
+  updateDeliveryDisplay(deliveryFee);
+  if(feeEl) feeEl.innerHTML = lalamoveQuoteId
+    ? `✅ Lalamove quote confirmed · Quote ID: <code style="font-size:0.7rem;">${lalamoveQuoteId}</code>`
+    : `⚠️ Using estimated delivery fee`;
+}
+
+function updateDeliveryDisplay(fee) {
+  const subtotal = cart.reduce((s,c) => s + c.price * c.qty, 0);
+  const delivEl = document.getElementById('cartDelivery');
+  const coDelivEl = document.getElementById('coDelivery');
+  const coTotalEl = document.getElementById('coTotal');
+  const cartTotalEl = document.getElementById('cartTotal');
+  if(delivEl) delivEl.textContent = `RM ${fee.toFixed(2)}`;
+  if(coDelivEl) coDelivEl.textContent = `RM ${fee.toFixed(2)}`;
+  if(coTotalEl) coTotalEl.textContent = `RM ${(subtotal + fee).toFixed(2)}`;
+  if(cartTotalEl) cartTotalEl.textContent = `RM ${(subtotal + fee).toFixed(2)}`;
+}
+
+function selectPay(el) {
+  document.querySelectorAll('.pay-opt').forEach(p => p.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function placeOrder() {
+  cart = [];
+  updateCartUI();
+  goPage('success');
+}
+
+// ── NAV ──
+function goPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ── TOAST ──
+function showToast(msg) {
+  document.getElementById('toastMsg').textContent = msg;
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ── SCROLL NAV ──
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20);
+});
+
+// INIT
+renderGrid(foods);
+</script>
+</body>
+</html>
