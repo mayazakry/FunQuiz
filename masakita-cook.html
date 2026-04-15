@@ -249,11 +249,11 @@ input:focus,select:focus,textarea:focus{border-color:var(--saffron);background:w
         <div class="reg-title">Create Your Cook Profile</div>
         <p class="reg-sub">Join thousands of home cooks earning with MasakApaTu. Daftar percuma!</p>
         <div class="commission-box">💡 <strong>How you earn:</strong> You set your price. We take only 11% platform fee. 89% goes straight to your TNG eWallet after every delivery.</div>
-        <div class="fg"><label>Full Name / Nama Penuh <span style="color:var(--chili);">*</span></label><input type="text" id="cookFullName" placeholder="e.g. Puan Rohani Abdullah" required></div>
-        <div class="fg"><label>Email Address <span style="color:var(--chili);">*</span></label><input type="email" id="cookEmail" placeholder="e.g. rohani@gmail.com" required></div>
-        <div class="fg"><label>Password <span style="color:var(--chili);">*</span></label><input type="password" id="cookPassword" placeholder="Min 8 characters" minlength="8" required></div>
+        <div class="fg"><label>Full Name / Nama Penuh <span style="color:var(--chili);">*</span></label><input type="text" id="cookFullName" placeholder="e.g. Puan Rohani Abdullah"></div>
+        <div class="fg"><label>Email Address <span style="color:var(--chili);">*</span></label><input type="email" id="cookEmail" placeholder="e.g. rohani@gmail.com"></div>
+        <div class="fg"><label>Password <span style="color:var(--chili);">*</span></label><input type="password" id="cookPassword" placeholder="Min 8 characters"></div>
         <div class="fr">
-          <div class="fg"><label>Phone / WhatsApp <span style="color:var(--chili);">*</span></label><input type="tel" id="cookPhone" placeholder="+60 12-345 6789" required></div>
+          <div class="fg"><label>Phone / WhatsApp <span style="color:var(--chili);">*</span></label><input type="tel" id="cookPhone" placeholder="+60 12-345 6789"></div>
           <div class="fg"><label>State / Negeri</label><select><option>Pulau Pinang</option><option>Kuala Lumpur</option><option>Selangor</option><option>Johor</option><option>Perak</option><option>Kedah</option><option>Sabah</option><option>Sarawak</option><option>Negeri Sembilan</option><option>Melaka</option><option>Pahang</option><option>Terengganu</option><option>Kelantan</option><option>Perlis</option></select></div>
         </div>
         <div class="fg"><label>City / Bandar</label><input type="text" placeholder="e.g. George Town"></div>
@@ -274,7 +274,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--saffron);background:w
           <img id="profilePreview" class="preview-img">
           <input type="hidden" id="profilePhotoUrl" value="">
         </div>
-        <button class="reg-btn" onclick="nextStep(2)">Next: Add Your First Dish →</button>
+        <button class="reg-btn" onclick="validateStep1()">Next: Add Your First Dish →</button>
         <div class="login-link">Already a cook? <a onclick="showSignIn()">Sign In</a></div>
 
 <!-- SIGN IN MODAL -->
@@ -697,6 +697,21 @@ input:focus,select:focus,textarea:focus{border-color:var(--saffron);background:w
 
 <script>
 // ── REGISTER STEPS ──
+function validateStep1() {
+  const fullName = document.getElementById('cookFullName')?.value || '';
+  const email    = document.getElementById('cookEmail')?.value || '';
+  const password = document.getElementById('cookPassword')?.value || '';
+  const phone    = document.getElementById('cookPhone')?.value || '';
+
+  if (!fullName.trim()) { showToast('⚠️ Please enter your full name!'); return; }
+  if (!email.trim()) { showToast('⚠️ Please enter your email!'); return; }
+  if (!email.includes('@')) { showToast('⚠️ Please enter a valid email!'); return; }
+  if (!password.trim() || password.length < 6) { showToast('⚠️ Password must be at least 6 characters!'); return; }
+  if (!phone.trim()) { showToast('⚠️ Please enter your phone number!'); return; }
+
+  nextStep(2);
+}
+
 function nextStep(n) {
   [1,2,3].forEach(i => {
     document.getElementById('step'+i).style.display = i===n ? 'block' : 'none';
@@ -901,9 +916,9 @@ function getStatusChip(status) {
 
 function getActionBtn(o) {
   if (o.status === 'Confirmed') {
-    return '<button class="action-btn action-accept" onclick="acceptRealOrder(this,'' + o.order_id + '')">✓ Accept</button>';
+    return '<button class="action-btn action-accept" onclick="acceptRealOrder(this,\'' + o.order_id + '\')">✓ Accept</button>';
   } else if (o.status === 'Preparing') {
-    return '<button class="action-btn action-ready" onclick="markRealReady(this,'' + o.order_id + '')">✓ Mark Ready</button>';
+    return '<button class="action-btn action-ready" onclick="markRealReady(this,\'' + o.order_id + '\')">✓ Mark Ready</button>';
   } else {
     return '<button class="action-btn action-done" disabled>Done</button>';
   }
