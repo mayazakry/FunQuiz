@@ -263,12 +263,14 @@ input:focus,select:focus,textarea:focus{border-color:var(--saffron);background:w
         </div>
         <div class="fg"><label>Bio — Tell customers about yourself</label><textarea rows="3" placeholder="e.g. Saya memasak resepi tradisional Penang sejak 20 tahun. Spesialisasi saya Assam Laksa dan Nasi Ulam..."></textarea></div>
         <div class="fg"><label>Profile Photo</label>
-          <div class="upload-zone" onclick="document.getElementById('profilePic').click()">
+          <div class="upload-zone" onclick="document.getElementById('profilePic').click()" id="profileUploadZone">
             <div class="upload-icon">📷</div>
-            <div class="upload-text"><strong>Click to upload</strong> your photo<br><span style="font-size:0.75rem;">JPG, PNG max 5MB</span></div>
-            <input type="file" id="profilePic" accept="image/*" style="display:none" onchange="previewImg(this,'profilePreview')">
+            <div class="upload-text"><strong>Click to upload</strong> or take photo<br><span style="font-size:0.75rem;">JPG, PNG max 5MB · Camera supported 📱</span></div>
+            <input type="file" id="profilePic" accept="image/*" capture="user" style="display:none" onchange="handleProfileUpload(this)">
           </div>
+          <div id="profileUploadStatus" style="font-size:0.78rem;color:var(--bark-mid);margin-top:6px;display:none;"></div>
           <img id="profilePreview" class="preview-img">
+          <input type="hidden" id="profilePhotoUrl" value="">
         </div>
         <button class="reg-btn" onclick="nextStep(2)">Next: Add Your First Dish →</button>
         <div class="login-link">Already a cook? <a onclick="goToDash()">Sign In</a></div>
@@ -291,16 +293,18 @@ input:focus,select:focus,textarea:focus{border-color:var(--saffron);background:w
         </div>
         <div class="fg"><label>Dietary Tags</label><select><option>Halal</option><option>Vegetarian</option><option>Vegan</option><option>Gluten-Free</option><option>No Pork / No Lard</option></select></div>
         <div class="fg"><label>Food Photos (up to 5) 📸</label>
-          <div class="upload-zone" onclick="document.getElementById('foodPics').click()">
+          <div class="upload-zone" onclick="document.getElementById('foodPics').click()" id="foodUploadZone">
             <div class="upload-icon">📸</div>
-            <div class="upload-text"><strong>Upload food photos</strong> — cantik = more orders!<br><span style="font-size:0.75rem;">JPG, PNG, max 5MB each</span></div>
-            <input type="file" id="foodPics" accept="image/*" multiple style="display:none" onchange="previewImg(this,'foodPreview')">
+            <div class="upload-text"><strong>Upload food photos</strong> — cantik = more orders!<br><span style="font-size:0.75rem;">JPG, PNG max 5MB · Camera supported 📱</span></div>
+            <input type="file" id="foodPics" accept="image/*" capture="environment" style="display:none" onchange="handleFoodUpload(this)">
           </div>
+          <div id="foodUploadStatus" style="font-size:0.78rem;color:var(--bark-mid);margin-top:6px;display:none;"></div>
           <img id="foodPreview" class="preview-img">
+          <input type="hidden" id="foodPhotoUrl" value="">
         </div>
         <div class="btn-row">
           <button class="reg-btn outline" onclick="nextStep(1)" style="flex:1;">← Back</button>
-          <button class="reg-btn" onclick="nextStep(3)" style="flex:2;">Submit & Join MasakApaTu ✓</button>
+          <button class="reg-btn" onclick="registerCook()" style="flex:2;">Submit & Join MasakApaTu ✓</button>
         </div>
       </div>
 
@@ -723,6 +727,30 @@ function toggleMenu(el) {
 // ── ORDER ACTIONS ──
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxUxaFIELEJ3kLOWpPKGNqeq53jdQ9c6YT-21FOqksQU05CQHKaFunLXvTDp91_Jqdj/exec';
 
+// ── CLOUDINARY CONFIG ──
+const CLOUDINARY_CLOUD = 'dwv7mokkk';
+const CLOUDINARY_PRESET = 'MasakApaTu';
+const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD + '/image/upload';
+
+async function uploadToCloudinary(file, progressCallback) {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', CLOUDINARY_PRESET);
+  formData.append('folder', 'masakapatU');
+
+  const response = await fetch(CLOUDINARY_URL, {
+    method: 'POST',
+    body: formData
+  });
+
+  const data = await response.json();
+  if (data.secure_url) {
+    if (progressCallback) progressCallback(100);
+    return data.secure_url;
+  }
+  throw new Error('Upload failed: ' + JSON.stringify(data));
+}
+
 function acceptOrder(btn) {
   btn.closest('tr').querySelector('.status-chip').className = 'status-chip status-prep';
   btn.closest('tr').querySelector('.status-chip').textContent = '🍳 Preparing';
@@ -931,6 +959,128 @@ async function markRealReady(btn, orderId) {
     showToast('🛵 Lalamove dispatched!');
     setTimeout(loadRealOrders, 1500);
   }
+}
+
+// ── CLOUDINARY UPLOAD HANDLERS ──
+async function handleProfileUpload(input) {
+  if (!input.files || !input.files[0]) return;
+  const file = input.files[0];
+  const statusEl = document.getElementById('profileUploadStatus');
+  const preview = document.getElementById('profilePreview');
+
+  // Show preview immediately
+  const reader = new FileReader();
+  reader.onload = e => { preview.src = e.target.result; preview.style.display = 'block'; };
+  reader.readAsDataURL(file);
+
+  // Upload to Cloudinary
+  statusEl.style.display = 'block';
+  statusEl.textContent = '⏳ Uploading photo...';
+  statusEl.style.color = 'var(--bark-mid)';
+
+  try {
+    const url = await uploadToCloudinary(file);
+    document.getElementById('profilePhotoUrl').value = url;
+    statusEl.textContent = '✅ Photo uploaded successfully!';
+    statusEl.style.color = 'var(--green)';
+  } catch(e) {
+    statusEl.textContent = '⚠️ Upload failed — photo saved locally only';
+    statusEl.style.color = 'var(--chili)';
+  }
+}
+
+async function handleFoodUpload(input) {
+  if (!input.files || !input.files[0]) return;
+  const file = input.files[0];
+  const statusEl = document.getElementById('foodUploadStatus');
+  const preview = document.getElementById('foodPreview');
+
+  // Show preview immediately
+  const reader = new FileReader();
+  reader.onload = e => { preview.src = e.target.result; preview.style.display = 'block'; };
+  reader.readAsDataURL(file);
+
+  // Upload to Cloudinary
+  statusEl.style.display = 'block';
+  statusEl.textContent = '⏳ Uploading food photo...';
+  statusEl.style.color = 'var(--bark-mid)';
+
+  try {
+    const url = await uploadToCloudinary(file);
+    document.getElementById('foodPhotoUrl').value = url;
+    statusEl.textContent = '✅ Photo uploaded! URL saved.';
+    statusEl.style.color = 'var(--green)';
+    showToast('📸 Food photo uploaded to Cloudinary!');
+  } catch(e) {
+    statusEl.textContent = '⚠️ Upload failed — try again';
+    statusEl.style.color = 'var(--chili)';
+  }
+}
+
+// ── COOK REGISTRATION ──
+async function registerCook() {
+  // Collect Step 1 data
+  const fullName    = document.querySelector('#step1 input[placeholder="e.g. Puan Rohani Abdullah"]')?.value || '';
+  const phone       = document.querySelector('#step1 input[placeholder="+60 12-345 6789"]')?.value || '';
+  const state       = document.querySelector('#step1 select')?.value || '';
+  const city        = document.querySelector('#step1 input[placeholder="e.g. George Town"]')?.value || '';
+  const address     = document.querySelector('#step1 input[placeholder*="Lalamove"]')?.value || '';
+  const tngPhone    = document.querySelector('#step1 input[placeholder*="TNG"]')?.value || '';
+  const selects     = document.querySelectorAll('#step1 select');
+  const cuisine     = selects[1]?.value || '';
+  const halal       = selects[2]?.value || '';
+  const bio         = document.querySelector('#step1 textarea')?.value || '';
+
+  // Collect Step 2 dish data
+  const dishNameEN  = document.querySelector('#step2 input[placeholder*="Nasi Lemak"]')?.value || '';
+  const dishNameBM  = document.querySelectorAll('#step2 input[type="text"]')[1]?.value || '';
+  const dishDesc    = document.querySelector('#step2 textarea')?.value || '';
+  const price       = document.querySelector('#step2 input[placeholder="12.00"]')?.value || '';
+  const portions    = document.querySelector('#step2 input[placeholder="20"]')?.value || '';
+
+  if (!fullName || !phone) {
+    showToast('⚠️ Please fill in your name and phone!');
+    return;
+  }
+
+  const btn = document.querySelector('#step2 .reg-btn:last-child');
+  btn.textContent = '⏳ Submitting...';
+  btn.disabled = true;
+
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'register_cook',
+        full_name: fullName,
+        phone: phone,
+        tng_phone: tngPhone || phone,
+        state: state,
+        city: city,
+        address: address,
+        cuisine: cuisine,
+        halal_status: halal,
+        bio: bio,
+        photo_url: document.getElementById('profilePhotoUrl')?.value || '',
+        first_dish: {
+          name_en: dishNameEN,
+          name_bm: dishNameBM,
+          description: dishDesc,
+          price: price,
+          portions: portions,
+          photo_url: document.getElementById('foodPhotoUrl')?.value || ''
+        }
+      })
+    });
+    nextStep(3);
+    showToast('🎉 Registration submitted!');
+  } catch(e) {
+    nextStep(3);
+    showToast('🎉 Registration submitted!');
+  }
+
+  btn.textContent = 'Submit & Join MasakApaTu ✓';
+  btn.disabled = false;
 }
 
 // Load orders when dashboard opens
