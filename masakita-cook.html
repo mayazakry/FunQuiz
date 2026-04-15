@@ -249,9 +249,11 @@ input:focus,select:focus,textarea:focus{border-color:var(--saffron);background:w
         <div class="reg-title">Create Your Cook Profile</div>
         <p class="reg-sub">Join thousands of home cooks earning with MasakApaTu. Daftar percuma!</p>
         <div class="commission-box">💡 <strong>How you earn:</strong> You set your price. We take only 11% platform fee. 89% goes straight to your TNG eWallet after every delivery.</div>
-        <div class="fg"><label>Full Name / Nama Penuh</label><input type="text" placeholder="e.g. Puan Rohani Abdullah"></div>
+        <div class="fg"><label>Full Name / Nama Penuh <span style="color:var(--chili);">*</span></label><input type="text" id="cookFullName" placeholder="e.g. Puan Rohani Abdullah" required></div>
+        <div class="fg"><label>Email Address <span style="color:var(--chili);">*</span></label><input type="email" id="cookEmail" placeholder="e.g. rohani@gmail.com" required></div>
+        <div class="fg"><label>Password <span style="color:var(--chili);">*</span></label><input type="password" id="cookPassword" placeholder="Min 8 characters" minlength="8" required></div>
         <div class="fr">
-          <div class="fg"><label>Phone / WhatsApp</label><input type="tel" placeholder="+60 12-345 6789"></div>
+          <div class="fg"><label>Phone / WhatsApp <span style="color:var(--chili);">*</span></label><input type="tel" id="cookPhone" placeholder="+60 12-345 6789" required></div>
           <div class="fg"><label>State / Negeri</label><select><option>Pulau Pinang</option><option>Kuala Lumpur</option><option>Selangor</option><option>Johor</option><option>Perak</option><option>Kedah</option><option>Sabah</option><option>Sarawak</option><option>Negeri Sembilan</option><option>Melaka</option><option>Pahang</option><option>Terengganu</option><option>Kelantan</option><option>Perlis</option></select></div>
         </div>
         <div class="fg"><label>City / Bandar</label><input type="text" placeholder="e.g. George Town"></div>
@@ -273,7 +275,20 @@ input:focus,select:focus,textarea:focus{border-color:var(--saffron);background:w
           <input type="hidden" id="profilePhotoUrl" value="">
         </div>
         <button class="reg-btn" onclick="nextStep(2)">Next: Add Your First Dish →</button>
-        <div class="login-link">Already a cook? <a onclick="goToDash()">Sign In</a></div>
+        <div class="login-link">Already a cook? <a onclick="showSignIn()">Sign In</a></div>
+
+<!-- SIGN IN MODAL -->
+<div id="signInModal" style="display:none;position:fixed;inset:0;background:rgba(46,31,15,0.5);z-index:600;align-items:center;justify-content:center;backdrop-filter:blur(8px);">
+  <div style="background:white;border-radius:20px;padding:32px;width:90%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+    <div style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;margin-bottom:4px;">Sign In 👩‍🍳</div>
+    <div style="font-size:0.83rem;color:var(--bark-mid);margin-bottom:20px;">Welcome back to MasakApaTu!</div>
+    <div class="fg"><label>Email</label><input type="email" id="signInEmail" placeholder="your@email.com"></div>
+    <div class="fg"><label>Password</label><input type="password" id="signInPassword" placeholder="Your password"></div>
+    <div id="signInError" style="color:var(--chili);font-size:0.8rem;margin-bottom:10px;display:none;">❌ Invalid email or password</div>
+    <button onclick="doSignIn()" style="width:100%;padding:13px;border-radius:100px;background:var(--chili);color:white;font-weight:800;font-size:0.95rem;border:none;cursor:pointer;margin-bottom:10px;">Sign In →</button>
+    <button onclick="closeSignIn()" style="width:100%;padding:11px;border-radius:100px;background:var(--fog);color:var(--bark);font-weight:600;font-size:0.87rem;border:none;cursor:pointer;">Cancel</button>
+  </div>
+</div>
       </div>
 
       <!-- STEP 2: FIRST DISH -->
@@ -1020,8 +1035,10 @@ async function handleFoodUpload(input) {
 // ── COOK REGISTRATION ──
 async function registerCook() {
   // Collect Step 1 data
-  const fullName    = document.querySelector('#step1 input[placeholder="e.g. Puan Rohani Abdullah"]')?.value || '';
-  const phone       = document.querySelector('#step1 input[placeholder="+60 12-345 6789"]')?.value || '';
+  const fullName    = document.getElementById('cookFullName')?.value || document.querySelector('#step1 input[placeholder="e.g. Puan Rohani Abdullah"]')?.value || '';
+  const phone       = document.getElementById('cookPhone')?.value || document.querySelector('#step1 input[placeholder="+60 12-345 6789"]')?.value || '';
+  const email       = document.getElementById('cookEmail')?.value || '';
+  const password    = document.getElementById('cookPassword')?.value || '';
   const state       = document.querySelector('#step1 select')?.value || '';
   const city        = document.querySelector('#step1 input[placeholder="e.g. George Town"]')?.value || '';
   const address     = document.querySelector('#step1 input[placeholder*="Lalamove"]')?.value || '';
@@ -1038,8 +1055,12 @@ async function registerCook() {
   const price       = document.querySelector('#step2 input[placeholder="12.00"]')?.value || '';
   const portions    = document.querySelector('#step2 input[placeholder="20"]')?.value || '';
 
-  if (!fullName || !phone) {
-    showToast('⚠️ Please fill in your name and phone!');
+  if (!fullName || !phone || !email) {
+    showToast('⚠️ Please fill in name, phone and email!');
+    return;
+  }
+  if (password.length < 8) {
+    showToast('⚠️ Password must be at least 8 characters!');
     return;
   }
 
@@ -1052,6 +1073,8 @@ async function registerCook() {
       method: 'POST',
       body: JSON.stringify({
         action: 'register_cook',
+        email: email,
+        password: btoa(password), // basic encoding
         full_name: fullName,
         phone: phone,
         tng_phone: tngPhone || phone,
@@ -1081,6 +1104,46 @@ async function registerCook() {
 
   btn.textContent = 'Submit & Join MasakApaTu ✓';
   btn.disabled = false;
+}
+
+// ── SIGN IN ──
+function showSignIn() {
+  document.getElementById('signInModal').style.display = 'flex';
+}
+function closeSignIn() {
+  document.getElementById('signInModal').style.display = 'none';
+}
+async function doSignIn() {
+  const email = document.getElementById('signInEmail').value;
+  const password = document.getElementById('signInPassword').value;
+  const errEl = document.getElementById('signInError');
+
+  if (!email || !password) {
+    errEl.style.display = 'block';
+    errEl.textContent = '⚠️ Please enter email and password';
+    return;
+  }
+
+  // Check against COOKS sheet via Apps Script
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + '?action=sign_in&email=' + encodeURIComponent(email) + '&password=' + encodeURIComponent(btoa(password)));
+    const data = await res.json();
+    if (data.status === 'OK') {
+      closeSignIn();
+      // Store cook info
+      localStorage.setItem('cookName', data.cook_name);
+      localStorage.setItem('cookId', data.cook_id);
+      document.querySelector('.cook-name-mini').textContent = data.cook_name;
+      goToDash();
+    } else {
+      errEl.style.display = 'block';
+      errEl.textContent = '❌ Invalid email or password';
+    }
+  } catch(e) {
+    // Fallback — just go to dashboard for demo
+    closeSignIn();
+    goToDash();
+  }
 }
 
 // Load orders when dashboard opens
