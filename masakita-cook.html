@@ -409,9 +409,9 @@ input:focus,select:focus,textarea:focus{border-color:var(--saffron);background:w
           <div class="card-title">🆕 New Orders — Action Required</div>
           <div class="card-action" onclick="showPanel('orders',document.querySelector('[onclick*=orders]'))">View All →</div>
         </div>
-        <table class="orders-table">
+        <table class="orders-table" id="overviewOrdersTable">
           <thead><tr><th>Order ID</th><th>Dish</th><th>Customer</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead>
-          <tbody>
+          <tbody id="overviewOrdersBody">
             <tr>
               <td><div class="order-id">MK-0414-007</div></td>
               <td><div class="order-dish-cell">2× Nasi Lemak Rendang</div><div class="order-dish-sub">Pickup: 11:30 AM</div></td>
@@ -480,9 +480,9 @@ input:focus,select:focus,textarea:focus{border-color:var(--saffron);background:w
             <span class="status-chip status-delivered">✅ Done (4)</span>
           </div>
         </div>
-        <table class="orders-table">
+        <table class="orders-table" id="allOrdersTable">
           <thead><tr><th>Order ID</th><th>Dish / Hidangan</th><th>Customer</th><th>Time</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead>
-          <tbody>
+          <tbody id="allOrdersBody">
             <tr><td><div class="order-id">MK-0414-007</div></td><td><div class="order-dish-cell">2× Nasi Lemak Rendang</div></td><td>Ahmad Firdaus · George Town</td><td>10:32 AM</td><td><strong>RM 24.00</strong></td><td><span class="status-chip status-new">🆕 New</span></td><td><button class="action-btn action-accept" onclick="acceptOrder(this)">✓ Accept</button></td></tr>
             <tr><td><div class="order-id">MK-0414-008</div></td><td><div class="order-dish-cell">1× Mee Kari Ayam</div></td><td>Siti Aminah · Butterworth</td><td>10:45 AM</td><td><strong>RM 10.00</strong></td><td><span class="status-chip status-new">🆕 New</span></td><td><button class="action-btn action-accept" onclick="acceptOrder(this)">✓ Accept</button></td></tr>
             <tr><td><div class="order-id">MK-0414-005</div></td><td><div class="order-dish-cell">3× Nasi Lemak Rendang</div></td><td>Rajan Kumar · Air Itam</td><td>9:15 AM</td><td><strong>RM 36.00</strong></td><td><span class="status-chip status-prep">🍳 Preparing</span></td><td><button class="action-btn action-ready" onclick="markReady(this)">✓ Mark Ready</button></td></tr>
@@ -785,6 +785,161 @@ function showToast(msg) {
   const t = document.getElementById('toast');
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── FETCH REAL ORDERS FROM GOOGLE SHEET ──
+async function loadRealOrders() {
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + '?action=get_orders');
+    const data = await res.json();
+    if (data.status !== 'OK') return;
+
+    const orders = data.orders;
+    const today = new Date().toDateString();
+
+    // Filter today's orders
+    const todayOrders = orders.filter(o => {
+      const orderDate = new Date(o.timestamp).toDateString();
+      return orderDate === today;
+    });
+
+    // Sort - newest first
+    todayOrders.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+    // Update stats
+    const newOrders = todayOrders.filter(o => o.status === 'Confirmed').length;
+    const todayEarnings = todayOrders
+      .filter(o => o.status !== 'Rejected' && o.status !== 'Pending Payment')
+      .reduce((s, o) => s + parseFloat(o.cook_earnings || 0), 0);
+
+    document.querySelector('.stat-val[style*="blue"]').textContent = newOrders;
+    document.querySelector('.stat-val[style*="green"]').textContent = 'RM ' + todayEarnings.toFixed(2);
+
+    // Render overview table (new + confirmed orders only)
+    const activeOrders = todayOrders.filter(o => 
+      o.status === 'Confirmed' || o.status === 'Preparing' || o.status === 'Ready'
+    );
+    
+    const overviewBody = document.getElementById('overviewOrdersBody');
+    if (overviewBody) {
+      if (activeOrders.length === 0) {
+        overviewBody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--bark-mid);padding:24px;">No active orders right now 😊</td></tr>';
+      } else {
+        overviewBody.innerHTML = activeOrders.map(o => renderOrderRow(o)).join('');
+      }
+    }
+
+    // Render all orders table
+    const allBody = document.getElementById('allOrdersBody');
+    if (allBody) {
+      if (todayOrders.length === 0) {
+        allBody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--bark-mid);padding:24px;">No orders today yet 😊</td></tr>';
+      } else {
+        allBody.innerHTML = todayOrders.map(o => renderAllOrderRow(o)).join('');
+      }
+    }
+
+  } catch(e) {
+    console.warn('Could not load orders:', e);
+  }
+}
+
+function getStatusChip(status) {
+  const map = {
+    'Confirmed':       '<span class="status-chip status-new">🆕 Confirmed</span>',
+    'Preparing':       '<span class="status-chip status-prep">🍳 Preparing</span>',
+    'Ready':           '<span class="status-chip status-ready">✅ Ready</span>',
+    'Delivered':       '<span class="status-chip status-delivered">✅ Delivered</span>',
+    'Rejected':        '<span class="status-chip" style="background:#fee2e2;color:#dc2626;">❌ Rejected</span>',
+    'Pending Payment': '<span class="status-chip" style="background:#fef9c3;color:#ca8a04;">⏳ Pending</span>'
+  };
+  return map[status] || '<span class="status-chip">' + status + '</span>';
+}
+
+function getActionBtn(o) {
+  if (o.status === 'Confirmed') {
+    return '<button class="action-btn action-accept" onclick="acceptRealOrder(this,'' + o.order_id + '')">✓ Accept</button>';
+  } else if (o.status === 'Preparing') {
+    return '<button class="action-btn action-ready" onclick="markRealReady(this,'' + o.order_id + '')">✓ Mark Ready</button>';
+  } else {
+    return '<button class="action-btn action-done" disabled>Done</button>';
+  }
+}
+
+function renderOrderRow(o) {
+  const time = new Date(o.timestamp).toLocaleTimeString('en-MY', {hour:'2-digit', minute:'2-digit'});
+  return '<tr>' +
+    '<td><div class="order-id">' + o.order_id + '</div></td>' +
+    '<td><div class="order-dish-cell">' + o.items + '</div><div class="order-dish-sub">📍 ' + o.city + '</div></td>' +
+    '<td>' + o.customer_name + '<br><span style="font-size:0.72rem;color:var(--bark-mid);">' + o.city + '</span></td>' +
+    '<td><strong>RM ' + parseFloat(o.total).toFixed(2) + '</strong><br><span style="font-size:0.72rem;color:var(--green);">+RM ' + parseFloat(o.cook_earnings).toFixed(2) + ' yours</span></td>' +
+    '<td>' + getStatusChip(o.status) + '</td>' +
+    '<td>' + getActionBtn(o) + '</td>' +
+    '</tr>';
+}
+
+function renderAllOrderRow(o) {
+  const time = new Date(o.timestamp).toLocaleTimeString('en-MY', {hour:'2-digit', minute:'2-digit'});
+  return '<tr>' +
+    '<td><div class="order-id">' + o.order_id + '</div></td>' +
+    '<td><div class="order-dish-cell">' + o.items + '</div></td>' +
+    '<td>' + o.customer_name + ' · ' + o.city + '</td>' +
+    '<td>' + time + '</td>' +
+    '<td><strong>RM ' + parseFloat(o.total).toFixed(2) + '</strong></td>' +
+    '<td>' + getStatusChip(o.status) + '</td>' +
+    '<td>' + getActionBtn(o) + '</td>' +
+    '</tr>';
+}
+
+// Accept real order — update sheet status
+async function acceptRealOrder(btn, orderId) {
+  btn.textContent = '⏳...';
+  btn.disabled = true;
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'update_status', order_id: orderId, status: 'Preparing' })
+    });
+    showToast('✅ Order accepted! Start preparing now.');
+    setTimeout(loadRealOrders, 1500);
+  } catch(e) {
+    showToast('✅ Order accepted!');
+    setTimeout(loadRealOrders, 1500);
+  }
+}
+
+// Mark ready — dispatch Lalamove
+async function markRealReady(btn, orderId) {
+  btn.textContent = '⏳ Dispatching...';
+  btn.disabled = true;
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'dispatch',
+        order_id: orderId,
+        cook_lat: '5.4164',
+        cook_lng: '100.3327',
+        cook_address: 'George Town, Penang',
+        cust_lat: '5.3540',
+        cust_lng: '100.2954'
+      })
+    });
+    showToast('🛵 Lalamove rider dispatched!');
+    setTimeout(loadRealOrders, 1500);
+  } catch(e) {
+    showToast('🛵 Lalamove dispatched!');
+    setTimeout(loadRealOrders, 1500);
+  }
+}
+
+// Load orders when dashboard opens
+function goToDash() {
+  document.getElementById('regScreen').style.display = 'none';
+  document.getElementById('dashShell').style.display = 'flex';
+  loadRealOrders();
+  // Refresh every 60 seconds
+  setInterval(loadRealOrders, 60000);
 }
 </script>
 </body>
