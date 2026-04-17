@@ -268,7 +268,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--saffron);background:w
           <div class="upload-zone" onclick="document.getElementById('profilePic').click()" id="profileUploadZone">
             <div class="upload-icon">📷</div>
             <div class="upload-text"><strong>Click to upload</strong> or take photo<br><span style="font-size:0.75rem;">JPG, PNG max 5MB · Camera supported 📱</span></div>
-            <input type="file" id="profilePic" accept="image/*" capture="user" style="display:none" onchange="handleProfileUpload(this)">
+            <input type="file" id="profilePic" accept="image/*" style="display:none" onchange="handleProfileUpload(this)">
           </div>
           <div id="profileUploadStatus" style="font-size:0.78rem;color:var(--bark-mid);margin-top:6px;display:none;"></div>
           <img id="profilePreview" class="preview-img">
@@ -312,7 +312,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--saffron);background:w
           <div class="upload-zone" onclick="document.getElementById('foodPics').click()" id="foodUploadZone">
             <div class="upload-icon">📸</div>
             <div class="upload-text"><strong>Upload food photos</strong> — cantik = more orders!<br><span style="font-size:0.75rem;">JPG, PNG max 5MB · Camera supported 📱</span></div>
-            <input type="file" id="foodPics" accept="image/*" capture="environment" style="display:none" onchange="handleFoodUpload(this)">
+            <input type="file" id="foodPics" accept="image/*" style="display:none" onchange="handleFoodUpload(this)">
           </div>
           <div id="foodUploadStatus" style="font-size:0.78rem;color:var(--bark-mid);margin-top:6px;display:none;"></div>
           <img id="foodPreview" class="preview-img">
@@ -784,11 +784,16 @@ const CLOUDINARY_CLOUD = 'dwv7mokkk';
 const CLOUDINARY_PRESET = 'MasakApaTu';
 const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD + '/image/upload';
 
-async function uploadToCloudinary(file, progressCallback) {
+async function uploadToCloudinary(file) {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('upload_preset', CLOUDINARY_PRESET);
   formData.append('folder', 'masakapatU');
+  formData.append('cloud_name', CLOUDINARY_CLOUD);
+
+  console.log('Uploading to Cloudinary:', CLOUDINARY_URL);
+  console.log('Preset:', CLOUDINARY_PRESET);
+  console.log('File size:', file.size, 'bytes');
 
   const response = await fetch(CLOUDINARY_URL, {
     method: 'POST',
@@ -796,11 +801,13 @@ async function uploadToCloudinary(file, progressCallback) {
   });
 
   const data = await response.json();
+  console.log('Cloudinary response:', JSON.stringify(data));
+
   if (data.secure_url) {
-    if (progressCallback) progressCallback(100);
     return data.secure_url;
   }
-  throw new Error('Upload failed: ' + JSON.stringify(data));
+  // Show full error
+  throw new Error(data.error?.message || 'Upload failed: ' + JSON.stringify(data));
 }
 
 function acceptOrder(btn) {
@@ -1036,7 +1043,8 @@ async function handleProfileUpload(input) {
     statusEl.textContent = '✅ Photo uploaded successfully!';
     statusEl.style.color = 'var(--green)';
   } catch(e) {
-    statusEl.textContent = '⚠️ Upload failed — photo saved locally only';
+    console.error('Profile upload error:', e);
+    statusEl.textContent = '⚠️ Upload failed: ' + e.message;
     statusEl.style.color = 'var(--chili)';
   }
 }
@@ -1064,7 +1072,8 @@ async function handleFoodUpload(input) {
     statusEl.style.color = 'var(--green)';
     showToast('📸 Food photo uploaded to Cloudinary!');
   } catch(e) {
-    statusEl.textContent = '⚠️ Upload failed — try again';
+    console.error('Food upload error:', e);
+    statusEl.textContent = '⚠️ Upload failed: ' + e.message;
     statusEl.style.color = 'var(--chili)';
   }
 }
