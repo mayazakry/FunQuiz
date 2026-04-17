@@ -321,7 +321,7 @@ footer{background:var(--bark);border-top:1px solid rgba(255,255,255,0.06);paddin
   <div class="nav-mid">
     <div class="nav-link active" onclick="goPage('browse')">Browse Food</div>
     <div class="nav-link" onclick="goPage('browse')">How It Works</div>
-    <div class="nav-link">Become a Cook</div>
+    <div class="nav-link" onclick="window.open('masakita-cook.html','_blank')">Become a Cook</div>
   </div>
   <div class="nav-right">
     <button class="cart-btn" onclick="toggleCart()">🛒<div class="cart-count" id="cartCount">0</div></button>
@@ -472,7 +472,7 @@ footer{background:var(--bark);border-top:1px solid rgba(255,255,255,0.06);paddin
         <div class="footer-link">Privacy Policy</div>
         <div class="footer-link">Terms</div>
       </div>
-      <div class="footer-copy">© 2025 MasakApaTu Sdn Bhd · Made in Malaysia 🇲🇾</div>
+      <div class="footer-copy">© 2026 MasakApaTu Sdn Bhd · Made in Malaysia 🇲🇾</div>
     </div>
   </footer>
 </div>
@@ -948,6 +948,7 @@ function selectPay(el) {
 
 // ── MAKE WEBHOOK ──
 const MAKE_WEBHOOK = 'https://script.google.com/macros/s/AKfycbxUxaFIELEJ3kLOWpPKGNqeq53jdQ9c6YT-21FOqksQU05CQHKaFunLXvTDp91_Jqdj/exec';
+const APPS_SCRIPT_URL = MAKE_WEBHOOK; // same URL
 
 async function placeOrder() {
   const name     = document.querySelector('input[placeholder="e.g. Ahmad Firdaus"]')?.value || 'Customer';

@@ -286,6 +286,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--saffron);background:w
     <div class="fg"><label>Password</label><input type="password" id="signInPassword" placeholder="Your password"></div>
     <div id="signInError" style="color:var(--chili);font-size:0.8rem;margin-bottom:10px;display:none;">❌ Invalid email or password</div>
     <button onclick="doSignIn()" style="width:100%;padding:13px;border-radius:100px;background:var(--chili);color:white;font-weight:800;font-size:0.95rem;border:none;cursor:pointer;margin-bottom:10px;">Sign In →</button>
+    <button onclick="showForgotPassword()" style="width:100%;padding:9px;background:none;border:none;color:var(--bark-mid);font-size:0.82rem;cursor:pointer;margin-bottom:8px;">Forgot password?</button>
     <button onclick="closeSignIn()" style="width:100%;padding:11px;border-radius:100px;background:var(--fog);color:var(--bark);font-weight:600;font-size:0.87rem;border:none;cursor:pointer;">Cancel</button>
   </div>
 </div>
@@ -689,6 +690,27 @@ input:focus,select:focus,textarea:focus{border-color:var(--saffron);background:w
       <button class="reg-btn outline" style="padding:10px 20px;width:auto;" onclick="closeModal()">Cancel</button>
       <button class="reg-btn" style="padding:10px 24px;width:auto;" onclick="saveDish()">Save Dish ✓</button>
     </div>
+  </div>
+</div>
+
+<!-- FORGOT PASSWORD MODAL -->
+<div id="forgotModal" style="display:none;position:fixed;inset:0;background:rgba(46,31,15,0.5);z-index:700;align-items:center;justify-content:center;backdrop-filter:blur(8px);">
+  <div style="background:white;border-radius:20px;padding:32px;width:90%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+    <div style="font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:900;margin-bottom:4px;">Reset Password 🔑</div>
+    <div style="font-size:0.83rem;color:var(--bark-mid);margin-bottom:20px;">Enter your email — we'll send a reset code!</div>
+    <div id="forgotStep1">
+      <div class="fg"><label>Email Address</label><input type="email" id="forgotEmail" placeholder="your@email.com"></div>
+      <button onclick="sendResetCode()" style="width:100%;padding:13px;border-radius:100px;background:var(--chili);color:white;font-weight:800;font-size:0.95rem;border:none;cursor:pointer;margin-bottom:10px;">Send Reset Code →</button>
+    </div>
+    <div id="forgotStep2" style="display:none;">
+      <div style="background:var(--green-light);border:1px solid rgba(58,140,92,0.2);border-radius:8px;padding:12px;font-size:0.83rem;color:var(--green);margin-bottom:16px;">✅ Reset code sent to your email!</div>
+      <div class="fg"><label>6-Digit Reset Code</label><input type="text" id="resetCode" placeholder="Enter code from email" maxlength="6"></div>
+      <div class="fg"><label>New Password</label><input type="password" id="newPassword" placeholder="Min 6 characters"></div>
+      <div class="fg"><label>Confirm Password</label><input type="password" id="confirmPassword" placeholder="Repeat new password"></div>
+      <button onclick="doResetPassword()" style="width:100%;padding:13px;border-radius:100px;background:var(--chili);color:white;font-weight:800;font-size:0.95rem;border:none;cursor:pointer;margin-bottom:10px;">Reset Password ✓</button>
+    </div>
+    <div id="forgotError" style="color:var(--chili);font-size:0.8rem;margin-bottom:10px;display:none;"></div>
+    <button onclick="closeForgot()" style="width:100%;padding:11px;border-radius:100px;background:var(--fog);color:var(--bark);font-weight:600;font-size:0.87rem;border:none;cursor:pointer;">Cancel</button>
   </div>
 </div>
 
@@ -1129,35 +1151,138 @@ function closeSignIn() {
   document.getElementById('signInModal').style.display = 'none';
 }
 async function doSignIn() {
-  const email = document.getElementById('signInEmail').value;
+  const email = document.getElementById('signInEmail').value.trim();
   const password = document.getElementById('signInPassword').value;
   const errEl = document.getElementById('signInError');
+  errEl.style.display = 'none';
 
-  if (!email || !password) {
+  if (!email) {
     errEl.style.display = 'block';
-    errEl.textContent = '⚠️ Please enter email and password';
+    errEl.textContent = '⚠️ Please enter your email';
     return;
   }
 
-  // Check against COOKS sheet via Apps Script
+  const btn = document.querySelector('#signInModal button');
+  const origText = 'Sign In →';
+
   try {
-    const res = await fetch(APPS_SCRIPT_URL + '?action=sign_in&email=' + encodeURIComponent(email) + '&password=' + encodeURIComponent(btoa(password)));
+    const hashedPwd = await sha256(password);
+    const res = await fetch(APPS_SCRIPT_URL + '?action=sign_in&email=' + encodeURIComponent(email) + '&password=' + encodeURIComponent(hashedPwd));
     const data = await res.json();
+
     if (data.status === 'OK') {
       closeSignIn();
-      // Store cook info
-      localStorage.setItem('cookName', data.cook_name);
-      localStorage.setItem('cookId', data.cook_id);
-      document.querySelector('.cook-name-mini').textContent = data.cook_name;
+      sessionStorage.setItem('cookName', data.cook_name);
+      sessionStorage.setItem('cookId', data.cook_id);
+      sessionStorage.setItem('cookEmail', email);
+      document.querySelector('.cook-name-mini').textContent = data.cook_name || email.split('@')[0];
       goToDash();
     } else {
       errEl.style.display = 'block';
-      errEl.textContent = '❌ Invalid email or password';
+      errEl.textContent = data.message || '❌ Invalid email or password. Check Is_Verified = TRUE in sheet.';
     }
   } catch(e) {
-    // Fallback — just go to dashboard for demo
+    // If Apps Script fails, allow demo access
     closeSignIn();
+    document.querySelector('.cook-name-mini').textContent = email.split('@')[0];
     goToDash();
+  }
+}
+
+// SHA-256 hash function
+async function sha256(message) {
+  if (!message) return '';
+  const msgBuffer = new TextEncoder().encode(message);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// Forgot password functions
+function showForgotPassword() {
+  document.getElementById('signInModal').style.display = 'none';
+  document.getElementById('forgotModal').style.display = 'flex';
+  document.getElementById('forgotStep1').style.display = 'block';
+  document.getElementById('forgotStep2').style.display = 'none';
+  document.getElementById('forgotError').style.display = 'none';
+}
+
+function closeForgot() {
+  document.getElementById('forgotModal').style.display = 'none';
+}
+
+async function sendResetCode() {
+  const email = document.getElementById('forgotEmail').value.trim();
+  const errEl = document.getElementById('forgotError');
+  if (!email) {
+    errEl.style.display = 'block';
+    errEl.textContent = '⚠️ Please enter your email';
+    return;
+  }
+
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + '?action=forgot_password&email=' + encodeURIComponent(email));
+    const data = await res.json();
+    if (data.status === 'OK') {
+      document.getElementById('forgotStep1').style.display = 'none';
+      document.getElementById('forgotStep2').style.display = 'block';
+      errEl.style.display = 'none';
+    } else {
+      errEl.style.display = 'block';
+      errEl.textContent = '❌ Email not found. Please check and try again.';
+    }
+  } catch(e) {
+    errEl.style.display = 'block';
+    errEl.textContent = '❌ Error sending code. Please try again.';
+  }
+}
+
+async function doResetPassword() {
+  const email = document.getElementById('forgotEmail').value.trim();
+  const code = document.getElementById('resetCode').value.trim();
+  const newPwd = document.getElementById('newPassword').value;
+  const confirmPwd = document.getElementById('confirmPassword').value;
+  const errEl = document.getElementById('forgotError');
+
+  if (!code || code.length !== 6) {
+    errEl.style.display = 'block';
+    errEl.textContent = '⚠️ Please enter the 6-digit code from email';
+    return;
+  }
+  if (newPwd.length < 6) {
+    errEl.style.display = 'block';
+    errEl.textContent = '⚠️ Password must be at least 6 characters';
+    return;
+  }
+  if (newPwd !== confirmPwd) {
+    errEl.style.display = 'block';
+    errEl.textContent = '⚠️ Passwords do not match!';
+    return;
+  }
+
+  try {
+    const hashedPwd = await sha256(newPwd);
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'reset_password',
+        email: email,
+        code: code,
+        new_password: hashedPwd
+      })
+    });
+    const data = await res.json();
+    if (data.status === 'OK') {
+      closeForgot();
+      showToast('✅ Password reset! Please sign in with new password.');
+      setTimeout(() => showSignIn(), 1000);
+    } else {
+      errEl.style.display = 'block';
+      errEl.textContent = '❌ Invalid or expired code. Please try again.';
+    }
+  } catch(e) {
+    errEl.style.display = 'block';
+    errEl.textContent = '❌ Error. Please try again.';
   }
 }
 
