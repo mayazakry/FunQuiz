@@ -362,7 +362,7 @@ footer{background:var(--bark);border-top:1px solid rgba(255,255,255,0.06);paddin
         <p class="hero-sub">Order authentic homecooked meals made with love. Delivered to your door via Lalamove. Pay with TNG eWallet.</p>
         <div class="hero-ctas">
           <button class="btn-hero primary" onclick="document.querySelector('.filter-wrap').scrollIntoView({behavior:'smooth'})">Order Now 🍱</button>
-          <button class="btn-hero secondary">Become a Cook →</button>
+          <button class="btn-hero secondary" onclick="window.open('masakita-cook.html','_blank')">Become a Cook →</button>
         </div>
         <div class="hero-trust">
           <div class="trust-item">✅ Halal certified options</div>
@@ -660,13 +660,54 @@ let currentFood = null;
 let detailQty = 1;
 
 // ── RENDER FOOD GRID ──
+// Load real dishes from Google Sheet
+async function loadRealDishes() {
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + '?action=get_dishes');
+    const data = await res.json();
+    if (data.status === 'OK' && data.dishes.length > 0) {
+      // Merge real dishes with demo foods
+      const realFoods = data.dishes.map((d, i) => ({
+        id: 1000 + i,
+        name: d.name_en || d.name,
+        nameBM: d.name_bm || d.name,
+        cook: d.cook_name || 'Home Cook',
+        location: d.cook_location || 'Malaysia',
+        state: d.state || 'Pulau Pinang',
+        price: parseFloat(d.price) || 10,
+        cat: (d.category || 'malay').toLowerCase().replace(/\/.*/, '').trim(),
+        tags: d.halal === 'TRUE' || d.halal === true ? ['halal'] : [],
+        emoji: '🍱',
+        photo: d.photo_url || '',
+        rating: parseFloat(d.rating) || 4.8,
+        orders: parseInt(d.total_orders) || 0,
+        desc: d.description || 'Delicious homecooked food',
+        isNew: true,
+        isPopular: false,
+        isHalal: d.halal === 'TRUE' || d.halal === true,
+        readyBy: d.ready_by || '12:00 PM',
+        portions: parseInt(d.portions) || 10
+      }));
+      // Add real dishes to top of foods array
+      foods.unshift(...realFoods);
+    }
+  } catch(e) {
+    console.warn('Could not load real dishes:', e);
+  }
+  renderGrid(getFiltered());
+}
+
 function renderGrid(items) {
   const grid = document.getElementById('foodGrid');
   document.getElementById('gridCount').textContent = `Showing ${items.length} dish${items.length !== 1 ? 'es' : ''}`;
   grid.innerHTML = items.map(f => `
     <div class="food-card" onclick="openDetail(${f.id})">
       <div style="position:relative;">
-        <div class="food-emoji-bg">${f.emoji}</div>
+        ${f.photo ? 
+          `<img src="${f.photo}" class="food-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+           <div class="food-emoji-bg" style="display:none">${f.emoji}</div>` :
+          `<div class="food-emoji-bg">${f.emoji}</div>`
+        }
         <div class="food-badges">
           ${f.isHalal ? '<span class="badge badge-halal">✅ Halal</span>' : ''}
           ${f.isNew ? '<span class="badge badge-new">NEW</span>' : ''}
@@ -1026,7 +1067,7 @@ window.addEventListener('scroll', () => {
 });
 
 // INIT
-renderGrid(foods);
+loadRealDishes(); // loads real dishes from Sheet + renders grid
 </script>
 </body>
 </html>

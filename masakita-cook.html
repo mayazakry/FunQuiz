@@ -357,7 +357,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--saffron);background:w
     <div class="cook-profile-mini">
       <div class="cook-avatar-mini">👩‍🍳</div>
       <div>
-        <div class="cook-name-mini">Puan Rohani</div>
+        <div class="cook-name-mini" id="cookNameDisplay">Welcome!</div>
         <div class="cook-status-mini"><div class="status-dot"></div> Online & Accepting</div>
       </div>
     </div>
@@ -388,7 +388,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--saffron);background:w
     <div class="dash-panel active" id="panel-overview">
       <div class="dash-topbar">
         <div>
-          <div class="dash-page-title">Good morning, Puan Rohani! 👋</div>
+          <div class="dash-page-title" id="dashGreeting">Good morning! 👋</div>
           <div class="dash-page-sub">Isnin, 14 April 2025 · Today's pickup deadline: 12:00 PM</div>
         </div>
         <div class="topbar-right">
@@ -614,7 +614,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--saffron);background:w
             <div class="profile-cover"></div>
             <div class="profile-avatar-wrap"><div class="profile-avatar">👩‍🍳</div></div>
             <div class="profile-body">
-              <div class="profile-name">Puan Rohani Abdullah</div>
+              <div class="profile-name" id="profileNameDisplay">Loading...</div>
               <div class="profile-sub">George Town, Pulau Pinang · Joined Jan 2025</div>
               <div class="profile-badge-row">
                 <span class="pbadge pbadge-halal">✅ Halal</span>
@@ -632,7 +632,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--saffron);background:w
         <div>
           <div class="form-section">
             <div class="form-section-title">👤 Personal Info</div>
-            <div class="fg"><label>Full Name</label><input type="text" value="Puan Rohani Abdullah"></div>
+            <div class="fg"><label>Full Name</label><input type="text" id="profileFullName" value=""></div>
             <div class="fr">
               <div class="fg"><label>Phone / WhatsApp</label><input type="tel" value="+60123456789"></div>
               <div class="fg"><label>State</label><select><option selected>Pulau Pinang</option></select></div>
@@ -1132,9 +1132,13 @@ async function registerCook() {
         }
       })
     });
+    // Store name for when they sign in
+    sessionStorage.setItem('pendingCookName', fullName);
+    sessionStorage.setItem('pendingCookEmail', email);
     nextStep(3);
     showToast('🎉 Registration submitted!');
   } catch(e) {
+    sessionStorage.setItem('pendingCookName', fullName);
     nextStep(3);
     showToast('🎉 Registration submitted!');
   }
@@ -1290,8 +1294,27 @@ async function doResetPassword() {
 function goToDash() {
   document.getElementById('regScreen').style.display = 'none';
   document.getElementById('dashShell').style.display = 'flex';
+
+  // Update cook name from session
+  const cookName = sessionStorage.getItem('cookName') || 'Cook';
+  const cookEmail = sessionStorage.getItem('cookEmail') || '';
+  const displayName = cookName !== 'Cook' ? cookName : (cookEmail.split('@')[0] || 'Cook');
+
+  const nameEl = document.getElementById('cookNameDisplay');
+  const greetEl = document.getElementById('dashGreeting');
+  const profileEl = document.getElementById('profileNameDisplay');
+  const profileInput = document.getElementById('profileFullName');
+
+  if(nameEl) nameEl.textContent = displayName;
+  if(greetEl) {
+    const hour = new Date().getHours();
+    const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+    greetEl.textContent = greeting + ', ' + displayName + '! 👋';
+  }
+  if(profileEl) profileEl.textContent = cookName;
+  if(profileInput) profileInput.value = cookName;
+
   loadRealOrders();
-  // Refresh every 60 seconds
   setInterval(loadRealOrders, 60000);
 }
 </script>
