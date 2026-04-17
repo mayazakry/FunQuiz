@@ -520,59 +520,9 @@ input:focus,select:focus,textarea:focus{border-color:var(--saffron);background:w
         <button class="save-btn" onclick="openAddDish()">+ Add New Dish</button>
       </div>
       <div class="card">
-        <div class="card-header"><div class="card-title">Active Dishes</div><div class="card-action">3 dishes listed</div></div>
-        <div class="menu-grid">
-          <div class="menu-card">
-            <div class="menu-card-top">
-              <div class="menu-emoji">🍛</div>
-              <div class="menu-info">
-                <div class="menu-name">Nasi Lemak Ayam Rendang</div>
-                <div class="menu-price">RM 12.00</div>
-                <div style="font-size:0.7rem;color:var(--bark-mid);">⏰ Ready by 11:30 AM</div>
-              </div>
-            </div>
-            <div class="menu-card-foot">
-              <div class="menu-portions">8 / 20 portions left today</div>
-              <div style="display:flex;align-items:center;gap:8px;">
-                <div class="menu-edit-btn" onclick="openAddDish()">Edit</div>
-                <div class="toggle-avail on" onclick="toggleMenu(this)"></div>
-              </div>
-            </div>
-          </div>
-          <div class="menu-card">
-            <div class="menu-card-top">
-              <div class="menu-emoji">🍜</div>
-              <div class="menu-info">
-                <div class="menu-name">Mee Kari Ayam</div>
-                <div class="menu-price">RM 10.00</div>
-                <div style="font-size:0.7rem;color:var(--bark-mid);">⏰ Ready by 12:00 PM</div>
-              </div>
-            </div>
-            <div class="menu-card-foot">
-              <div class="menu-portions">14 / 15 portions left today</div>
-              <div style="display:flex;align-items:center;gap:8px;">
-                <div class="menu-edit-btn" onclick="openAddDish()">Edit</div>
-                <div class="toggle-avail on" onclick="toggleMenu(this)"></div>
-              </div>
-            </div>
-          </div>
-          <div class="menu-card" style="opacity:0.6;">
-            <div class="menu-card-top">
-              <div class="menu-emoji">🎂</div>
-              <div class="menu-info">
-                <div class="menu-name">Kek Batik (Whole)</div>
-                <div class="menu-price">RM 35.00</div>
-                <div style="font-size:0.7rem;color:var(--bark-mid);">⏰ Ready by 10:00 AM</div>
-              </div>
-            </div>
-            <div class="menu-card-foot">
-              <div class="menu-portions">Sold out today</div>
-              <div style="display:flex;align-items:center;gap:8px;">
-                <div class="menu-edit-btn" onclick="openAddDish()">Edit</div>
-                <div class="toggle-avail off" onclick="toggleMenu(this)"></div>
-              </div>
-            </div>
-          </div>
+        <div class="card-header"><div class="card-title">Active Dishes</div><div class="card-action" id="dishCount">Loading...</div></div>
+        <div class="menu-grid" id="menuGrid">
+          <div style="padding:24px;color:var(--bark-mid);font-size:0.9rem;">Loading dishes...</div>
           <div class="add-dish-card" onclick="openAddDish()">
             <div class="add-dish-icon">➕</div>
             <div class="add-dish-text">Add New Dish</div>
@@ -1443,7 +1393,57 @@ function goToDash() {
   }
 
   loadRealOrders();
+  loadRealDishes();
   setInterval(loadRealOrders, 60000);
+}
+
+// ── FETCH REAL DISHES FROM GOOGLE SHEET ──
+async function loadRealDishes() {
+  try {
+    const cookEmail = sessionStorage.getItem('cookEmail') || '';
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'get_dishes', cook_email: cookEmail })
+    });
+    const text = await res.text();
+    const data = JSON.parse(text);
+    if (data.status !== 'OK' || !data.dishes) return;
+
+    const dishes = data.dishes;
+    const grid = document.getElementById('menuGrid');
+    const countEl = document.getElementById('dishCount');
+    if (countEl) countEl.textContent = dishes.length + ' dish' + (dishes.length !== 1 ? 'es' : '') + ' listed';
+
+    const cards = dishes.map(d => {
+      const isActive = String(d.is_available).toLowerCase() === 'true';
+      return `
+        <div class="menu-card" style="${isActive ? '' : 'opacity:0.6;'}">
+          <div class="menu-card-top">
+            <div class="menu-emoji">🍱</div>
+            <div class="menu-info">
+              <div class="menu-name">${d.dish_name || d.name || 'Dish'}</div>
+              <div class="menu-price">RM ${parseFloat(d.price || 0).toFixed(2)}</div>
+              <div style="font-size:0.7rem;color:var(--bark-mid);">⏰ Ready by ${d.ready_by || '12:00 PM'}</div>
+            </div>
+          </div>
+          <div class="menu-card-foot">
+            <div class="menu-portions">${d.portions_left || d.portions || 0} / ${d.portions || 0} portions left today</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div class="menu-edit-btn" onclick="openAddDish()">Edit</div>
+              <div class="toggle-avail ${isActive ? 'on' : 'off'}" onclick="toggleMenu(this)"></div>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+
+    grid.innerHTML = cards + `
+      <div class="add-dish-card" onclick="openAddDish()">
+        <div class="add-dish-icon">➕</div>
+        <div class="add-dish-text">Add New Dish</div>
+      </div>`;
+  } catch(e) {
+    console.warn('Could not load dishes:', e);
+  }
 }
 </script>
 </body>
