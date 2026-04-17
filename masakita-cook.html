@@ -931,8 +931,12 @@ function showToast(msg) {
 // ── FETCH REAL ORDERS FROM GOOGLE SHEET ──
 async function loadRealOrders() {
   try {
-    const res = await fetch(APPS_SCRIPT_URL + '?action=get_orders');
-    const data = await res.json();
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'get_orders', cook_email: sessionStorage.getItem('cookEmail') || '' })
+    });
+    const text = await res.text();
+    const data = JSON.parse(text);
     if (data.status !== 'OK') return;
 
     const orders = data.orders;
@@ -1229,18 +1233,16 @@ async function doSignIn() {
     return;
   }
 
-  const btn = document.querySelector('#signInModal button');
-  const origText = 'Sign In →';
-
   try {
-    const hashedPwd = await sha256(password);
-    const res = await fetch(APPS_SCRIPT_URL + '?action=sign_in&email=' + encodeURIComponent(email) + '&password=' + encodeURIComponent(hashedPwd));
-    const data = await res.json();
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'cook_login', email: email, password: password })
+    });
+    const text = await res.text();
+    const data = JSON.parse(text);
 
     if (data.status === 'OK') {
       closeSignIn();
-
-      // Save all cook data to session
       sessionStorage.setItem('cookName',    data.cook_name || '');
       sessionStorage.setItem('cookId',      data.cook_id || '');
       sessionStorage.setItem('cookEmail',   email);
@@ -1248,22 +1250,17 @@ async function doSignIn() {
       sessionStorage.setItem('cookState',   data.cook_state || '');
       sessionStorage.setItem('cookCity',    data.cook_city || '');
       sessionStorage.setItem('cookAddress', data.cook_address || '');
-      sessionStorage.setItem('cookCuisine', data.cook_cuisine || '');
       sessionStorage.setItem('cookHalal',   data.cook_halal || '');
       sessionStorage.setItem('cookPhoto',   data.cook_photo || '');
-
-      // Update profile fields with real data
       updateProfileFields(data);
       goToDash();
     } else {
       errEl.style.display = 'block';
-      errEl.textContent = data.message || '❌ Invalid email or password. Check Is_Verified = TRUE in sheet.';
+      errEl.textContent = '❌ Email not found or not verified yet. Contact admin.';
     }
   } catch(e) {
-    // If Apps Script fails, allow demo access
-    closeSignIn();
-    document.querySelector('.cook-name-mini').textContent = email.split('@')[0];
-    goToDash();
+    errEl.style.display = 'block';
+    errEl.textContent = '❌ Error: ' + e.message;
   }
 }
 
