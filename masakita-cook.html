@@ -745,6 +745,60 @@ function nextStep(n) {
   });
 }
 
+function updateProfileFields(data) {
+  const name = data.cook_name || sessionStorage.getItem('cookName') || 'Cook';
+  const email = data.cook_email || sessionStorage.getItem('cookEmail') || '';
+  const phone = data.cook_phone || sessionStorage.getItem('cookPhone') || '';
+  const state = data.cook_state || sessionStorage.getItem('cookState') || '';
+  const city = data.cook_city || sessionStorage.getItem('cookCity') || '';
+  const address = data.cook_address || sessionStorage.getItem('cookAddress') || '';
+  const cuisine = data.cook_cuisine || sessionStorage.getItem('cookCuisine') || '';
+  const halal = data.cook_halal || sessionStorage.getItem('cookHalal') || '';
+  const photo = data.cook_photo || sessionStorage.getItem('cookPhoto') || '';
+
+  // Update sidebar
+  const nameEl = document.getElementById('cookNameDisplay');
+  if(nameEl) nameEl.textContent = name;
+
+  // Update profile section
+  const profileNameEl = document.getElementById('profileNameDisplay');
+  if(profileNameEl) profileNameEl.textContent = name;
+
+  const profileInput = document.getElementById('profileFullName');
+  if(profileInput) profileInput.value = name;
+
+  // Update profile sub info
+  const profileSub = document.querySelector('.profile-sub');
+  if(profileSub) profileSub.textContent = city + ', ' + state + ' · Cook';
+
+  // Update profile form fields
+  const phoneInput = document.querySelector('.form-section input[type="tel"]');
+  if(phoneInput) phoneInput.value = phone;
+
+  const addressInput = document.querySelector('.form-section input[placeholder*="address"], .form-section input[value*="Jalan"]');
+  if(addressInput) addressInput.value = address;
+
+  // Update profile avatar if photo exists
+  if(photo) {
+    const avatar = document.querySelector('.profile-avatar');
+    if(avatar) {
+      avatar.innerHTML = '';
+      const img = document.createElement('img');
+      img.src = photo;
+      img.style.cssText = 'width:100%;height:100%;border-radius:50%;object-fit:cover;';
+      avatar.appendChild(img);
+    }
+  }
+
+  // Update halal badge
+  const halalBadge = document.querySelector('.pbadge-halal');
+  if(halalBadge) halalBadge.textContent = halal || '✅ Halal';
+
+  // Update profile stats
+  const profileStats = document.querySelectorAll('.pstat-val');
+  if(profileStats.length > 2) profileStats[2].textContent = '0';
+}
+
 function goToDash() {
   document.getElementById('regScreen').style.display = 'none';
   document.getElementById('dashShell').style.display = 'flex';
@@ -1185,10 +1239,21 @@ async function doSignIn() {
 
     if (data.status === 'OK') {
       closeSignIn();
-      sessionStorage.setItem('cookName', data.cook_name);
-      sessionStorage.setItem('cookId', data.cook_id);
-      sessionStorage.setItem('cookEmail', email);
-      document.querySelector('.cook-name-mini').textContent = data.cook_name || email.split('@')[0];
+
+      // Save all cook data to session
+      sessionStorage.setItem('cookName',    data.cook_name || '');
+      sessionStorage.setItem('cookId',      data.cook_id || '');
+      sessionStorage.setItem('cookEmail',   email);
+      sessionStorage.setItem('cookPhone',   data.cook_phone || '');
+      sessionStorage.setItem('cookState',   data.cook_state || '');
+      sessionStorage.setItem('cookCity',    data.cook_city || '');
+      sessionStorage.setItem('cookAddress', data.cook_address || '');
+      sessionStorage.setItem('cookCuisine', data.cook_cuisine || '');
+      sessionStorage.setItem('cookHalal',   data.cook_halal || '');
+      sessionStorage.setItem('cookPhoto',   data.cook_photo || '');
+
+      // Update profile fields with real data
+      updateProfileFields(data);
       goToDash();
     } else {
       errEl.style.display = 'block';
@@ -1300,28 +1365,85 @@ async function doResetPassword() {
 }
 
 // Load orders when dashboard opens
+function updateProfileFields(data) {
+  const name = data.cook_name || sessionStorage.getItem('cookName') || 'Cook';
+  const email = data.cook_email || sessionStorage.getItem('cookEmail') || '';
+  const phone = data.cook_phone || sessionStorage.getItem('cookPhone') || '';
+  const state = data.cook_state || sessionStorage.getItem('cookState') || '';
+  const city = data.cook_city || sessionStorage.getItem('cookCity') || '';
+  const address = data.cook_address || sessionStorage.getItem('cookAddress') || '';
+  const cuisine = data.cook_cuisine || sessionStorage.getItem('cookCuisine') || '';
+  const halal = data.cook_halal || sessionStorage.getItem('cookHalal') || '';
+  const photo = data.cook_photo || sessionStorage.getItem('cookPhoto') || '';
+
+  // Update sidebar
+  const nameEl = document.getElementById('cookNameDisplay');
+  if(nameEl) nameEl.textContent = name;
+
+  // Update profile section
+  const profileNameEl = document.getElementById('profileNameDisplay');
+  if(profileNameEl) profileNameEl.textContent = name;
+
+  const profileInput = document.getElementById('profileFullName');
+  if(profileInput) profileInput.value = name;
+
+  // Update profile sub info
+  const profileSub = document.querySelector('.profile-sub');
+  if(profileSub) profileSub.textContent = city + ', ' + state + ' · Cook';
+
+  // Update profile form fields
+  const phoneInput = document.querySelector('.form-section input[type="tel"]');
+  if(phoneInput) phoneInput.value = phone;
+
+  const addressInput = document.querySelector('.form-section input[placeholder*="address"], .form-section input[value*="Jalan"]');
+  if(addressInput) addressInput.value = address;
+
+  // Update profile avatar if photo exists
+  if(photo) {
+    const avatar = document.querySelector('.profile-avatar');
+    if(avatar) {
+      avatar.innerHTML = '';
+      const img = document.createElement('img');
+      img.src = photo;
+      img.style.cssText = 'width:100%;height:100%;border-radius:50%;object-fit:cover;';
+      avatar.appendChild(img);
+    }
+  }
+
+  // Update halal badge
+  const halalBadge = document.querySelector('.pbadge-halal');
+  if(halalBadge) halalBadge.textContent = halal || '✅ Halal';
+
+  // Update profile stats
+  const profileStats = document.querySelectorAll('.pstat-val');
+  if(profileStats.length > 2) profileStats[2].textContent = '0';
+}
+
 function goToDash() {
   document.getElementById('regScreen').style.display = 'none';
   document.getElementById('dashShell').style.display = 'flex';
 
-  // Update cook name from session
+  // Update all profile fields from session
+  updateProfileFields({
+    cook_name:    sessionStorage.getItem('cookName'),
+    cook_email:   sessionStorage.getItem('cookEmail'),
+    cook_phone:   sessionStorage.getItem('cookPhone'),
+    cook_state:   sessionStorage.getItem('cookState'),
+    cook_city:    sessionStorage.getItem('cookCity'),
+    cook_address: sessionStorage.getItem('cookAddress'),
+    cook_cuisine: sessionStorage.getItem('cookCuisine'),
+    cook_halal:   sessionStorage.getItem('cookHalal'),
+    cook_photo:   sessionStorage.getItem('cookPhoto')
+  });
+
+  // Update greeting
   const cookName = sessionStorage.getItem('cookName') || 'Cook';
-  const cookEmail = sessionStorage.getItem('cookEmail') || '';
-  const displayName = cookName !== 'Cook' ? cookName : (cookEmail.split('@')[0] || 'Cook');
-
-  const nameEl = document.getElementById('cookNameDisplay');
   const greetEl = document.getElementById('dashGreeting');
-  const profileEl = document.getElementById('profileNameDisplay');
-  const profileInput = document.getElementById('profileFullName');
-
-  if(nameEl) nameEl.textContent = displayName;
   if(greetEl) {
     const hour = new Date().getHours();
     const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
-    greetEl.textContent = greeting + ', ' + displayName + '! 👋';
+    greetEl.textContent = greeting + ', ' + cookName + '! 👋';
   }
-  if(profileEl) profileEl.textContent = cookName;
-  if(profileInput) profileInput.value = cookName;
 
   loadRealOrders();
   setInterval(loadRealOrders, 60000);
