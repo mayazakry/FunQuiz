@@ -642,75 +642,81 @@ async function confirmPayment() {
 <div id="toast">✅ <span id="toastMsg">Added to cart!</span></div>
 
 <script>
-// ── DATA ──
-const foods = [
-  {id:1,name:'Nasi Lemak Ayam Rendang',nameBM:'Nasi Lemak Ayam Rendang',cook:'Puan Rohani',location:'George Town, Penang',state:'Pulau Pinang',price:12,cat:'malay',tags:['halal'],emoji:'🍛',rating:4.9,orders:284,desc:'Fragrant coconut rice cooked with pandan, served with rich rendang chicken, sambal, cucumber, and anchovies. Made from a 30-year family recipe.',isNew:true,isPopular:true,isHalal:true,readyBy:'11:30 AM',portions:15},
-  {id:2,name:'Char Koay Teow Basah',nameBM:'Char Koay Teow Basah',cook:'Uncle Ah Kow',location:'Jelutong, Penang',state:'Pulau Pinang',price:10,cat:'chinese',tags:[],emoji:'🍜',rating:4.8,orders:192,desc:'Authentic Penang-style wok-fried flat rice noodles with prawns, cockles, egg, bean sprouts, and dark soy. Wok hei perfection.',isNew:false,isPopular:true,isHalal:false,readyBy:'12:00 PM',portions:20},
-  {id:3,name:'Mutton Briyani Penang',nameBM:'Nasi Briyani Kambing',cook:'Amma Shantha',location:'Air Itam, Penang',state:'Pulau Pinang',price:16,cat:'indian',tags:['halal'],emoji:'🍚',rating:4.7,orders:156,desc:'Slow-cooked mutton briyani with aromatic basmati rice, raita, and achar. A family recipe perfected over generations.',isNew:false,isPopular:false,isHalal:true,readyBy:'12:30 PM',portions:12},
-  {id:4,name:'Banana Oat Muffin Box (6pcs)',nameBM:'Kotak Muffin Pisang Oat (6 biji)',cook:'Liyana Fit Kitchen',location:'Bayan Lepas, Penang',state:'Pulau Pinang',price:18,cat:'bakes',tags:['halal','veg'],emoji:'🧁',rating:5.0,orders:88,desc:'Healthy banana oat muffins with no refined sugar. Moist, nutritious, and perfect for breakfast or snacking. Freshly baked every morning.',isNew:true,isPopular:false,isHalal:true,readyBy:'10:00 AM',portions:30},
-  {id:5,name:'Sup Tulang Ayam + White Rice',nameBM:'Sup Tulang Ayam + Nasi Putih',cook:'Mak Long Maimunah',location:'Butterworth, Penang',state:'Pulau Pinang',price:9,cat:'malay',tags:['halal'],emoji:'🍲',rating:4.6,orders:310,desc:'Comforting chicken bone soup with herbs and spices, served with steamed white rice. The ultimate Malaysian comfort food.',isNew:false,isPopular:true,isHalal:true,readyBy:'11:00 AM',portions:25},
-  {id:6,name:'Hokkien Mee Dark Gravy',nameBM:'Mee Hokkien Kuah Hitam',cook:'Uncle Ah Lim',location:'Jelutong, Penang',state:'Pulau Pinang',price:11,cat:'chinese',tags:[],emoji:'🍝',rating:4.9,orders:205,desc:'Thick yellow noodles braised in rich dark prawn stock with pork belly, squid, and fish cake. Authentic Penang-style.',isNew:false,isPopular:true,isHalal:false,readyBy:'12:00 PM',portions:18},
-  {id:7,name:'Pandan Layer Cake (Whole)',nameBM:'Kek Lapis Pandan (Satu Loyang)',cook:'Kak Faridah',location:'Tanjung Bungah, Penang',state:'Pulau Pinang',price:38,cat:'bakes',tags:['halal','veg'],emoji:'🎂',rating:4.8,orders:64,desc:'Classic pandan coconut layer cake with a soft, pillowy texture and intense pandan fragrance. Perfect for gatherings.',isNew:true,isPopular:false,isHalal:true,readyBy:'10:00 AM',portions:5},
-  {id:8,name:'Buddha Bowl — Quinoa & Greens',nameBM:'Buddha Bowl Quinoa',cook:'Priya Health Bites',location:'Relau, Penang',state:'Pulau Pinang',price:16,cat:'healthy',tags:['veg'],emoji:'🥗',rating:4.7,orders:72,desc:'Nutrient-packed quinoa bowl with roasted vegetables, edamame, avocado, and tahini dressing. Vegan and gluten-free.',isNew:false,isPopular:false,isHalal:false,readyBy:'11:30 AM',portions:10},
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxUxaFIELEJ3kLOWpPKGNqeq53jdQ9c6YT-21FOqksQU05CQHKaFunLXvTDp91_Jqdj/exec';
+
+// ── DATA (fallback) ──
+const fallbackFoods = [
+  {id:1,name:'Nasi Lemak Ayam Rendang',nameBM:'Nasi Lemak Ayam Rendang',cook:'Puan Rohani',location:'George Town, Penang',state:'Pulau Pinang',price:12,cat:'malay',tags:['halal'],emoji:'🍛',rating:4.9,orders:284,desc:'Fragrant coconut rice with rich rendang chicken.',isNew:true,isPopular:true,isHalal:true,readyBy:'11:30 AM',portions:15},
+  {id:2,name:'Char Koay Teow Basah',nameBM:'Char Koay Teow Basah',cook:'Uncle Ah Kow',location:'Jelutong, Penang',state:'Pulau Pinang',price:10,cat:'chinese',tags:[],emoji:'🍜',rating:4.8,orders:192,desc:'Authentic Penang wok-fried flat rice noodles.',isNew:false,isPopular:true,isHalal:false,readyBy:'12:00 PM',portions:20},
+  {id:3,name:'Mutton Briyani Penang',nameBM:'Nasi Briyani Kambing',cook:'Amma Shantha',location:'Air Itam, Penang',state:'Pulau Pinang',price:16,cat:'indian',tags:['halal'],emoji:'🍚',rating:4.7,orders:156,desc:'Slow-cooked mutton briyani with aromatic basmati.',isNew:false,isPopular:false,isHalal:true,readyBy:'12:30 PM',portions:12},
+  {id:4,name:'Banana Oat Muffin Box (6pcs)',nameBM:'Kotak Muffin Pisang Oat',cook:'Liyana Fit Kitchen',location:'Bayan Lepas, Penang',state:'Pulau Pinang',price:18,cat:'bakes',tags:['halal','veg'],emoji:'🧁',rating:5.0,orders:88,desc:'Healthy banana oat muffins, no refined sugar.',isNew:true,isPopular:false,isHalal:true,readyBy:'10:00 AM',portions:30},
+  {id:5,name:'Sup Tulang Ayam + White Rice',nameBM:'Sup Tulang Ayam + Nasi',cook:'Mak Long Maimunah',location:'Butterworth, Penang',state:'Pulau Pinang',price:9,cat:'malay',tags:['halal'],emoji:'🍲',rating:4.6,orders:310,desc:'Comforting chicken bone soup with herbs.',isNew:false,isPopular:true,isHalal:true,readyBy:'11:00 AM',portions:25},
+  {id:6,name:'Hokkien Mee Dark Gravy',nameBM:'Mee Hokkien Kuah Hitam',cook:'Uncle Ah Lim',location:'Jelutong, Penang',state:'Pulau Pinang',price:11,cat:'chinese',tags:[],emoji:'🍝',rating:4.9,orders:205,desc:'Thick yellow noodles in rich dark prawn stock.',isNew:false,isPopular:true,isHalal:false,readyBy:'12:00 PM',portions:18},
+  {id:7,name:'Pandan Layer Cake',nameBM:'Kek Lapis Pandan',cook:'Kak Faridah',location:'Tanjung Bungah, Penang',state:'Pulau Pinang',price:38,cat:'bakes',tags:['halal','veg'],emoji:'🎂',rating:4.8,orders:64,desc:'Classic pandan coconut layer cake.',isNew:true,isPopular:false,isHalal:true,readyBy:'10:00 AM',portions:5},
+  {id:8,name:'Buddha Bowl — Quinoa',nameBM:'Buddha Bowl Quinoa',cook:'Priya Health Bites',location:'Relau, Penang',state:'Pulau Pinang',price:16,cat:'healthy',tags:['veg'],emoji:'🥗',rating:4.7,orders:72,desc:'Quinoa bowl with roasted veg and tahini.',isNew:false,isPopular:false,isHalal:false,readyBy:'11:30 AM',portions:10},
 ];
 
-let cart = [];
-let currentFilter = 'all';
-let currentFood = null;
-let detailQty = 1;
+let foods          = [...fallbackFoods];
+let cart           = [];
+let currentFilter  = 'all';
+let currentFood    = null;
+let detailQty      = 1;
+let deliveryFee    = 8.00;
+let lalamoveQuoteId = null;
 
-// ── RENDER FOOD GRID ──
-// Load real dishes from Google Sheet
+// ── LOAD REAL DISHES ──
 async function loadRealDishes() {
   try {
-    const res = await fetch(APPS_SCRIPT_URL + '?action=get_dishes');
-    const data = await res.json();
-    if (data.status === 'OK' && data.dishes.length > 0) {
-      // Merge real dishes with demo foods
+    const res  = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'get_dishes' })
+    });
+    const data = JSON.parse(await res.text());
+    if (data.status === 'OK' && data.dishes && data.dishes.length > 0) {
       const realFoods = data.dishes.map((d, i) => ({
-        id: 1000 + i,
-        name: d.name_en || d.name,
-        nameBM: d.name_bm || d.name,
-        cook: d.cook_name || 'Home Cook',
-        location: d.cook_location || 'Malaysia',
-        state: d.state || 'Pulau Pinang',
-        price: parseFloat(d.price) || 10,
-        cat: (d.category || 'malay').toLowerCase().replace(/\/.*/, '').trim(),
-        tags: d.halal === 'TRUE' || d.halal === true ? ['halal'] : [],
-        emoji: '🍱',
-        photo: d.photo_url || '',
-        rating: parseFloat(d.rating) || 4.8,
-        orders: parseInt(d.total_orders) || 0,
-        desc: d.description || 'Delicious homecooked food',
-        isNew: true,
-        isPopular: false,
-        isHalal: d.halal === 'TRUE' || d.halal === true,
-        readyBy: d.ready_by || '12:00 PM',
-        portions: parseInt(d.portions) || 10
+        id:         1000 + i,
+        name:       d.dish_name_en || d.dish_name || 'Dish',
+        nameBM:     d.dish_name_bm || d.dish_name_en || 'Dish',
+        cook:       d.cook_name   || 'Home Cook',
+        location:   'Malaysia',
+        state:      'Pulau Pinang',
+        price:      parseFloat(d.price_rm || 0),
+        cat:        (d.category || 'malay').toLowerCase().split('/')[0].trim(),
+        tags:       (d.dietary_tags||'').toLowerCase().includes('halal') ? ['halal'] : [],
+        emoji:      '🍱',
+        photo:      d.photo_url || '',
+        rating:     4.8,
+        orders:     0,
+        desc:       d.description || 'Delicious homecooked food',
+        isNew:      true,
+        isPopular:  false,
+        isHalal:    (d.dietary_tags||'').toLowerCase().includes('halal'),
+        readyBy:    d.pickup_ready_time || '12:00 PM',
+        portions:   parseInt(d.portions_today || 10)
       }));
-      // Add real dishes to top of foods array
-      foods.unshift(...realFoods);
+      foods = [...realFoods, ...fallbackFoods];
     }
   } catch(e) {
-    console.warn('Could not load real dishes:', e);
+    console.warn('Using fallback dishes:', e);
   }
   renderGrid(getFiltered());
 }
 
+// ── RENDER FOOD GRID ──
 function renderGrid(items) {
   const grid = document.getElementById('foodGrid');
-  document.getElementById('gridCount').textContent = `Showing ${items.length} dish${items.length !== 1 ? 'es' : ''}`;
+  document.getElementById('gridCount').textContent = 'Showing ' + items.length + ' dish' + (items.length!==1?'es':'');
   grid.innerHTML = items.map(f => `
     <div class="food-card" onclick="openDetail(${f.id})">
       <div style="position:relative;">
-        ${f.photo ? 
+        ${f.photo ?
           `<img src="${f.photo}" class="food-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
            <div class="food-emoji-bg" style="display:none">${f.emoji}</div>` :
           `<div class="food-emoji-bg">${f.emoji}</div>`
         }
         <div class="food-badges">
           ${f.isHalal ? '<span class="badge badge-halal">✅ Halal</span>' : ''}
-          ${f.isNew ? '<span class="badge badge-new">NEW</span>' : ''}
+          ${f.isNew   ? '<span class="badge badge-new">NEW</span>' : ''}
           ${f.isPopular ? '<span class="badge badge-popular">🔥 Popular</span>' : ''}
         </div>
       </div>
@@ -739,12 +745,13 @@ function renderGrid(items) {
 }
 
 function getFiltered() {
-  const q = (document.getElementById('searchInput')?.value || '').toLowerCase();
+  const q     = (document.getElementById('searchInput')?.value || '').toLowerCase();
   const state = document.getElementById('stateSelect')?.value || '';
   return foods.filter(f => {
-    const matchCat = currentFilter === 'all' || f.cat === currentFilter || (currentFilter === 'halal' && f.isHalal) || (currentFilter === 'veg' && f.tags.includes('veg'));
-    const matchQ = !q || f.name.toLowerCase().includes(q) || f.cook.toLowerCase().includes(q);
-    const matchState = !state || f.state === state;
+    const matchCat = currentFilter==='all' || f.cat===currentFilter ||
+      (currentFilter==='halal'&&f.isHalal) || (currentFilter==='veg'&&f.tags.includes('veg'));
+    const matchQ     = !q || f.name.toLowerCase().includes(q) || f.cook.toLowerCase().includes(q);
+    const matchState = !state || f.state===state;
     return matchCat && matchQ && matchState;
   });
 }
@@ -760,73 +767,77 @@ function setFilter(cat, el) {
 
 function sortFoods(val) {
   const items = getFiltered();
-  if(val === 'price-low') items.sort((a,b) => a.price - b.price);
-  if(val === 'price-high') items.sort((a,b) => b.price - a.price);
-  if(val === 'rating') items.sort((a,b) => b.rating - a.rating);
-  if(val === 'popular') items.sort((a,b) => b.orders - a.orders);
+  if(val==='price-low')  items.sort((a,b)=>a.price-b.price);
+  if(val==='price-high') items.sort((a,b)=>b.price-a.price);
+  if(val==='rating')     items.sort((a,b)=>b.rating-a.rating);
+  if(val==='popular')    items.sort((a,b)=>b.orders-a.orders);
   renderGrid(items);
 }
 
 // ── DETAIL ──
 function openDetail(id) {
-  const f = foods.find(x => x.id === id);
+  const f = foods.find(x => x.id===id);
   if(!f) return;
-  currentFood = f;
-  detailQty = 1;
-  document.getElementById('detailImg').textContent = f.emoji;
-  document.getElementById('detailName').textContent = f.name;
-  document.getElementById('detailNameBM').textContent = f.nameBM;
-  document.getElementById('detailCook').textContent = f.cook;
+  currentFood = f; detailQty = 1;
+  document.getElementById('detailImg').textContent     = f.photo ? '' : f.emoji;
+  if(f.photo) {
+    const img = document.createElement('img');
+    img.src = f.photo;
+    img.style.cssText = 'width:100%;height:320px;border-radius:20px;object-fit:cover;';
+    const imgEl = document.getElementById('detailImg');
+    imgEl.innerHTML = ''; imgEl.appendChild(img);
+  }
+  document.getElementById('detailName').textContent    = f.name;
+  document.getElementById('detailNameBM').textContent  = f.nameBM;
+  document.getElementById('detailCook').textContent    = f.cook;
   document.getElementById('detailLocation').textContent = f.location;
-  document.getElementById('detailStars').textContent = '★'.repeat(Math.round(f.rating));
-  document.getElementById('detailOrders').textContent = `${f.orders} orders`;
-  document.getElementById('detailDesc').textContent = f.desc;
-  document.getElementById('detailPrice').textContent = `RM ${f.price.toFixed(2)}`;
-  document.getElementById('detailQty').textContent = detailQty;
-  document.getElementById('detailTotal').textContent = `RM ${(f.price * detailQty).toFixed(2)}`;
-  document.getElementById('detailBadges').innerHTML = `
-    ${f.isHalal ? '<span class="badge badge-halal">✅ Halal</span>' : ''}
-    ${f.isNew ? '<span class="badge badge-new">NEW</span>' : ''}
-    ${f.isPopular ? '<span class="badge badge-popular">🔥 Popular</span>' : ''}
-  `;
+  document.getElementById('detailStars').textContent   = '★'.repeat(Math.round(f.rating));
+  document.getElementById('detailOrders').textContent  = f.orders + ' orders';
+  document.getElementById('detailDesc').textContent    = f.desc;
+  document.getElementById('detailPrice').textContent   = 'RM ' + f.price.toFixed(2);
+  document.getElementById('detailQty').textContent     = detailQty;
+  document.getElementById('detailTotal').textContent   = 'RM ' + (f.price*detailQty).toFixed(2);
+  document.getElementById('detailBadges').innerHTML    = `
+    ${f.isHalal   ? '<span class="badge badge-halal">✅ Halal</span>' : ''}
+    ${f.isNew     ? '<span class="badge badge-new">NEW</span>' : ''}
+    ${f.isPopular ? '<span class="badge badge-popular">🔥 Popular</span>' : ''}`;
   document.getElementById('detailInfo').innerHTML = `
     <div class="info-chip"><span class="info-chip-icon">⏰</span><div><div class="info-chip-label">Ready by</div><div class="info-chip-val">${f.readyBy}</div></div></div>
     <div class="info-chip"><span class="info-chip-icon">🍽️</span><div><div class="info-chip-label">Portions left</div><div class="info-chip-val">${f.portions}</div></div></div>
-    <div class="info-chip"><span class="info-chip-icon">🛵</span><div><div class="info-chip-label">Delivery</div><div class="info-chip-val">via Lalamove</div></div></div>
-  `;
+    <div class="info-chip"><span class="info-chip-icon">🛵</span><div><div class="info-chip-label">Delivery</div><div class="info-chip-val">via Lalamove</div></div></div>`;
   goPage('detail');
 }
 
 function changeQty(delta) {
-  detailQty = Math.max(1, detailQty + delta);
-  document.getElementById('detailQty').textContent = detailQty;
-  document.getElementById('detailTotal').textContent = `RM ${(currentFood.price * detailQty).toFixed(2)}`;
+  detailQty = Math.max(1, detailQty+delta);
+  document.getElementById('detailQty').textContent   = detailQty;
+  document.getElementById('detailTotal').textContent = 'RM ' + (currentFood.price*detailQty).toFixed(2);
 }
 
 function addCurrentToCart() {
   if(!currentFood) return;
-  for(let i=0; i<detailQty; i++) addToCart(currentFood.id, true);
-  showToast(`🛒 Added ${detailQty}× ${currentFood.name}!`);
+  for(let i=0;i<detailQty;i++) addToCart(currentFood.id, true);
+  showToast('🛒 Added '+detailQty+'× '+currentFood.name+'!');
   goPage('browse');
 }
 
 // ── CART ──
 function addToCart(id, silent=false) {
-  const f = foods.find(x => x.id === id);
-  const existing = cart.find(c => c.id === id);
+  const f        = foods.find(x=>x.id===id);
+  const existing = cart.find(c=>c.id===id);
   if(existing) existing.qty++;
   else cart.push({...f, qty:1});
   updateCartUI();
-  if(!silent) showToast(`🛒 ${f.name} added!`);
+  if(!silent) showToast('🛒 '+f.name+' added!');
 }
 
 function updateCartUI() {
-  const total = cart.reduce((s,c) => s + c.qty, 0);
+  const total = cart.reduce((s,c)=>s+c.qty,0);
   document.getElementById('cartCount').textContent = total;
-  const subtotal = cart.reduce((s,c) => s + c.price * c.qty, 0);
-  const delivery = 8;
-  document.getElementById('cartSubtotal').textContent = `RM ${subtotal.toFixed(2)}`;
-  document.getElementById('cartTotal').textContent = `RM ${(subtotal + delivery).toFixed(2)}`;
+  const subtotal = cart.reduce((s,c)=>s+c.price*c.qty,0);
+  document.getElementById('cartSubtotal').textContent = 'RM '+subtotal.toFixed(2);
+  document.getElementById('cartTotal').textContent    = 'RM '+(subtotal+deliveryFee).toFixed(2);
+  document.getElementById('cartDelivery').textContent = 'RM '+deliveryFee.toFixed(2);
   const footer = document.getElementById('cartFooter');
   footer.style.display = cart.length ? 'block' : 'none';
   const itemsEl = document.getElementById('cartItems');
@@ -846,16 +857,16 @@ function updateCartUI() {
           <button class="ci-qty-btn" onclick="changeCartQty(${c.id},1)">+</button>
         </div>
       </div>
-      <div class="ci-price">RM ${(c.price * c.qty).toFixed(2)}</div>
+      <div class="ci-price">RM ${(c.price*c.qty).toFixed(2)}</div>
     </div>
   `).join('');
 }
 
 function changeCartQty(id, delta) {
-  const idx = cart.findIndex(c => c.id === id);
-  if(idx === -1) return;
+  const idx = cart.findIndex(c=>c.id===id);
+  if(idx===-1) return;
   cart[idx].qty += delta;
-  if(cart[idx].qty <= 0) cart.splice(idx, 1);
+  if(cart[idx].qty<=0) cart.splice(idx,1);
   updateCartUI();
 }
 
@@ -864,88 +875,49 @@ function toggleCart() {
   document.getElementById('cartDrawer').classList.toggle('open');
 }
 
-// ── LALAMOVE CONFIG ──
-const LALA_API_KEY    = 'pk_test_bf62f07a9e2fe3af78a299d9a5fe50a6';
-const LALA_API_SECRET = 'sk_test_rSF9snh8UDrbXcigi72mV0gfcjMqwC7dKJ+y4Sh2tBQTeC3Jfm5Fw1vnXrU9M62R';
-const LALA_BASE       = 'https://rest.sandbox.lalamove.com';
-const LALA_MARKET     = 'MY';
-
-// Cook pickup coords (default: George Town, Penang — update per cook later)
-const COOK_COORDS = { lat: '5.4164', lng: '100.3327' };
-
-let deliveryFee = 8.00; // default fallback
-let lalamoveQuoteId = null;
-
-// Build HMAC signature for Lalamove
-async function lalamoveSign(method, path, body = '') {
-  const ts   = Date.now().toString();
-  const raw  = `${ts}\r\n${method}\r\n${path}\r\n\r\n${body}`;
-  const key  = await crypto.subtle.importKey(
-    'raw', new TextEncoder().encode(LALA_API_SECRET),
-    { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
-  );
-  const sig  = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(raw));
-  const hex  = Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2,'0')).join('');
-  return { ts, sig: hex };
-}
-
-// Get Lalamove delivery quote
-async function getLalamoveQuote(toAddress) {
-  const path   = '/v3/quotations';
-  const bodyObj = {
-    data: {
-      serviceType: 'MOTORCYCLE',
-      language: 'en_MY',
-      stops: [
-        {
-          coordinates: { lat: COOK_COORDS.lat, lng: COOK_COORDS.lng },
-          address: 'Cook Pickup Location, George Town, Penang'
-        },
-        {
-          coordinates: { lat: '5.3540', lng: '100.2954' }, // fallback customer coords
-          address: toAddress || 'Customer Delivery Address, Penang'
-        }
-      ],
-      item: { quantity: '1', weight: 'LESS_THAN_3KG', categories: ['FOOD_DELIVERY'], handlingInstructions: [] }
-    }
-  };
-  const bodyStr = JSON.stringify(bodyObj);
-  const { ts, sig } = await lalamoveSign('POST', path, bodyStr);
-
+// ── LALAMOVE QUOTE (via Apps Script to avoid CORS) ──
+async function fetchQuote(address) {
+  if(!address || address.length < 8) return;
+  const feeEl = document.getElementById('lalaFeeStatus');
+  if(feeEl) feeEl.innerHTML = '🛵 Getting Lalamove quote...';
+  // Lalamove called server-side via Apps Script to avoid CORS
   try {
-    const res = await fetch(`${LALA_BASE}${path}`, {
+    const res  = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `hmac ${LALA_API_KEY}:${ts}:${sig}`,
-        'Market': LALA_MARKET,
-        'Request-ID': `masakapatU-${Date.now()}`
-      },
-      body: bodyStr
+      body: JSON.stringify({ action: 'get_lalamove_quote', address })
     });
-    const data = await res.json();
-    if (data?.data?.priceBreakdown?.total) {
-      // Lalamove returns price in cents
-      const fee = parseFloat(data.data.priceBreakdown.total) / 100;
-      lalamoveQuoteId = data.data.quotationId || null;
-      return fee;
+    const data = JSON.parse(await res.text());
+    if(data.fee) {
+      deliveryFee = parseFloat(data.fee);
+      updateDeliveryDisplay(deliveryFee);
+      if(feeEl) feeEl.innerHTML = '✅ Lalamove quote: RM '+deliveryFee.toFixed(2);
     }
   } catch(e) {
-    console.warn('Lalamove API error:', e);
+    if(feeEl) feeEl.innerHTML = '⚠️ Using estimated delivery fee (RM 8.00)';
   }
-  return 8.00; // fallback if API fails
+}
+
+function updateDeliveryDisplay(fee) {
+  const subtotal = cart.reduce((s,c)=>s+c.price*c.qty,0);
+  const els = {
+    cartDelivery: 'RM '+fee.toFixed(2),
+    coDelivery:   'RM '+fee.toFixed(2),
+    coTotal:      'RM '+(subtotal+fee).toFixed(2),
+    cartTotal:    'RM '+(subtotal+fee).toFixed(2)
+  };
+  Object.entries(els).forEach(([id,val])=>{const el=document.getElementById(id);if(el)el.textContent=val;});
 }
 
 // ── CHECKOUT ──
 function goCheckout() {
   toggleCart();
-  const subtotal = cart.reduce((s,c) => s + c.price * c.qty, 0);
-  document.getElementById('coSubtotal').textContent = `RM ${subtotal.toFixed(2)}`;
-  document.getElementById('coTotal').textContent = `RM ${(subtotal + deliveryFee).toFixed(2)}`;
-  document.getElementById('checkoutItems').innerHTML = cart.map(c =>
-    `<div class="osc-item"><span class="osc-item-name">${c.qty}× ${c.name}</span><span class="osc-item-price">RM ${(c.price * c.qty).toFixed(2)}</span></div>`
+  const subtotal = cart.reduce((s,c)=>s+c.price*c.qty,0);
+  document.getElementById('coSubtotal').textContent    = 'RM '+subtotal.toFixed(2);
+  document.getElementById('coDelivery').textContent    = 'RM '+deliveryFee.toFixed(2);
+  document.getElementById('coTotal').textContent       = 'RM '+(subtotal+deliveryFee).toFixed(2);
+  document.getElementById('checkoutItems').innerHTML   = cart.map(c =>
+    '<div class="osc-item"><span class="osc-item-name">'+c.qty+'× '+c.name+'</span><span class="osc-item-price">RM '+(c.price*c.qty).toFixed(2)+'</span></div>'
   ).join('');
-  updateDeliveryDisplay(deliveryFee);
   goPage('checkout');
 
   // Auto-fetch quote when address typed
@@ -959,98 +931,77 @@ function goCheckout() {
   }
 }
 
-async function fetchQuote(address) {
-  if(!address || address.length < 8) return;
-  const feeEl = document.getElementById('lalaFeeStatus');
-  if(feeEl) feeEl.innerHTML = '🛵 Getting Lalamove quote...';
-  deliveryFee = await getLalamoveQuote(address);
-  updateDeliveryDisplay(deliveryFee);
-  if(feeEl) feeEl.innerHTML = lalamoveQuoteId
-    ? `✅ Lalamove quote confirmed · Quote ID: <code style="font-size:0.7rem;">${lalamoveQuoteId}</code>`
-    : `⚠️ Using estimated delivery fee`;
-}
-
-function updateDeliveryDisplay(fee) {
-  const subtotal = cart.reduce((s,c) => s + c.price * c.qty, 0);
-  const delivEl = document.getElementById('cartDelivery');
-  const coDelivEl = document.getElementById('coDelivery');
-  const coTotalEl = document.getElementById('coTotal');
-  const cartTotalEl = document.getElementById('cartTotal');
-  if(delivEl) delivEl.textContent = `RM ${fee.toFixed(2)}`;
-  if(coDelivEl) coDelivEl.textContent = `RM ${fee.toFixed(2)}`;
-  if(coTotalEl) coTotalEl.textContent = `RM ${(subtotal + fee).toFixed(2)}`;
-  if(cartTotalEl) cartTotalEl.textContent = `RM ${(subtotal + fee).toFixed(2)}`;
-}
-
 function selectPay(el) {
-  document.querySelectorAll('.pay-opt').forEach(p => p.classList.remove('selected'));
+  document.querySelectorAll('.pay-opt').forEach(p=>p.classList.remove('selected'));
   el.classList.add('selected');
 }
 
-// ── MAKE WEBHOOK ──
-const MAKE_WEBHOOK = 'https://script.google.com/macros/s/AKfycbxUxaFIELEJ3kLOWpPKGNqeq53jdQ9c6YT-21FOqksQU05CQHKaFunLXvTDp91_Jqdj/exec';
-const APPS_SCRIPT_URL = MAKE_WEBHOOK; // same URL
+// ── TNG QR ──
+function showQR() {
+  const subtotal = cart.reduce((s,c)=>s+c.price*c.qty,0);
+  const total    = (subtotal+deliveryFee).toFixed(2);
+  document.getElementById('tngAmount').textContent      = 'RM '+total;
+  document.getElementById('tngAmountSmall').textContent = 'RM '+total;
+  document.getElementById('tngOverlay').style.display   = 'flex';
+}
+function closeQR() { document.getElementById('tngOverlay').style.display='none'; }
 
+async function confirmPayment() {
+  closeQR();
+  await placeOrder();
+}
+
+// ── PLACE ORDER ──
 async function placeOrder() {
-  const name     = document.querySelector('input[placeholder="e.g. Ahmad Firdaus"]')?.value || 'Customer';
-  const phone    = document.querySelector('input[placeholder="+60 12-345 6789"]')?.value || '';
-  const address  = document.getElementById('deliveryAddress')?.value || '';
-  const city     = document.querySelector('input[placeholder="e.g. George Town"]')?.value || '';
-  const notes    = document.querySelector('input[placeholder*="spicy"]')?.value || '';
+  const name    = document.querySelector('input[placeholder="e.g. Ahmad Firdaus"]')?.value || 'Customer';
+  const phone   = document.querySelector('input[placeholder="+60 12-345 6789"]')?.value    || '';
+  const address = document.getElementById('deliveryAddress')?.value || '';
+  const city    = document.querySelector('input[placeholder="e.g. George Town"]')?.value   || '';
+  const notes   = document.querySelector('input[placeholder*="spicy"]')?.value             || '';
   const payMethod = document.querySelector('.pay-opt.selected .pay-opt-name')?.textContent || 'TNG eWallet';
-  const subtotal = cart.reduce((s,c) => s + c.price * c.qty, 0);
-  const orderID  = 'MK-' + new Date().toISOString().slice(0,10).replace(/-/g,'') + '-' + (Math.floor(Math.random()*900)+100);
+  const subtotal  = cart.reduce((s,c)=>s+c.price*c.qty,0);
+  const orderID   = 'MK-'+new Date().toISOString().slice(0,10).replace(/-/g,'')+'-'+(Math.floor(Math.random()*900)+100);
 
   const orderData = {
     order_id:  orderID,
     timestamp: new Date().toISOString(),
     customer:  { name, phone, address, city, notes },
-    items: cart.map(c => ({
-      dish_name:  c.name,
-      cook:       c.cook,
-      cook_location: c.location,
-      qty:        c.qty,
-      unit_price: c.price,
-      subtotal:   c.price * c.qty
+    items: cart.map(c=>({
+      dish_name: c.name, cook: c.cook,
+      cook_location: c.location, qty: c.qty,
+      unit_price: c.price, subtotal: c.price*c.qty
     })),
     payment: {
-      method:        payMethod,
+      method:       payMethod,
       food_subtotal: subtotal,
       delivery_fee:  deliveryFee,
-      total:         subtotal + deliveryFee,
-      platform_fee:  parseFloat((subtotal * 0.11).toFixed(2)),
-      cook_earnings: parseFloat((subtotal * 0.89).toFixed(2)),
+      total:         subtotal+deliveryFee,
+      platform_fee:  parseFloat((subtotal*0.11).toFixed(2)),
+      cook_earnings: parseFloat((subtotal*0.89).toFixed(2)),
       lalamove_quote_id: lalamoveQuoteId || 'pending'
     },
     status: 'new'
   };
 
   const btn = document.querySelector('.place-order-btn');
-  btn.textContent = '⏳ Placing order...';
-  btn.disabled = true;
+  if(btn) { btn.textContent='⏳ Placing order...'; btn.disabled=true; }
 
   try {
-    await fetch(MAKE_WEBHOOK, {
-      method: 'POST',
-      body: JSON.stringify(orderData)
-    });
-  } catch(e) {
-    console.warn('Webhook error:', e);
-  }
+    await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify(orderData) });
+  } catch(e) { console.warn('Order webhook error:', e); }
 
   cart = [];
   updateCartUI();
   document.getElementById('successOrderId').textContent = orderID;
   goPage('success');
-  btn.textContent = 'Place Order & Pay →';
-  btn.disabled = false;
+  if(btn) { btn.textContent='Place Order & Pay via TNG →'; btn.disabled=false; }
 }
 
 // ── NAV ──
 function goPage(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-' + id).classList.add('active');
-  window.scrollTo(0, 0);
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  window.scrollTo(0,0);
 }
 
 // ── TOAST ──
@@ -1058,16 +1009,16 @@ function showToast(msg) {
   document.getElementById('toastMsg').textContent = msg;
   const t = document.getElementById('toast');
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2800);
+  setTimeout(()=>t.classList.remove('show'), 2800);
 }
 
 // ── SCROLL NAV ──
-window.addEventListener('scroll', () => {
-  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20);
+window.addEventListener('scroll', ()=>{
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY>20);
 });
 
-// INIT
-loadRealDishes(); // loads real dishes from Sheet + renders grid
+// ── INIT ──
+loadRealDishes();
 </script>
 </body>
 </html>

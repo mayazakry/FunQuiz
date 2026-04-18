@@ -520,63 +520,9 @@ input:focus,select:focus,textarea:focus{border-color:var(--saffron);background:w
         <button class="save-btn" onclick="openAddDish()">+ Add New Dish</button>
       </div>
       <div class="card">
-        <div class="card-header"><div class="card-title">Active Dishes</div><div class="card-action">3 dishes listed</div></div>
-        <div class="menu-grid">
-          <div class="menu-card">
-            <div class="menu-card-top">
-              <div class="menu-emoji">🍛</div>
-              <div class="menu-info">
-                <div class="menu-name">Nasi Lemak Ayam Rendang</div>
-                <div class="menu-price">RM 12.00</div>
-                <div style="font-size:0.7rem;color:var(--bark-mid);">⏰ Ready by 11:30 AM</div>
-              </div>
-            </div>
-            <div class="menu-card-foot">
-              <div class="menu-portions">8 / 20 portions left today</div>
-              <div style="display:flex;align-items:center;gap:8px;">
-                <div class="menu-edit-btn" onclick="openAddDish()">Edit</div>
-                <div class="toggle-avail on" onclick="toggleMenu(this)"></div>
-              </div>
-            </div>
-          </div>
-          <div class="menu-card">
-            <div class="menu-card-top">
-              <div class="menu-emoji">🍜</div>
-              <div class="menu-info">
-                <div class="menu-name">Mee Kari Ayam</div>
-                <div class="menu-price">RM 10.00</div>
-                <div style="font-size:0.7rem;color:var(--bark-mid);">⏰ Ready by 12:00 PM</div>
-              </div>
-            </div>
-            <div class="menu-card-foot">
-              <div class="menu-portions">14 / 15 portions left today</div>
-              <div style="display:flex;align-items:center;gap:8px;">
-                <div class="menu-edit-btn" onclick="openAddDish()">Edit</div>
-                <div class="toggle-avail on" onclick="toggleMenu(this)"></div>
-              </div>
-            </div>
-          </div>
-          <div class="menu-card" style="opacity:0.6;">
-            <div class="menu-card-top">
-              <div class="menu-emoji">🎂</div>
-              <div class="menu-info">
-                <div class="menu-name">Kek Batik (Whole)</div>
-                <div class="menu-price">RM 35.00</div>
-                <div style="font-size:0.7rem;color:var(--bark-mid);">⏰ Ready by 10:00 AM</div>
-              </div>
-            </div>
-            <div class="menu-card-foot">
-              <div class="menu-portions">Sold out today</div>
-              <div style="display:flex;align-items:center;gap:8px;">
-                <div class="menu-edit-btn" onclick="openAddDish()">Edit</div>
-                <div class="toggle-avail off" onclick="toggleMenu(this)"></div>
-              </div>
-            </div>
-          </div>
-          <div class="add-dish-card" onclick="openAddDish()">
-            <div class="add-dish-icon">➕</div>
-            <div class="add-dish-text">Add New Dish</div>
-          </div>
+        <div class="card-header"><div class="card-title">Active Dishes</div><div class="card-action" id="dishCount">Loading...</div></div>
+        <div class="menu-grid" id="menuGrid">
+          <div style="padding:24px;color:var(--bark-mid);">Loading dishes...</div>
         </div>
       </div>
     </div>
@@ -650,7 +596,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--saffron);background:w
               <div class="fg"><label>Cuisine Specialty</label><input type="text" id="profileCuisine" placeholder="e.g. Malay / Melayu"></div>
               <div class="fg"><label>Halal Status</label><input type="text" id="profileHalal" placeholder="✅ Halal Certified"></div>
             </div>
-            <div class="fg"><label>Bio</label><textarea id="profileBio" rows="3" placeholder="Tell customers about yourself and your cooking..."></textarea></div>
+            <div class="fg"><label>Bio</label><textarea id="profileBio" rows="3" placeholder="Tell customers about yourself..."></textarea></div>
           </div>
         </div>
       </div>
@@ -678,7 +624,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--saffron);background:w
         <div class="fg"><label>Category</label>
           <select id="dishCategory">
             <option>Rice / Nasi</option><option>Noodles / Mee</option>
-            <option>Bakes & Kuih</option><option>Lauk Only</option>
+            <option>Bakes &amp; Kuih</option><option>Lauk Only</option>
             <option>Healthy</option><option>Drinks</option>
           </select>
         </div>
@@ -733,267 +679,63 @@ input:focus,select:focus,textarea:focus{border-color:var(--saffron);background:w
 <div id="toast">✅ <span id="toastMsg"></span></div>
 
 <script>
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxUxaFIELEJ3kLOWpPKGNqeq53jdQ9c6YT-21FOqksQU05CQHKaFunLXvTDp91_Jqdj/exec';
+const CLOUDINARY_CLOUD  = 'dwv7mokkk';
+const CLOUDINARY_PRESET = 'MasakApaTu';
+const CLOUDINARY_URL    = 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD + '/image/upload';
+
 // ── REGISTER STEPS ──
 function validateStep1() {
-  const fullName = document.getElementById('cookFullName')?.value || '';
-  const email    = document.getElementById('cookEmail')?.value || '';
-  const password = document.getElementById('cookPassword')?.value || '';
-  const phone    = document.getElementById('cookPhone')?.value || '';
-
-  if (!fullName.trim()) { showToast('⚠️ Please enter your full name!'); return; }
-  if (!email.trim()) { showToast('⚠️ Please enter your email!'); return; }
-  if (!email.includes('@')) { showToast('⚠️ Please enter a valid email!'); return; }
-  if (!password.trim() || password.length < 6) { showToast('⚠️ Password must be at least 6 characters!'); return; }
-  if (!phone.trim()) { showToast('⚠️ Please enter your phone number!'); return; }
-
+  const fullName = document.getElementById('cookFullName')?.value.trim() || '';
+  const email    = document.getElementById('cookEmail')?.value.trim()    || '';
+  const password = document.getElementById('cookPassword')?.value        || '';
+  const phone    = document.getElementById('cookPhone')?.value.trim()    || '';
+  if (!fullName) { showToast('⚠️ Please enter your full name!'); return; }
+  if (!email || !email.includes('@')) { showToast('⚠️ Please enter a valid email!'); return; }
+  if (password.length < 6) { showToast('⚠️ Password must be at least 6 characters!'); return; }
+  if (!phone) { showToast('⚠️ Please enter your phone number!'); return; }
   nextStep(2);
 }
 
 function nextStep(n) {
   [1,2,3].forEach(i => {
     document.getElementById('step'+i).style.display = i===n ? 'block' : 'none';
-    const s = document.getElementById('s'+i);
+    const s  = document.getElementById('s'+i);
     const sl = document.getElementById('sl'+i);
-    if(i < n){ s.className='step done'; sl.className='step-label'; }
-    else if(i === n){ s.className='step active'; sl.className='step-label active'; }
-    else{ s.className='step'; sl.className='step-label'; }
+    if(i < n)      { s.className='step done';   sl.className='step-label'; }
+    else if(i===n) { s.className='step active'; sl.className='step-label active'; }
+    else           { s.className='step';        sl.className='step-label'; }
   });
 }
 
-function goToReg() {
-  document.getElementById('dashShell').style.display = 'none';
-  document.getElementById('regScreen').style.display = 'flex';
-}
-
-// ── DASHBOARD NAV ──
-function showPanel(id, el) {
-  document.querySelectorAll('.dash-panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('panel-'+id).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  if(el) el.classList.add('active');
-}
-
-// ── ONLINE TOGGLE ──
-function toggleOnline() {
-  const t = document.getElementById('onlineToggle');
-  t.classList.toggle('off');
-  showToast(t.classList.contains('off') ? '⏸ You are now offline — not accepting orders' : '✅ You are online — accepting orders!');
-}
-
-// ── MENU TOGGLE ──
-function toggleMenu(el) {
-  el.classList.toggle('on');
-  el.classList.toggle('off');
-  showToast(el.classList.contains('on') ? '✅ Dish is now available!' : '⏸ Dish paused for today');
-}
-
-// ── ORDER ACTIONS ──
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxUxaFIELEJ3kLOWpPKGNqeq53jdQ9c6YT-21FOqksQU05CQHKaFunLXvTDp91_Jqdj/exec';
-
-// ── CLOUDINARY CONFIG ──
-const CLOUDINARY_CLOUD = 'dwv7mokkk';
-const CLOUDINARY_PRESET = 'MasakApaTu';
-const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD + '/image/upload';
-
+// ── CLOUDINARY UPLOAD ──
 async function uploadToCloudinary(file) {
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('upload_preset', CLOUDINARY_PRESET);
-  formData.append('folder', 'masakapatU');
-  formData.append('cloud_name', CLOUDINARY_CLOUD);
-
-  console.log('Uploading to Cloudinary:', CLOUDINARY_URL);
-  console.log('Preset:', CLOUDINARY_PRESET);
-  console.log('File size:', file.size, 'bytes');
-
-  const response = await fetch(CLOUDINARY_URL, {
-    method: 'POST',
-    body: formData
-  });
-
-  const data = await response.json();
-  console.log('Cloudinary response:', JSON.stringify(data));
-
-  if (data.secure_url) {
-    return data.secure_url;
-  }
-  // Show full error
-  throw new Error(data.error?.message || 'Upload failed: ' + JSON.stringify(data));
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('upload_preset', CLOUDINARY_PRESET);
+  fd.append('folder', 'masakapatU');
+  const res  = await fetch(CLOUDINARY_URL, { method: 'POST', body: fd });
+  const data = await res.json();
+  if (data.secure_url) return data.secure_url;
+  throw new Error(data.error?.message || 'Upload failed');
 }
 
-function acceptOrder(btn) {
-  btn.closest('tr').querySelector('.status-chip').className = 'status-chip status-prep';
-  btn.closest('tr').querySelector('.status-chip').textContent = '🍳 Preparing';
-  btn.className = 'action-btn action-ready';
-  btn.textContent = '✓ Mark Ready';
-  btn.onclick = function(){ markReady(this); };
-  showToast('✅ Order accepted! Lalamove will be dispatched when ready.');
-}
-
-async function markReady(btn) {
-  const row = btn.closest('tr');
-  const orderId = row.querySelector('.order-id')?.textContent.trim() || 'UNKNOWN';
-
-  // Update UI immediately
-  row.querySelector('.status-chip').className = 'status-chip status-delivered';
-  row.querySelector('.status-chip').textContent = '✅ Ready for pickup';
-  btn.className = 'action-btn action-done';
-  btn.textContent = '⏳ Dispatching...';
-  btn.disabled = true;
-
-  try {
-    await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      body: JSON.stringify({
-        action: 'dispatch',
-        order_id: orderId,
-        cook_address: 'George Town, Penang',
-        cook_lat: '5.4164',
-        cook_lng: '100.3327',
-        cust_lat: '5.3540',
-        cust_lng: '100.2954'
-      })
-    });
-    btn.textContent = '✅ Done';
-    showToast('🛵 Lalamove rider dispatched! On the way!');
-  } catch(e) {
-    btn.textContent = '✅ Done';
-    showToast('🛵 Lalamove dispatched!');
-  }
-}
-
-
-// ── IMAGE PREVIEW ──
-function previewImg(input, previewId) {
-  const p = document.getElementById(previewId);
-  if(input.files && input.files[0]) {
-    const r = new FileReader();
-    r.onload = e => { p.src = e.target.result; p.style.display = 'block'; };
-    r.readAsDataURL(input.files[0]);
-  }
-}
-
-// ── TOAST ──
-function showToast(msg) {
-  document.getElementById('toastMsg').textContent = msg;
-  const t = document.getElementById('toast');
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
-
-function getStatusChip(status) {
-  const map = {
-    'Confirmed':       '<span class="status-chip status-new">🆕 Confirmed</span>',
-    'Preparing':       '<span class="status-chip status-prep">🍳 Preparing</span>',
-    'Ready':           '<span class="status-chip status-ready">✅ Ready</span>',
-    'Delivered':       '<span class="status-chip status-delivered">✅ Delivered</span>',
-    'Rejected':        '<span class="status-chip" style="background:#fee2e2;color:#dc2626;">❌ Rejected</span>',
-    'Pending Payment': '<span class="status-chip" style="background:#fef9c3;color:#ca8a04;">⏳ Pending</span>'
-  };
-  return map[status] || '<span class="status-chip">' + status + '</span>';
-}
-
-function getActionBtn(o) {
-  if (o.status === 'Confirmed') {
-    return '<button class="action-btn action-accept" onclick="acceptRealOrder(this,\'' + o.order_id + '\')">✓ Accept</button>';
-  } else if (o.status === 'Preparing') {
-    return '<button class="action-btn action-ready" onclick="markRealReady(this,\'' + o.order_id + '\')">✓ Mark Ready</button>';
-  } else {
-    return '<button class="action-btn action-done" disabled>Done</button>';
-  }
-}
-
-function renderOrderRow(o) {
-  const time = new Date(o.timestamp).toLocaleTimeString('en-MY', {hour:'2-digit', minute:'2-digit'});
-  return '<tr>' +
-    '<td><div class="order-id">' + o.order_id + '</div></td>' +
-    '<td><div class="order-dish-cell">' + o.items + '</div><div class="order-dish-sub">📍 ' + o.city + '</div></td>' +
-    '<td>' + o.customer_name + '<br><span style="font-size:0.72rem;color:var(--bark-mid);">' + o.city + '</span></td>' +
-    '<td><strong>RM ' + parseFloat(o.total).toFixed(2) + '</strong><br><span style="font-size:0.72rem;color:var(--green);">+RM ' + parseFloat(o.cook_earnings).toFixed(2) + ' yours</span></td>' +
-    '<td>' + getStatusChip(o.status) + '</td>' +
-    '<td>' + getActionBtn(o) + '</td>' +
-    '</tr>';
-}
-
-function renderAllOrderRow(o) {
-  const time = new Date(o.timestamp).toLocaleTimeString('en-MY', {hour:'2-digit', minute:'2-digit'});
-  return '<tr>' +
-    '<td><div class="order-id">' + o.order_id + '</div></td>' +
-    '<td><div class="order-dish-cell">' + o.items + '</div></td>' +
-    '<td>' + o.customer_name + ' · ' + o.city + '</td>' +
-    '<td>' + time + '</td>' +
-    '<td><strong>RM ' + parseFloat(o.total).toFixed(2) + '</strong></td>' +
-    '<td>' + getStatusChip(o.status) + '</td>' +
-    '<td>' + getActionBtn(o) + '</td>' +
-    '</tr>';
-}
-
-// Accept real order — update sheet status
-async function acceptRealOrder(btn, orderId) {
-  btn.textContent = '⏳...';
-  btn.disabled = true;
-  try {
-    await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'update_status', order_id: orderId, status: 'Preparing' })
-    });
-    showToast('✅ Order accepted! Start preparing now.');
-    setTimeout(loadRealOrders, 1500);
-  } catch(e) {
-    showToast('✅ Order accepted!');
-    setTimeout(loadRealOrders, 1500);
-  }
-}
-
-// Mark ready — dispatch Lalamove
-async function markRealReady(btn, orderId) {
-  btn.textContent = '⏳ Dispatching...';
-  btn.disabled = true;
-  try {
-    await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      body: JSON.stringify({
-        action: 'dispatch',
-        order_id: orderId,
-        cook_lat: '5.4164',
-        cook_lng: '100.3327',
-        cook_address: 'George Town, Penang',
-        cust_lat: '5.3540',
-        cust_lng: '100.2954'
-      })
-    });
-    showToast('🛵 Lalamove rider dispatched!');
-    setTimeout(loadRealOrders, 1500);
-  } catch(e) {
-    showToast('🛵 Lalamove dispatched!');
-    setTimeout(loadRealOrders, 1500);
-  }
-}
-
-// ── CLOUDINARY UPLOAD HANDLERS ──
 async function handleProfileUpload(input) {
   if (!input.files || !input.files[0]) return;
-  const file = input.files[0];
+  const file     = input.files[0];
   const statusEl = document.getElementById('profileUploadStatus');
-  const preview = document.getElementById('profilePreview');
-
-  // Show preview immediately
+  const preview  = document.getElementById('profilePreview');
   const reader = new FileReader();
   reader.onload = e => { preview.src = e.target.result; preview.style.display = 'block'; };
   reader.readAsDataURL(file);
-
-  // Upload to Cloudinary
   statusEl.style.display = 'block';
-  statusEl.textContent = '⏳ Uploading photo...';
-  statusEl.style.color = 'var(--bark-mid)';
-
+  statusEl.textContent = '⏳ Uploading...';
   try {
     const url = await uploadToCloudinary(file);
     document.getElementById('profilePhotoUrl').value = url;
-    statusEl.textContent = '✅ Photo uploaded successfully!';
+    statusEl.textContent = '✅ Photo uploaded!';
     statusEl.style.color = 'var(--green)';
   } catch(e) {
-    console.error('Profile upload error:', e);
     statusEl.textContent = '⚠️ Upload failed: ' + e.message;
     statusEl.style.color = 'var(--chili)';
   }
@@ -1001,28 +743,20 @@ async function handleProfileUpload(input) {
 
 async function handleFoodUpload(input) {
   if (!input.files || !input.files[0]) return;
-  const file = input.files[0];
+  const file     = input.files[0];
   const statusEl = document.getElementById('foodUploadStatus');
-  const preview = document.getElementById('foodPreview');
-
-  // Show preview immediately
+  const preview  = document.getElementById('foodPreview');
   const reader = new FileReader();
   reader.onload = e => { preview.src = e.target.result; preview.style.display = 'block'; };
   reader.readAsDataURL(file);
-
-  // Upload to Cloudinary
   statusEl.style.display = 'block';
   statusEl.textContent = '⏳ Uploading food photo...';
-  statusEl.style.color = 'var(--bark-mid)';
-
   try {
     const url = await uploadToCloudinary(file);
     document.getElementById('foodPhotoUrl').value = url;
-    statusEl.textContent = '✅ Photo uploaded! URL saved.';
+    statusEl.textContent = '✅ Photo uploaded!';
     statusEl.style.color = 'var(--green)';
-    showToast('📸 Food photo uploaded to Cloudinary!');
   } catch(e) {
-    console.error('Food upload error:', e);
     statusEl.textContent = '⚠️ Upload failed: ' + e.message;
     statusEl.style.color = 'var(--chili)';
   }
@@ -1030,74 +764,54 @@ async function handleFoodUpload(input) {
 
 // ── COOK REGISTRATION ──
 async function registerCook() {
-  // Collect Step 1 data
-  const fullName    = document.getElementById('cookFullName')?.value || document.querySelector('#step1 input[placeholder="e.g. Puan Rohani Abdullah"]')?.value || '';
-  const phone       = document.getElementById('cookPhone')?.value || document.querySelector('#step1 input[placeholder="+60 12-345 6789"]')?.value || '';
-  const email       = document.getElementById('cookEmail')?.value || '';
-  const password    = document.getElementById('cookPassword')?.value || '';
-  const state       = document.querySelector('#step1 select')?.value || '';
-  const city        = document.querySelector('#step1 input[placeholder="e.g. George Town"]')?.value || '';
-  const address     = document.querySelector('#step1 input[placeholder*="Lalamove"]')?.value || '';
-  const tngPhone    = document.querySelector('#step1 input[placeholder*="TNG"]')?.value || '';
-  const selects     = document.querySelectorAll('#step1 select');
-  const cuisine     = selects[1]?.value || '';
-  const halal       = selects[2]?.value || '';
-  const bio         = document.querySelector('#step1 textarea')?.value || '';
+  const fullName = document.getElementById('cookFullName')?.value.trim() || '';
+  const email    = document.getElementById('cookEmail')?.value.trim()    || '';
+  const password = document.getElementById('cookPassword')?.value        || '';
+  const phone    = document.getElementById('cookPhone')?.value.trim()    || '';
+  const selects  = document.querySelectorAll('#step1 select');
+  const state    = selects[0]?.value || '';
+  const city     = document.querySelector('#step1 input[placeholder="e.g. George Town"]')?.value.trim() || '';
+  const address  = document.querySelector('#step1 input[placeholder*="Lalamove"]')?.value.trim() || '';
+  const tngPhone = document.querySelector('#step1 input[placeholder*="TNG"]')?.value.trim() || phone;
+  const cuisine  = selects[1]?.value || '';
+  const halal    = selects[2]?.value || '';
 
-  // Collect Step 2 dish data
-  const dishNameEN  = document.querySelector('#step2 input[placeholder*="Nasi Lemak"]')?.value || '';
-  const dishNameBM  = document.querySelectorAll('#step2 input[type="text"]')[1]?.value || '';
-  const dishDesc    = document.querySelector('#step2 textarea')?.value || '';
-  const price       = document.querySelector('#step2 input[placeholder="12.00"]')?.value || '';
-  const portions    = document.querySelector('#step2 input[placeholder="20"]')?.value || '';
+  const dishInputs = document.querySelectorAll('#step2 input[type="text"]');
+  const dishNameEN = dishInputs[0]?.value.trim() || '';
+  const dishNameBM = dishInputs[1]?.value.trim() || '';
+  const dishDesc   = document.querySelector('#step2 textarea')?.value.trim() || '';
+  const price      = document.querySelector('#step2 input[placeholder="12.00"]')?.value || '';
+  const portions   = document.querySelector('#step2 input[placeholder="20"]')?.value || '';
 
-  if (!fullName || !phone || !email) {
-    showToast('⚠️ Please fill in name, phone and email!');
-    return;
-  }
-  if (password.length < 8) {
-    showToast('⚠️ Password must be at least 8 characters!');
-    return;
-  }
+  if (!fullName || !email || !phone) { showToast('⚠️ Please fill in name, email and phone!'); return; }
+  if (password.length < 6) { showToast('⚠️ Password must be at least 6 characters!'); return; }
 
   const btn = document.querySelector('#step2 .reg-btn:last-child');
   btn.textContent = '⏳ Submitting...';
   btn.disabled = true;
 
   try {
-    await fetch(APPS_SCRIPT_URL, {
+    const res  = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       body: JSON.stringify({
         action: 'register_cook',
-        email: email,
-        password: btoa(password), // basic encoding
-        full_name: fullName,
-        phone: phone,
-        tng_phone: tngPhone || phone,
-        state: state,
-        city: city,
-        address: address,
-        cuisine: cuisine,
-        halal_status: halal,
-        bio: bio,
+        email, password: btoa(password),
+        full_name: fullName, phone, tng_phone: tngPhone,
+        state, city, address, cuisine, halal_status: halal,
         photo_url: document.getElementById('profilePhotoUrl')?.value || '',
         first_dish: {
-          name_en: dishNameEN,
-          name_bm: dishNameBM,
-          description: dishDesc,
-          price: price,
-          portions: portions,
+          name_en: dishNameEN, name_bm: dishNameBM,
+          description: dishDesc, price, portions,
           photo_url: document.getElementById('foodPhotoUrl')?.value || ''
         }
       })
     });
-    // Store name for when they sign in
-    sessionStorage.setItem('pendingCookName', fullName);
+    const data = JSON.parse(await res.text());
     sessionStorage.setItem('pendingCookEmail', email);
+    sessionStorage.setItem('pendingCookName',  fullName);
     nextStep(3);
     showToast('🎉 Registration submitted!');
   } catch(e) {
-    sessionStorage.setItem('pendingCookName', fullName);
     nextStep(3);
     showToast('🎉 Registration submitted!');
   }
@@ -1107,72 +821,66 @@ async function registerCook() {
 }
 
 // ── SIGN IN ──
-function showSignIn() {
-  document.getElementById('signInModal').style.display = 'flex';
-}
-function closeSignIn() {
-  document.getElementById('signInModal').style.display = 'none';
-}
+function showSignIn()  { document.getElementById('signInModal').style.display = 'flex'; }
+function closeSignIn() { document.getElementById('signInModal').style.display = 'none'; }
+
 async function doSignIn() {
-  const email = document.getElementById('signInEmail').value.trim();
+  const email    = document.getElementById('signInEmail').value.trim();
   const password = document.getElementById('signInPassword').value;
-  const errEl = document.getElementById('signInError');
+  const errEl    = document.getElementById('signInError');
   errEl.style.display = 'none';
 
-  if (!email) {
+  if (!email || !password) {
     errEl.style.display = 'block';
-    errEl.textContent = '⚠️ Please enter your email';
+    errEl.textContent = '⚠️ Please enter your email and password';
     return;
   }
 
   const btn = document.querySelector('#signInModal button');
-  const origText = 'Sign In →';
+  btn.textContent = 'Signing in...';
+  btn.disabled = true;
 
   try {
-    const hashedPwd = await sha256(password);
-    const res = await fetch(APPS_SCRIPT_URL + '?action=sign_in&email=' + encodeURIComponent(email) + '&password=' + encodeURIComponent(hashedPwd));
-    const data = await res.json();
+    const res  = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'cook_login', email, password })
+    });
+    const data = JSON.parse(await res.text());
 
     if (data.status === 'OK') {
       closeSignIn();
-
-      // Save all cook data to session
-      sessionStorage.setItem('cookName',    data.cook_name || '');
-      sessionStorage.setItem('cookId',      data.cook_id || '');
+      sessionStorage.setItem('cookName',    data.cook_name    || '');
+      sessionStorage.setItem('cookId',      data.cook_id      || '');
       sessionStorage.setItem('cookEmail',   email);
-      sessionStorage.setItem('cookPhone',   data.cook_phone || '');
-      sessionStorage.setItem('cookState',   data.cook_state || '');
-      sessionStorage.setItem('cookCity',    data.cook_city || '');
+      sessionStorage.setItem('cookPhone',   data.cook_phone   || '');
+      sessionStorage.setItem('cookState',   data.cook_state   || '');
+      sessionStorage.setItem('cookCity',    data.cook_city    || '');
       sessionStorage.setItem('cookAddress', data.cook_address || '');
       sessionStorage.setItem('cookCuisine', data.cook_cuisine || '');
-      sessionStorage.setItem('cookHalal',   data.cook_halal || '');
-      sessionStorage.setItem('cookPhoto',   data.cook_photo || '');
-
-      // Update profile fields with real data
+      sessionStorage.setItem('cookHalal',   data.cook_halal   || '');
+      sessionStorage.setItem('cookPhoto',   data.cook_photo   || '');
       updateProfileFields(data);
       goToDash();
+    } else if (data.status === 'WRONG_PASSWORD') {
+      errEl.style.display = 'block';
+      errEl.textContent = '❌ Wrong password. Please try again.';
+    } else if (data.status === 'NOT_VERIFIED') {
+      errEl.style.display = 'block';
+      errEl.textContent = '❌ Account not verified yet. Contact admin.';
     } else {
       errEl.style.display = 'block';
-      errEl.textContent = data.message || '❌ Invalid email or password. Check Is_Verified = TRUE in sheet.';
+      errEl.textContent = '❌ Email not found. Please check and try again.';
     }
   } catch(e) {
-    // If Apps Script fails, allow demo access
-    closeSignIn();
-    document.querySelector('.cook-name-mini').textContent = email.split('@')[0];
-    goToDash();
+    errEl.style.display = 'block';
+    errEl.textContent = '❌ Connection error. Please try again.';
   }
+
+  btn.textContent = 'Sign In →';
+  btn.disabled = false;
 }
 
-// SHA-256 hash function
-async function sha256(message) {
-  if (!message) return '';
-  const msgBuffer = new TextEncoder().encode(message);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
-// Forgot password functions
+// ── FORGOT / RESET PASSWORD ──
 function showForgotPassword() {
   document.getElementById('signInModal').style.display = 'none';
   document.getElementById('forgotModal').style.display = 'flex';
@@ -1180,23 +888,18 @@ function showForgotPassword() {
   document.getElementById('forgotStep2').style.display = 'none';
   document.getElementById('forgotError').style.display = 'none';
 }
-
-function closeForgot() {
-  document.getElementById('forgotModal').style.display = 'none';
-}
+function closeForgot() { document.getElementById('forgotModal').style.display = 'none'; }
 
 async function sendResetCode() {
   const email = document.getElementById('forgotEmail').value.trim();
   const errEl = document.getElementById('forgotError');
-  if (!email) {
-    errEl.style.display = 'block';
-    errEl.textContent = '⚠️ Please enter your email';
-    return;
-  }
-
+  if (!email) { errEl.style.display='block'; errEl.textContent='⚠️ Please enter your email'; return; }
   try {
-    const res = await fetch(APPS_SCRIPT_URL + '?action=forgot_password&email=' + encodeURIComponent(email));
-    const data = await res.json();
+    const res  = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'forgot_password', email })
+    });
+    const data = JSON.parse(await res.text());
     if (data.status === 'OK') {
       document.getElementById('forgotStep1').style.display = 'none';
       document.getElementById('forgotStep2').style.display = 'block';
@@ -1212,52 +915,60 @@ async function sendResetCode() {
 }
 
 async function doResetPassword() {
-  const email = document.getElementById('forgotEmail').value.trim();
-  const code = document.getElementById('resetCode').value.trim();
-  const newPwd = document.getElementById('newPassword').value;
+  const email      = document.getElementById('forgotEmail').value.trim();
+  const code       = document.getElementById('resetCode').value.trim();
+  const newPwd     = document.getElementById('newPassword').value;
   const confirmPwd = document.getElementById('confirmPassword').value;
-  const errEl = document.getElementById('forgotError');
-
-  if (!code || code.length !== 6) {
-    errEl.style.display = 'block';
-    errEl.textContent = '⚠️ Please enter the 6-digit code from email';
-    return;
-  }
-  if (newPwd.length < 6) {
-    errEl.style.display = 'block';
-    errEl.textContent = '⚠️ Password must be at least 6 characters';
-    return;
-  }
-  if (newPwd !== confirmPwd) {
-    errEl.style.display = 'block';
-    errEl.textContent = '⚠️ Passwords do not match!';
-    return;
-  }
-
+  const errEl      = document.getElementById('forgotError');
+  if (!code || code.length !== 6) { errEl.style.display='block'; errEl.textContent='⚠️ Please enter the 6-digit code'; return; }
+  if (newPwd.length < 6) { errEl.style.display='block'; errEl.textContent='⚠️ Password must be at least 6 characters'; return; }
+  if (newPwd !== confirmPwd) { errEl.style.display='block'; errEl.textContent='⚠️ Passwords do not match!'; return; }
   try {
-    const hashedPwd = await sha256(newPwd);
-    const res = await fetch(APPS_SCRIPT_URL, {
+    const res  = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
-      body: JSON.stringify({
-        action: 'reset_password',
-        email: email,
-        code: code,
-        new_password: hashedPwd
-      })
+      body: JSON.stringify({ action: 'reset_password', email, code, new_password: newPwd })
     });
-    const data = await res.json();
+    const data = JSON.parse(await res.text());
     if (data.status === 'OK') {
       closeForgot();
-      showToast('✅ Password reset! Please sign in with new password.');
+      showToast('✅ Password reset! Please sign in.');
       setTimeout(() => showSignIn(), 1000);
     } else {
       errEl.style.display = 'block';
-      errEl.textContent = '❌ Invalid or expired code. Please try again.';
+      errEl.textContent = '❌ Invalid or expired code.';
     }
   } catch(e) {
     errEl.style.display = 'block';
     errEl.textContent = '❌ Error. Please try again.';
   }
+}
+
+// ── DASHBOARD NAV ──
+function showPanel(id, el) {
+  document.querySelectorAll('.dash-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if(el) el.classList.add('active');
+  if(id === 'menu') loadRealDishes();
+  if(id === 'earnings') loadRealEarnings();
+}
+
+function toggleOnline() {
+  const t = document.getElementById('onlineToggle');
+  t.classList.toggle('off');
+  showToast(t.classList.contains('off') ? '⏸ You are now offline' : '✅ You are online — accepting orders!');
+}
+
+function toggleMenu(el) {
+  el.classList.toggle('on');
+  el.classList.toggle('off');
+  showToast(el.classList.contains('on') ? '✅ Dish is now available!' : '⏸ Dish paused for today');
+}
+
+function goToReg() {
+  sessionStorage.clear();
+  document.getElementById('dashShell').style.display = 'none';
+  document.getElementById('regScreen').style.display = 'flex';
 }
 
 // ── UPDATE PROFILE FIELDS ──
@@ -1270,21 +981,18 @@ function updateProfileFields(data) {
   const halal   = data.cook_halal   || sessionStorage.getItem('cookHalal')   || '';
   const photo   = data.cook_photo   || sessionStorage.getItem('cookPhoto')   || '';
 
-  // Sidebar
   const nameEl = document.getElementById('cookNameDisplay');
   if(nameEl) nameEl.textContent = name || 'Cook';
 
-  // Profile card
   const profileNameEl = document.getElementById('profileNameDisplay');
   if(profileNameEl) profileNameEl.textContent = name;
 
   const profileSub = document.querySelector('.profile-sub');
-  if(profileSub) profileSub.textContent = [city, state].filter(Boolean).join(', ') + ' · Cook';
+  if(profileSub) profileSub.textContent = [city,state].filter(Boolean).join(', ') + ' · Cook';
 
   const halalBadge = document.querySelector('.pbadge-halal');
   if(halalBadge) halalBadge.textContent = halal || '✅ Halal';
 
-  // Form fields
   const pfName = document.getElementById('profileFullName');
   if(pfName) pfName.value = name;
 
@@ -1303,10 +1011,9 @@ function updateProfileFields(data) {
   const pfHalal = document.getElementById('profileHalal');
   if(pfHalal) pfHalal.value = halal;
 
-  // Avatar
   if(photo && photo !== '0' && photo !== '') {
     const avatar = document.querySelector('.profile-avatar');
-    if(avatar) avatar.innerHTML = `<img src="${photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+    if(avatar) avatar.innerHTML = '<img src="'+photo+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">';
   }
 }
 
@@ -1334,11 +1041,10 @@ function goToDash() {
   }
 
   loadRealOrders();
-  loadRealDishes();
   setInterval(loadRealOrders, 60000);
 }
 
-// ── FETCH REAL ORDERS ──
+// ── ORDERS ──
 async function loadRealOrders() {
   try {
     const cookEmail = sessionStorage.getItem('cookEmail') || '';
@@ -1354,40 +1060,115 @@ async function loadRealOrders() {
       .filter(o => new Date(o.timestamp).toDateString() === today)
       .sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
 
-    const newOrders     = todayOrders.filter(o => o.status === 'new' || o.status === 'Confirmed').length;
+    const newCount      = todayOrders.filter(o => ['new','Confirmed','Pending Payment'].includes(o.status)).length;
     const todayEarnings = todayOrders
-      .filter(o => o.status !== 'Rejected')
+      .filter(o => !['Rejected','Pending Payment'].includes(o.status))
       .reduce((s,o) => s + parseFloat(o.cook_earnings || 0), 0);
 
+    // Update stat cards
     const statVals = document.querySelectorAll('.stat-val');
-    if(statVals[0]) statVals[0].textContent = newOrders;
+    if(statVals[0]) statVals[0].textContent = newCount;
     if(statVals[1]) statVals[1].textContent = 'RM ' + todayEarnings.toFixed(2);
 
-    const activeOrders = todayOrders.filter(o =>
-      ['new','Confirmed','Preparing','Ready'].includes(o.status)
-    );
+    // Update orders badge in sidebar
+    const badge = document.querySelector('.nav-item span[style*="chili"]');
+    if(badge) badge.textContent = newCount;
+
+    const activeOrders = todayOrders.filter(o => ['Confirmed','new','Preparing','Ready'].includes(o.status));
 
     const overviewBody = document.getElementById('overviewOrdersBody');
     if(overviewBody) overviewBody.innerHTML = activeOrders.length
-      ? activeOrders.map(o => renderOrderRow(o)).join('')
+      ? activeOrders.map(renderOrderRow).join('')
       : '<tr><td colspan="6" style="text-align:center;color:var(--bark-mid);padding:24px;">No active orders right now 😊</td></tr>';
 
     const allBody = document.getElementById('allOrdersBody');
     if(allBody) allBody.innerHTML = todayOrders.length
-      ? todayOrders.map(o => renderAllOrderRow(o)).join('')
+      ? todayOrders.map(renderAllOrderRow).join('')
       : '<tr><td colspan="7" style="text-align:center;color:var(--bark-mid);padding:24px;">No orders today 😊</td></tr>';
 
-  } catch(e) {
-    console.warn('Could not load orders:', e);
-  }
+  } catch(e) { console.warn('Could not load orders:', e); }
 }
 
-// ── FETCH REAL DISHES ──
+function getStatusChip(status) {
+  const map = {
+    'Confirmed':       '<span class="status-chip status-new">🆕 Confirmed</span>',
+    'new':             '<span class="status-chip status-new">🆕 New</span>',
+    'Preparing':       '<span class="status-chip status-prep">🍳 Preparing</span>',
+    'Ready':           '<span class="status-chip status-ready">✅ Ready</span>',
+    'Delivered':       '<span class="status-chip status-delivered">✅ Delivered</span>',
+    'Rejected':        '<span class="status-chip" style="background:#fee2e2;color:#dc2626;">❌ Rejected</span>',
+    'Pending Payment': '<span class="status-chip" style="background:#fef9c3;color:#ca8a04;">⏳ Pending</span>'
+  };
+  return map[status] || '<span class="status-chip">'+status+'</span>';
+}
+
+function getActionBtn(o) {
+  if (o.status === 'Confirmed' || o.status === 'new')
+    return '<button class="action-btn action-accept" onclick="acceptRealOrder(this,\''+o.order_id+'\')">✓ Accept</button>';
+  if (o.status === 'Preparing')
+    return '<button class="action-btn action-ready" onclick="markRealReady(this,\''+o.order_id+'\')">✓ Mark Ready</button>';
+  return '<button class="action-btn action-done" disabled>Done</button>';
+}
+
+function renderOrderRow(o) {
+  return '<tr>'+
+    '<td><div class="order-id">'+o.order_id+'</div></td>'+
+    '<td><div class="order-dish-cell">'+o.items+'</div><div class="order-dish-sub">📍 '+o.city+'</div></td>'+
+    '<td>'+o.customer_name+'<br><span style="font-size:0.72rem;color:var(--bark-mid);">'+o.city+'</span></td>'+
+    '<td><strong>RM '+parseFloat(o.total||0).toFixed(2)+'</strong><br><span style="font-size:0.72rem;color:var(--green);">+RM '+parseFloat(o.cook_earnings||0).toFixed(2)+' yours</span></td>'+
+    '<td>'+getStatusChip(o.status)+'</td>'+
+    '<td>'+getActionBtn(o)+'</td>'+
+    '</tr>';
+}
+
+function renderAllOrderRow(o) {
+  const time = new Date(o.timestamp).toLocaleTimeString('en-MY',{hour:'2-digit',minute:'2-digit'});
+  return '<tr>'+
+    '<td><div class="order-id">'+o.order_id+'</div></td>'+
+    '<td><div class="order-dish-cell">'+o.items+'</div></td>'+
+    '<td>'+o.customer_name+' · '+o.city+'</td>'+
+    '<td>'+time+'</td>'+
+    '<td><strong>RM '+parseFloat(o.total||0).toFixed(2)+'</strong></td>'+
+    '<td>'+getStatusChip(o.status)+'</td>'+
+    '<td>'+getActionBtn(o)+'</td>'+
+    '</tr>';
+}
+
+async function acceptRealOrder(btn, orderId) {
+  btn.textContent = '⏳...'; btn.disabled = true;
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'update_status', order_id: orderId, status: 'Preparing' })
+    });
+    showToast('✅ Order accepted! Start preparing now.');
+  } catch(e) { showToast('✅ Order accepted!'); }
+  setTimeout(loadRealOrders, 1500);
+}
+
+async function markRealReady(btn, orderId) {
+  btn.textContent = '⏳ Dispatching...'; btn.disabled = true;
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'dispatch', order_id: orderId,
+        cook_lat: '5.4164', cook_lng: '100.3327',
+        cook_address: sessionStorage.getItem('cookAddress') || 'George Town, Penang',
+        cust_lat: '5.3540', cust_lng: '100.2954'
+      })
+    });
+    showToast('🛵 Lalamove rider dispatched!');
+  } catch(e) { showToast('🛵 Dispatched!'); }
+  setTimeout(loadRealOrders, 1500);
+}
+
+// ── DISHES ──
 async function loadRealDishes() {
   const grid    = document.getElementById('menuGrid');
   const countEl = document.getElementById('dishCount');
   if(!grid) return;
-
+  grid.innerHTML = '<div style="padding:24px;color:var(--bark-mid);">Loading dishes...</div>';
   try {
     const cookEmail = sessionStorage.getItem('cookEmail') || '';
     const res  = await fetch(APPS_SCRIPT_URL, {
@@ -1396,145 +1177,180 @@ async function loadRealDishes() {
     });
     const data = JSON.parse(await res.text());
 
-    if(data.status !== 'OK' || !data.dishes || !data.dishes.length) {
+    if(data.status !== 'OK' || !data.dishes?.length) {
       if(countEl) countEl.textContent = '0 dishes';
-      grid.innerHTML = `
-        <div style="padding:24px;color:var(--bark-mid);font-size:0.87rem;">No dishes yet. Add your first dish! 🍱</div>
-        <div class="add-dish-card" onclick="openAddDish()"><div class="add-dish-icon">➕</div><div class="add-dish-text">Add New Dish</div></div>`;
+      grid.innerHTML = '<div style="padding:24px;color:var(--bark-mid);">No dishes yet. Add your first dish! 🍱</div>'+addDishCard();
       return;
     }
 
-    const dishes = data.dishes;
-    if(countEl) countEl.textContent = dishes.length + ' dish' + (dishes.length !== 1 ? 'es' : '') + ' listed';
-
-    grid.innerHTML = dishes.map(d => {
+    if(countEl) countEl.textContent = data.dishes.length + ' dish' + (data.dishes.length!==1?'es':'') + ' listed';
+    grid.innerHTML = data.dishes.map(d => {
       const isActive = String(d.is_available).toUpperCase() === 'TRUE';
-      const total    = parseInt(d.portions_today || 0);
-      const sold     = parseInt(d.portions_sold  || 0);
-      const left     = Math.max(0, total - sold);
-      const photo    = d.photo_url || '';
-      return `
-        <div class="menu-card" style="${isActive ? '' : 'opacity:0.6;'}">
-          <div class="menu-card-top">
-            <div class="menu-emoji">${photo ? `<img src="${photo}" style="width:48px;height:48px;border-radius:10px;object-fit:cover;">` : '🍱'}</div>
-            <div class="menu-info">
-              <div class="menu-name">${d.dish_name_en || 'Dish'}</div>
-              <div class="menu-price">RM ${parseFloat(d.price_rm || 0).toFixed(2)}</div>
-              <div style="font-size:0.7rem;color:var(--bark-mid);">⏰ Ready by ${d.pickup_ready_time || '12:00 PM'}</div>
-            </div>
-          </div>
-          <div class="menu-card-foot">
-            <div class="menu-portions">${isActive ? left + ' / ' + total + ' portions left' : 'Sold out today'}</div>
-            <div style="display:flex;align-items:center;gap:8px;">
-              <div class="menu-edit-btn" onclick="openAddDish()">Edit</div>
-              <div class="toggle-avail ${isActive ? 'on' : 'off'}" onclick="toggleMenu(this)"></div>
-            </div>
-          </div>
-        </div>`;
-    }).join('') + `
-      <div class="add-dish-card" onclick="openAddDish()">
-        <div class="add-dish-icon">➕</div>
-        <div class="add-dish-text">Add New Dish</div>
-      </div>`;
+      const total    = parseInt(d.portions_today||0);
+      const sold     = parseInt(d.portions_sold||0);
+      const left     = Math.max(0, total-sold);
+      const photo    = d.photo_url||'';
+      return '<div class="menu-card" style="'+(isActive?'':'opacity:0.6;')+'">'+
+        '<div class="menu-card-top">'+
+        '<div class="menu-emoji">'+(photo ? '<img src="'+photo+'" style="width:48px;height:48px;border-radius:10px;object-fit:cover;">' : '🍱')+'</div>'+
+        '<div class="menu-info">'+
+        '<div class="menu-name">'+(d.dish_name_en||'Dish')+'</div>'+
+        '<div class="menu-price">RM '+parseFloat(d.price_rm||0).toFixed(2)+'</div>'+
+        '<div style="font-size:0.7rem;color:var(--bark-mid);">⏰ Ready by '+(d.pickup_ready_time||'12:00 PM')+'</div>'+
+        '</div></div>'+
+        '<div class="menu-card-foot">'+
+        '<div class="menu-portions">'+(isActive ? left+' / '+total+' portions left' : 'Sold out today')+'</div>'+
+        '<div style="display:flex;align-items:center;gap:8px;">'+
+        '<div class="menu-edit-btn" onclick="openAddDish()">Edit</div>'+
+        '<div class="toggle-avail '+(isActive?'on':'off')+'" onclick="toggleMenu(this)"></div>'+
+        '</div></div></div>';
+    }).join('') + addDishCard();
   } catch(e) {
     console.warn('Could not load dishes:', e);
+    grid.innerHTML = '<div style="padding:24px;color:var(--chili);">Error loading dishes.</div>'+addDishCard();
   }
 }
 
-// ── SAVE DISH ──
+function addDishCard() {
+  return '<div class="add-dish-card" onclick="openAddDish()"><div class="add-dish-icon">➕</div><div class="add-dish-text">Add New Dish</div></div>';
+}
+
+// ── EARNINGS ──
+async function loadRealEarnings() {
+  try {
+    const cookEmail = sessionStorage.getItem('cookEmail') || '';
+    const res  = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'get_orders', cook_email: cookEmail })
+    });
+    const data = JSON.parse(await res.text());
+    if(data.status !== 'OK') return;
+
+    const orders       = data.orders.filter(o => !['Rejected','Pending Payment'].includes(o.status));
+    const today        = new Date().toDateString();
+    const thisMonth    = new Date().getMonth();
+    const todayTotal   = orders.filter(o => new Date(o.timestamp).toDateString()===today).reduce((s,o)=>s+parseFloat(o.cook_earnings||0),0);
+    const monthTotal   = orders.filter(o => new Date(o.timestamp).getMonth()===thisMonth).reduce((s,o)=>s+parseFloat(o.cook_earnings||0),0);
+    const platformFee  = orders.filter(o => new Date(o.timestamp).getMonth()===thisMonth).reduce((s,o)=>s+parseFloat(o.food_subtotal||0)*0.11,0);
+
+    const earnVals = document.querySelectorAll('.earn-val');
+    if(earnVals[0]) earnVals[0].textContent = 'RM ' + monthTotal.toFixed(2);
+    if(earnVals[1]) earnVals[1].textContent = 'RM ' + todayTotal.toFixed(2);
+    if(earnVals[2]) earnVals[2].textContent = 'RM ' + platformFee.toFixed(2);
+
+    // Payout list
+    const payoutList = document.querySelector('.payout-list');
+    if(payoutList) {
+      const recent = data.orders.slice().reverse().slice(0,5);
+      payoutList.innerHTML = recent.map(o => {
+        const isPaid = o.status === 'Delivered';
+        const dt     = new Date(o.timestamp).toLocaleDateString('en-MY');
+        return '<div class="payout-item">'+
+          '<div class="payout-icon '+(isPaid?'paid':'pending')+'">'+(isPaid?'💚':'⏳')+'</div>'+
+          '<div class="payout-info"><div class="payout-label">'+o.order_id+' · '+o.items+'</div>'+
+          '<div class="payout-sub">'+dt+' · via TNG eWallet</div></div>'+
+          '<div class="payout-amount '+(isPaid?'paid':'pending')+'">'+(isPaid?'+':'')+'RM '+parseFloat(o.cook_earnings||0).toFixed(2)+'</div>'+
+          '</div>';
+      }).join('');
+    }
+  } catch(e) { console.warn('Could not load earnings:', e); }
+}
+
+// ── ADD DISH MODAL ──
 function openAddDish() {
   ['dishNameEN','dishNameBM','dishDesc','dishPrice','dishPortions','dishPhotoUrl'].forEach(id => {
-    const el = document.getElementById(id);
-    if(el) el.value = '';
+    const el = document.getElementById(id); if(el) el.value='';
   });
-  const readyEl = document.getElementById('dishReadyBy');
-  if(readyEl) readyEl.value = '11:30';
-  const preview = document.getElementById('modalPhotoPreview');
-  if(preview) preview.style.display = 'none';
-  const status = document.getElementById('modalUploadStatus');
-  if(status) status.textContent = '';
+  const readyEl = document.getElementById('dishReadyBy'); if(readyEl) readyEl.value='11:30';
+  const prev = document.getElementById('modalPhotoPreview'); if(prev) prev.style.display='none';
+  const stat = document.getElementById('modalUploadStatus'); if(stat) stat.textContent='';
   document.getElementById('addDishModal').classList.add('open');
 }
 
 function closeModal() { document.getElementById('addDishModal').classList.remove('open'); }
 
 async function handleModalPhoto(input) {
-  if(!input.files || !input.files[0]) return;
+  if(!input.files||!input.files[0]) return;
   const file     = input.files[0];
   const statusEl = document.getElementById('modalUploadStatus');
   const previewEl = document.getElementById('modalPhotoPreview');
-
-  statusEl.textContent = '⏳ Uploading photo...';
-
   const reader = new FileReader();
-  reader.onload = e => { previewEl.src = e.target.result; previewEl.style.display = 'block'; };
+  reader.onload = e => { previewEl.src=e.target.result; previewEl.style.display='block'; };
   reader.readAsDataURL(file);
-
+  statusEl.textContent = '⏳ Uploading photo...';
   try {
-    const fd = new FormData();
-    fd.append('file', file);
-    fd.append('upload_preset', CLOUDINARY_PRESET);
-    const res  = await fetch(CLOUDINARY_URL, { method: 'POST', body: fd });
-    const data = await res.json();
-    if(data.secure_url) {
-      document.getElementById('dishPhotoUrl').value = data.secure_url;
-      previewEl.src = data.secure_url;
-      statusEl.textContent = '✅ Photo uploaded!';
-    } else {
-      statusEl.textContent = '⚠️ Upload failed — will save without photo';
-    }
+    const url = await uploadToCloudinary(file);
+    document.getElementById('dishPhotoUrl').value = url;
+    previewEl.src = url;
+    statusEl.textContent = '✅ Photo uploaded!';
+    statusEl.style.color = 'var(--green)';
   } catch(e) {
     statusEl.textContent = '⚠️ Upload failed — will save without photo';
+    statusEl.style.color = 'var(--chili)';
   }
 }
 
 async function saveDish() {
   const nameEN   = (document.getElementById('dishNameEN')?.value   || '').trim();
-  const price    = (document.getElementById('dishPrice')?.value     || '').trim();
-  const portions = (document.getElementById('dishPortions')?.value  || '').trim();
-
-  if(!nameEN || !price || !portions) {
-    showToast('⚠️ Please fill in Dish Name, Price and Portions!');
-    return;
-  }
+  const price    = (document.getElementById('dishPrice')?.value    || '').trim();
+  const portions = (document.getElementById('dishPortions')?.value || '').trim();
+  if(!nameEN||!price||!portions) { showToast('⚠️ Please fill in Dish Name, Price and Portions!'); return; }
 
   const btn = document.getElementById('saveDishBtn');
-  if(btn) { btn.textContent = '⏳ Saving...'; btn.disabled = true; }
-
-  const dishData = {
-    action:            'save_dish',
-    cook_id:           sessionStorage.getItem('cookId')    || '',
-    cook_email:        sessionStorage.getItem('cookEmail') || '',
-    cook_name:         sessionStorage.getItem('cookName')  || '',
-    dish_name_en:      nameEN,
-    dish_name_bm:      (document.getElementById('dishNameBM')?.value   || '').trim(),
-    description:       (document.getElementById('dishDesc')?.value     || '').trim(),
-    price_rm:          price,
-    category:          document.getElementById('dishCategory')?.value  || 'Rice / Nasi',
-    dietary_tags:      document.getElementById('dishTags')?.value      || 'Halal',
-    photo_url:         document.getElementById('dishPhotoUrl')?.value  || '',
-    portions_today:    portions,
-    portions_sold:     '0',
-    pickup_ready_time: document.getElementById('dishReadyBy')?.value   || '11:30',
-    is_available:      'TRUE'
-  };
+  if(btn) { btn.textContent='⏳ Saving...'; btn.disabled=true; }
 
   try {
-    const res  = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(dishData) });
+    const res  = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action:            'save_dish',
+        cook_id:           sessionStorage.getItem('cookId')    || '',
+        cook_email:        sessionStorage.getItem('cookEmail') || '',
+        cook_name:         sessionStorage.getItem('cookName')  || '',
+        dish_name_en:      nameEN,
+        dish_name_bm:      (document.getElementById('dishNameBM')?.value   || '').trim(),
+        description:       (document.getElementById('dishDesc')?.value     || '').trim(),
+        price_rm:          price,
+        category:          document.getElementById('dishCategory')?.value  || 'Rice / Nasi',
+        dietary_tags:      document.getElementById('dishTags')?.value      || 'Halal',
+        photo_url:         document.getElementById('dishPhotoUrl')?.value  || '',
+        portions_today:    portions,
+        portions_sold:     '0',
+        pickup_ready_time: document.getElementById('dishReadyBy')?.value   || '11:30',
+        is_available:      'TRUE'
+      })
+    });
     const data = JSON.parse(await res.text());
-    if(data.status === 'OK') {
+    if(data.status==='OK') {
       closeModal();
       showToast('✅ Dish saved and live on MasakApaTu!');
       loadRealDishes();
     } else {
       showToast('❌ Error saving dish. Try again.');
     }
-  } catch(e) {
-    showToast('❌ Connection error. Try again.');
-  }
+  } catch(e) { showToast('❌ Connection error. Try again.'); }
 
-  if(btn) { btn.textContent = 'Save Dish ✓'; btn.disabled = false; }
+  if(btn) { btn.textContent='Save Dish ✓'; btn.disabled=false; }
+}
+
+// ── IMAGE PREVIEW (registration) ──
+function previewImg(input, previewId) {
+  const p = document.getElementById(previewId);
+  if(input.files&&input.files[0]) {
+    const r = new FileReader();
+    r.onload = e => { p.src=e.target.result; p.style.display='block'; };
+    r.readAsDataURL(input.files[0]);
+  }
+}
+
+// ── TOAST ──
+function showToast(msg) {
+  document.getElementById('toastMsg').textContent = msg;
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
 }
 </script>
+
 </body>
 </html>
