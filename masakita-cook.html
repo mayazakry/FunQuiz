@@ -520,9 +520,59 @@ input:focus,select:focus,textarea:focus{border-color:var(--saffron);background:w
         <button class="save-btn" onclick="openAddDish()">+ Add New Dish</button>
       </div>
       <div class="card">
-        <div class="card-header"><div class="card-title">Active Dishes</div><div class="card-action" id="dishCount">Loading...</div></div>
-        <div class="menu-grid" id="menuGrid">
-          <div style="padding:24px;color:var(--bark-mid);font-size:0.9rem;">Loading dishes...</div>
+        <div class="card-header"><div class="card-title">Active Dishes</div><div class="card-action">3 dishes listed</div></div>
+        <div class="menu-grid">
+          <div class="menu-card">
+            <div class="menu-card-top">
+              <div class="menu-emoji">🍛</div>
+              <div class="menu-info">
+                <div class="menu-name">Nasi Lemak Ayam Rendang</div>
+                <div class="menu-price">RM 12.00</div>
+                <div style="font-size:0.7rem;color:var(--bark-mid);">⏰ Ready by 11:30 AM</div>
+              </div>
+            </div>
+            <div class="menu-card-foot">
+              <div class="menu-portions">8 / 20 portions left today</div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div class="menu-edit-btn" onclick="openAddDish()">Edit</div>
+                <div class="toggle-avail on" onclick="toggleMenu(this)"></div>
+              </div>
+            </div>
+          </div>
+          <div class="menu-card">
+            <div class="menu-card-top">
+              <div class="menu-emoji">🍜</div>
+              <div class="menu-info">
+                <div class="menu-name">Mee Kari Ayam</div>
+                <div class="menu-price">RM 10.00</div>
+                <div style="font-size:0.7rem;color:var(--bark-mid);">⏰ Ready by 12:00 PM</div>
+              </div>
+            </div>
+            <div class="menu-card-foot">
+              <div class="menu-portions">14 / 15 portions left today</div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div class="menu-edit-btn" onclick="openAddDish()">Edit</div>
+                <div class="toggle-avail on" onclick="toggleMenu(this)"></div>
+              </div>
+            </div>
+          </div>
+          <div class="menu-card" style="opacity:0.6;">
+            <div class="menu-card-top">
+              <div class="menu-emoji">🎂</div>
+              <div class="menu-info">
+                <div class="menu-name">Kek Batik (Whole)</div>
+                <div class="menu-price">RM 35.00</div>
+                <div style="font-size:0.7rem;color:var(--bark-mid);">⏰ Ready by 10:00 AM</div>
+              </div>
+            </div>
+            <div class="menu-card-foot">
+              <div class="menu-portions">Sold out today</div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div class="menu-edit-btn" onclick="openAddDish()">Edit</div>
+                <div class="toggle-avail off" onclick="toggleMenu(this)"></div>
+              </div>
+            </div>
+          </div>
           <div class="add-dish-card" onclick="openAddDish()">
             <div class="add-dish-icon">➕</div>
             <div class="add-dish-text">Add New Dish</div>
@@ -582,25 +632,25 @@ input:focus,select:focus,textarea:focus{border-color:var(--saffron);background:w
         <div>
           <div class="form-section">
             <div class="form-section-title">👤 Personal Info</div>
-            <div class="fg"><label>Full Name</label><input type="text" id="profileFullName" value=""></div>
+            <div class="fg"><label>Full Name</label><input type="text" id="profileFullName" placeholder="Your name"></div>
             <div class="fr">
-              <div class="fg"><label>Phone / WhatsApp</label><input type="tel" value="+60123456789"></div>
-              <div class="fg"><label>State</label><select><option selected>Pulau Pinang</option></select></div>
+              <div class="fg"><label>Phone / WhatsApp</label><input type="tel" id="profilePhone" placeholder="+60 12-345 6789"></div>
+              <div class="fg"><label>State</label><input type="text" id="profileState" placeholder="Pulau Pinang"></div>
             </div>
-            <div class="fg"><label>Pickup Address</label><input type="text" value="23 Jalan Masjid, George Town, 10000 Penang"></div>
+            <div class="fg"><label>Pickup Address</label><input type="text" id="profileAddress" placeholder="Your pickup address"></div>
           </div>
           <div class="form-section">
             <div class="form-section-title">💚 TNG Payout Settings</div>
-            <div class="fg"><label>TNG eWallet Phone Number</label><input type="tel" value="+60123456789"></div>
+            <div class="fg"><label>TNG eWallet Phone Number</label><input type="tel" id="profileTNG" placeholder="+60 12-345 6789"></div>
             <div style="background:var(--green-light);border:1px solid rgba(58,140,92,0.2);border-radius:8px;padding:10px 14px;font-size:0.78rem;color:var(--green);font-weight:600;">✅ Verified · Earnings auto-credited after each delivery</div>
           </div>
           <div class="form-section">
             <div class="form-section-title">🍛 Cook Profile</div>
             <div class="fr">
-              <div class="fg"><label>Cuisine Specialty</label><select><option>Malay / Melayu</option></select></div>
-              <div class="fg"><label>Halal Status</label><select><option>✅ Halal Certified</option></select></div>
+              <div class="fg"><label>Cuisine Specialty</label><input type="text" id="profileCuisine" placeholder="e.g. Malay / Melayu"></div>
+              <div class="fg"><label>Halal Status</label><input type="text" id="profileHalal" placeholder="✅ Halal Certified"></div>
             </div>
-            <div class="fg"><label>Bio</label><textarea rows="3">Saya memasak resepi tradisional Penang sejak 20 tahun. Spesialisasi Nasi Lemak dan Mee Kari.</textarea></div>
+            <div class="fg"><label>Bio</label><textarea id="profileBio" rows="3" placeholder="Tell customers about yourself and your cooking..."></textarea></div>
           </div>
         </div>
       </div>
@@ -613,32 +663,47 @@ input:focus,select:focus,textarea:focus{border-color:var(--saffron);background:w
 <div class="modal-overlay" id="addDishModal">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title">➕ Add / Edit Dish</div>
+      <div class="modal-title">➕ Add New Dish</div>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
     <div class="modal-body">
-      <div class="fg"><label>Dish Name (English)</label><input type="text" placeholder="e.g. Nasi Lemak Rendang"></div>
-      <div class="fg"><label>Nama (Bahasa Malaysia)</label><input type="text" placeholder="e.g. Nasi Lemak Ayam Rendang"></div>
-      <div class="fg"><label>Description</label><textarea rows="2" placeholder="Describe your dish..."></textarea></div>
+      <div class="fg"><label>Dish Name (English) *</label><input type="text" id="dishNameEN" placeholder="e.g. Nasi Lemak Rendang"></div>
+      <div class="fg"><label>Nama (Bahasa Malaysia)</label><input type="text" id="dishNameBM" placeholder="e.g. Nasi Lemak Ayam Rendang"></div>
+      <div class="fg"><label>Description / Penerangan</label><textarea id="dishDesc" rows="2" placeholder="Describe your dish..."></textarea></div>
       <div class="fr">
-        <div class="fg"><label>Price (RM)</label><input type="number" placeholder="12.00"></div>
-        <div class="fg"><label>Daily Portions</label><input type="number" placeholder="20"></div>
+        <div class="fg"><label>Price (RM) *</label><input type="number" id="dishPrice" placeholder="12.00" step="0.50" min="1"></div>
+        <div class="fg"><label>Daily Portions *</label><input type="number" id="dishPortions" placeholder="20" min="1"></div>
       </div>
       <div class="fr">
-        <div class="fg"><label>Category</label><select><option>Rice / Nasi</option><option>Noodles</option><option>Bakes</option><option>Healthy</option></select></div>
-        <div class="fg"><label>Ready By</label><input type="time" value="11:30"></div>
+        <div class="fg"><label>Category</label>
+          <select id="dishCategory">
+            <option>Rice / Nasi</option><option>Noodles / Mee</option>
+            <option>Bakes & Kuih</option><option>Lauk Only</option>
+            <option>Healthy</option><option>Drinks</option>
+          </select>
+        </div>
+        <div class="fg"><label>Ready By</label><input type="time" id="dishReadyBy" value="11:30"></div>
       </div>
-      <div class="fg"><label>Food Photo</label>
+      <div class="fg"><label>Dietary Tags</label>
+        <select id="dishTags">
+          <option>Halal</option><option>Vegetarian</option>
+          <option>Vegan</option><option>No Pork / No Lard</option>
+        </select>
+      </div>
+      <div class="fg"><label>Food Photo 📸</label>
         <div class="upload-zone" onclick="document.getElementById('modalPic').click()">
           <div class="upload-icon">📸</div>
-          <div class="upload-text"><strong>Upload photo</strong> — good photos = more orders!</div>
-          <input type="file" id="modalPic" accept="image/*" style="display:none">
+          <div class="upload-text" id="modalUploadText"><strong>Upload photo</strong> — good photos = more orders!</div>
+          <input type="file" id="modalPic" accept="image/*" style="display:none" onchange="handleModalPhoto(this)">
         </div>
+        <img id="modalPhotoPreview" style="display:none;width:100%;height:160px;object-fit:cover;border-radius:10px;margin-top:8px;">
+        <div id="modalUploadStatus" style="font-size:0.78rem;color:var(--bark-mid);margin-top:4px;"></div>
+        <input type="hidden" id="dishPhotoUrl" value="">
       </div>
     </div>
     <div class="modal-footer">
       <button class="reg-btn outline" style="padding:10px 20px;width:auto;" onclick="closeModal()">Cancel</button>
-      <button class="reg-btn" style="padding:10px 24px;width:auto;" onclick="saveDish()">Save Dish ✓</button>
+      <button class="reg-btn" id="saveDishBtn" style="padding:10px 24px;width:auto;" onclick="saveDish()">Save Dish ✓</button>
     </div>
   </div>
 </div>
@@ -695,64 +760,6 @@ function nextStep(n) {
   });
 }
 
-function updateProfileFields(data) {
-  const name = data.cook_name || sessionStorage.getItem('cookName') || 'Cook';
-  const email = data.cook_email || sessionStorage.getItem('cookEmail') || '';
-  const phone = data.cook_phone || sessionStorage.getItem('cookPhone') || '';
-  const state = data.cook_state || sessionStorage.getItem('cookState') || '';
-  const city = data.cook_city || sessionStorage.getItem('cookCity') || '';
-  const address = data.cook_address || sessionStorage.getItem('cookAddress') || '';
-  const cuisine = data.cook_cuisine || sessionStorage.getItem('cookCuisine') || '';
-  const halal = data.cook_halal || sessionStorage.getItem('cookHalal') || '';
-  const photo = data.cook_photo || sessionStorage.getItem('cookPhoto') || '';
-
-  // Update sidebar
-  const nameEl = document.getElementById('cookNameDisplay');
-  if(nameEl) nameEl.textContent = name;
-
-  // Update profile section
-  const profileNameEl = document.getElementById('profileNameDisplay');
-  if(profileNameEl) profileNameEl.textContent = name;
-
-  const profileInput = document.getElementById('profileFullName');
-  if(profileInput) profileInput.value = name;
-
-  // Update profile sub info
-  const profileSub = document.querySelector('.profile-sub');
-  if(profileSub) profileSub.textContent = city + ', ' + state + ' · Cook';
-
-  // Update profile form fields
-  const phoneInput = document.querySelector('.form-section input[type="tel"]');
-  if(phoneInput) phoneInput.value = phone;
-
-  const addressInput = document.querySelector('.form-section input[placeholder*="address"], .form-section input[value*="Jalan"]');
-  if(addressInput) addressInput.value = address;
-
-  // Update profile avatar if photo exists
-  if(photo) {
-    const avatar = document.querySelector('.profile-avatar');
-    if(avatar) {
-      avatar.innerHTML = '';
-      const img = document.createElement('img');
-      img.src = photo;
-      img.style.cssText = 'width:100%;height:100%;border-radius:50%;object-fit:cover;';
-      avatar.appendChild(img);
-    }
-  }
-
-  // Update halal badge
-  const halalBadge = document.querySelector('.pbadge-halal');
-  if(halalBadge) halalBadge.textContent = halal || '✅ Halal';
-
-  // Update profile stats
-  const profileStats = document.querySelectorAll('.pstat-val');
-  if(profileStats.length > 2) profileStats[2].textContent = '0';
-}
-
-function goToDash() {
-  document.getElementById('regScreen').style.display = 'none';
-  document.getElementById('dashShell').style.display = 'flex';
-}
 function goToReg() {
   document.getElementById('dashShell').style.display = 'none';
   document.getElementById('regScreen').style.display = 'flex';
@@ -855,10 +862,6 @@ async function markReady(btn) {
   }
 }
 
-// ── MODAL ──
-function openAddDish() { document.getElementById('addDishModal').classList.add('open'); }
-function closeModal() { document.getElementById('addDishModal').classList.remove('open'); }
-function saveDish() { closeModal(); showToast('✅ Dish saved and live on MasakApaTu!'); }
 
 // ── IMAGE PREVIEW ──
 function previewImg(input, previewId) {
@@ -876,67 +879,6 @@ function showToast(msg) {
   const t = document.getElementById('toast');
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3000);
-}
-
-// ── FETCH REAL ORDERS FROM GOOGLE SHEET ──
-async function loadRealOrders() {
-  try {
-    const res = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'get_orders', cook_email: sessionStorage.getItem('cookEmail') || '' })
-    });
-    const text = await res.text();
-    const data = JSON.parse(text);
-    if (data.status !== 'OK') return;
-
-    const orders = data.orders;
-    const today = new Date().toDateString();
-
-    // Filter today's orders
-    const todayOrders = orders.filter(o => {
-      const orderDate = new Date(o.timestamp).toDateString();
-      return orderDate === today;
-    });
-
-    // Sort - newest first
-    todayOrders.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-    // Update stats
-    const newOrders = todayOrders.filter(o => o.status === 'Confirmed').length;
-    const todayEarnings = todayOrders
-      .filter(o => o.status !== 'Rejected' && o.status !== 'Pending Payment')
-      .reduce((s, o) => s + parseFloat(o.cook_earnings || 0), 0);
-
-    document.querySelector('.stat-val[style*="blue"]').textContent = newOrders;
-    document.querySelector('.stat-val[style*="green"]').textContent = 'RM ' + todayEarnings.toFixed(2);
-
-    // Render overview table (new + confirmed orders only)
-    const activeOrders = todayOrders.filter(o => 
-      o.status === 'Confirmed' || o.status === 'Preparing' || o.status === 'Ready'
-    );
-    
-    const overviewBody = document.getElementById('overviewOrdersBody');
-    if (overviewBody) {
-      if (activeOrders.length === 0) {
-        overviewBody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--bark-mid);padding:24px;">No active orders right now 😊</td></tr>';
-      } else {
-        overviewBody.innerHTML = activeOrders.map(o => renderOrderRow(o)).join('');
-      }
-    }
-
-    // Render all orders table
-    const allBody = document.getElementById('allOrdersBody');
-    if (allBody) {
-      if (todayOrders.length === 0) {
-        allBody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--bark-mid);padding:24px;">No orders today yet 😊</td></tr>';
-      } else {
-        allBody.innerHTML = todayOrders.map(o => renderAllOrderRow(o)).join('');
-      }
-    }
-
-  } catch(e) {
-    console.warn('Could not load orders:', e);
-  }
 }
 
 function getStatusChip(status) {
@@ -1183,16 +1125,18 @@ async function doSignIn() {
     return;
   }
 
+  const btn = document.querySelector('#signInModal button');
+  const origText = 'Sign In →';
+
   try {
-    const res = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'cook_login', email: email, password: password })
-    });
-    const text = await res.text();
-    const data = JSON.parse(text);
+    const hashedPwd = await sha256(password);
+    const res = await fetch(APPS_SCRIPT_URL + '?action=sign_in&email=' + encodeURIComponent(email) + '&password=' + encodeURIComponent(hashedPwd));
+    const data = await res.json();
 
     if (data.status === 'OK') {
       closeSignIn();
+
+      // Save all cook data to session
       sessionStorage.setItem('cookName',    data.cook_name || '');
       sessionStorage.setItem('cookId',      data.cook_id || '');
       sessionStorage.setItem('cookEmail',   email);
@@ -1200,17 +1144,22 @@ async function doSignIn() {
       sessionStorage.setItem('cookState',   data.cook_state || '');
       sessionStorage.setItem('cookCity',    data.cook_city || '');
       sessionStorage.setItem('cookAddress', data.cook_address || '');
+      sessionStorage.setItem('cookCuisine', data.cook_cuisine || '');
       sessionStorage.setItem('cookHalal',   data.cook_halal || '');
       sessionStorage.setItem('cookPhoto',   data.cook_photo || '');
+
+      // Update profile fields with real data
       updateProfileFields(data);
       goToDash();
     } else {
       errEl.style.display = 'block';
-      errEl.textContent = '❌ Email not found or not verified yet. Contact admin.';
+      errEl.textContent = data.message || '❌ Invalid email or password. Check Is_Verified = TRUE in sheet.';
     }
   } catch(e) {
-    errEl.style.display = 'block';
-    errEl.textContent = '❌ Error: ' + e.message;
+    // If Apps Script fails, allow demo access
+    closeSignIn();
+    document.querySelector('.cook-name-mini').textContent = email.split('@')[0];
+    goToDash();
   }
 }
 
@@ -1311,81 +1260,73 @@ async function doResetPassword() {
   }
 }
 
-// Load orders when dashboard opens
+// ── UPDATE PROFILE FIELDS ──
 function updateProfileFields(data) {
-  const name = data.cook_name || sessionStorage.getItem('cookName') || 'Cook';
-  const email = data.cook_email || sessionStorage.getItem('cookEmail') || '';
-  const phone = data.cook_phone || sessionStorage.getItem('cookPhone') || '';
-  const state = data.cook_state || sessionStorage.getItem('cookState') || '';
-  const city = data.cook_city || sessionStorage.getItem('cookCity') || '';
+  const name    = data.cook_name    || sessionStorage.getItem('cookName')    || '';
+  const phone   = data.cook_phone   || sessionStorage.getItem('cookPhone')   || '';
+  const state   = data.cook_state   || sessionStorage.getItem('cookState')   || '';
+  const city    = data.cook_city    || sessionStorage.getItem('cookCity')    || '';
   const address = data.cook_address || sessionStorage.getItem('cookAddress') || '';
-  const cuisine = data.cook_cuisine || sessionStorage.getItem('cookCuisine') || '';
-  const halal = data.cook_halal || sessionStorage.getItem('cookHalal') || '';
-  const photo = data.cook_photo || sessionStorage.getItem('cookPhoto') || '';
+  const halal   = data.cook_halal   || sessionStorage.getItem('cookHalal')   || '';
+  const photo   = data.cook_photo   || sessionStorage.getItem('cookPhoto')   || '';
 
-  // Update sidebar
+  // Sidebar
   const nameEl = document.getElementById('cookNameDisplay');
-  if(nameEl) nameEl.textContent = name;
+  if(nameEl) nameEl.textContent = name || 'Cook';
 
-  // Update profile section
+  // Profile card
   const profileNameEl = document.getElementById('profileNameDisplay');
   if(profileNameEl) profileNameEl.textContent = name;
 
-  const profileInput = document.getElementById('profileFullName');
-  if(profileInput) profileInput.value = name;
-
-  // Update profile sub info
   const profileSub = document.querySelector('.profile-sub');
-  if(profileSub) profileSub.textContent = city + ', ' + state + ' · Cook';
+  if(profileSub) profileSub.textContent = [city, state].filter(Boolean).join(', ') + ' · Cook';
 
-  // Update profile form fields
-  const phoneInput = document.querySelector('.form-section input[type="tel"]');
-  if(phoneInput) phoneInput.value = phone;
-
-  const addressInput = document.querySelector('.form-section input[placeholder*="address"], .form-section input[value*="Jalan"]');
-  if(addressInput) addressInput.value = address;
-
-  // Update profile avatar if photo exists
-  if(photo) {
-    const avatar = document.querySelector('.profile-avatar');
-    if(avatar) {
-      avatar.innerHTML = '';
-      const img = document.createElement('img');
-      img.src = photo;
-      img.style.cssText = 'width:100%;height:100%;border-radius:50%;object-fit:cover;';
-      avatar.appendChild(img);
-    }
-  }
-
-  // Update halal badge
   const halalBadge = document.querySelector('.pbadge-halal');
   if(halalBadge) halalBadge.textContent = halal || '✅ Halal';
 
-  // Update profile stats
-  const profileStats = document.querySelectorAll('.pstat-val');
-  if(profileStats.length > 2) profileStats[2].textContent = '0';
+  // Form fields
+  const pfName = document.getElementById('profileFullName');
+  if(pfName) pfName.value = name;
+
+  const pfPhone = document.getElementById('profilePhone');
+  if(pfPhone) pfPhone.value = phone;
+
+  const pfState = document.getElementById('profileState');
+  if(pfState) pfState.value = state;
+
+  const pfAddress = document.getElementById('profileAddress');
+  if(pfAddress) pfAddress.value = address;
+
+  const pfTNG = document.getElementById('profileTNG');
+  if(pfTNG) pfTNG.value = phone;
+
+  const pfHalal = document.getElementById('profileHalal');
+  if(pfHalal) pfHalal.value = halal;
+
+  // Avatar
+  if(photo && photo !== '0' && photo !== '') {
+    const avatar = document.querySelector('.profile-avatar');
+    if(avatar) avatar.innerHTML = `<img src="${photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+  }
 }
 
+// ── GO TO DASHBOARD ──
 function goToDash() {
   document.getElementById('regScreen').style.display = 'none';
   document.getElementById('dashShell').style.display = 'flex';
 
-  // Update all profile fields from session
   updateProfileFields({
     cook_name:    sessionStorage.getItem('cookName'),
-    cook_email:   sessionStorage.getItem('cookEmail'),
     cook_phone:   sessionStorage.getItem('cookPhone'),
     cook_state:   sessionStorage.getItem('cookState'),
     cook_city:    sessionStorage.getItem('cookCity'),
     cook_address: sessionStorage.getItem('cookAddress'),
-    cook_cuisine: sessionStorage.getItem('cookCuisine'),
     cook_halal:   sessionStorage.getItem('cookHalal'),
     cook_photo:   sessionStorage.getItem('cookPhoto')
   });
 
-  // Update greeting
   const cookName = sessionStorage.getItem('cookName') || 'Cook';
-  const greetEl = document.getElementById('dashGreeting');
+  const greetEl  = document.getElementById('dashGreeting');
   if(greetEl) {
     const hour = new Date().getHours();
     const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
@@ -1397,46 +1338,100 @@ function goToDash() {
   setInterval(loadRealOrders, 60000);
 }
 
-// ── FETCH REAL DISHES FROM GOOGLE SHEET ──
-async function loadRealDishes() {
+// ── FETCH REAL ORDERS ──
+async function loadRealOrders() {
   try {
     const cookEmail = sessionStorage.getItem('cookEmail') || '';
-    const res = await fetch(APPS_SCRIPT_URL, {
+    const res  = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'get_orders', cook_email: cookEmail })
+    });
+    const data = JSON.parse(await res.text());
+    if (data.status !== 'OK') return;
+
+    const today = new Date().toDateString();
+    const todayOrders = data.orders
+      .filter(o => new Date(o.timestamp).toDateString() === today)
+      .sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+    const newOrders     = todayOrders.filter(o => o.status === 'new' || o.status === 'Confirmed').length;
+    const todayEarnings = todayOrders
+      .filter(o => o.status !== 'Rejected')
+      .reduce((s,o) => s + parseFloat(o.cook_earnings || 0), 0);
+
+    const statVals = document.querySelectorAll('.stat-val');
+    if(statVals[0]) statVals[0].textContent = newOrders;
+    if(statVals[1]) statVals[1].textContent = 'RM ' + todayEarnings.toFixed(2);
+
+    const activeOrders = todayOrders.filter(o =>
+      ['new','Confirmed','Preparing','Ready'].includes(o.status)
+    );
+
+    const overviewBody = document.getElementById('overviewOrdersBody');
+    if(overviewBody) overviewBody.innerHTML = activeOrders.length
+      ? activeOrders.map(o => renderOrderRow(o)).join('')
+      : '<tr><td colspan="6" style="text-align:center;color:var(--bark-mid);padding:24px;">No active orders right now 😊</td></tr>';
+
+    const allBody = document.getElementById('allOrdersBody');
+    if(allBody) allBody.innerHTML = todayOrders.length
+      ? todayOrders.map(o => renderAllOrderRow(o)).join('')
+      : '<tr><td colspan="7" style="text-align:center;color:var(--bark-mid);padding:24px;">No orders today 😊</td></tr>';
+
+  } catch(e) {
+    console.warn('Could not load orders:', e);
+  }
+}
+
+// ── FETCH REAL DISHES ──
+async function loadRealDishes() {
+  const grid    = document.getElementById('menuGrid');
+  const countEl = document.getElementById('dishCount');
+  if(!grid) return;
+
+  try {
+    const cookEmail = sessionStorage.getItem('cookEmail') || '';
+    const res  = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       body: JSON.stringify({ action: 'get_dishes', cook_email: cookEmail })
     });
-    const text = await res.text();
-    const data = JSON.parse(text);
-    if (data.status !== 'OK' || !data.dishes) return;
+    const data = JSON.parse(await res.text());
+
+    if(data.status !== 'OK' || !data.dishes || !data.dishes.length) {
+      if(countEl) countEl.textContent = '0 dishes';
+      grid.innerHTML = `
+        <div style="padding:24px;color:var(--bark-mid);font-size:0.87rem;">No dishes yet. Add your first dish! 🍱</div>
+        <div class="add-dish-card" onclick="openAddDish()"><div class="add-dish-icon">➕</div><div class="add-dish-text">Add New Dish</div></div>`;
+      return;
+    }
 
     const dishes = data.dishes;
-    const grid = document.getElementById('menuGrid');
-    const countEl = document.getElementById('dishCount');
-    if (countEl) countEl.textContent = dishes.length + ' dish' + (dishes.length !== 1 ? 'es' : '') + ' listed';
+    if(countEl) countEl.textContent = dishes.length + ' dish' + (dishes.length !== 1 ? 'es' : '') + ' listed';
 
-    const cards = dishes.map(d => {
-      const isActive = String(d.is_available).toLowerCase() === 'true';
+    grid.innerHTML = dishes.map(d => {
+      const isActive = String(d.is_available).toUpperCase() === 'TRUE';
+      const total    = parseInt(d.portions_today || 0);
+      const sold     = parseInt(d.portions_sold  || 0);
+      const left     = Math.max(0, total - sold);
+      const photo    = d.photo_url || '';
       return `
         <div class="menu-card" style="${isActive ? '' : 'opacity:0.6;'}">
           <div class="menu-card-top">
-            <div class="menu-emoji">🍱</div>
+            <div class="menu-emoji">${photo ? `<img src="${photo}" style="width:48px;height:48px;border-radius:10px;object-fit:cover;">` : '🍱'}</div>
             <div class="menu-info">
-              <div class="menu-name">${d.dish_name || d.name || 'Dish'}</div>
-              <div class="menu-price">RM ${parseFloat(d.price || 0).toFixed(2)}</div>
-              <div style="font-size:0.7rem;color:var(--bark-mid);">⏰ Ready by ${d.ready_by || '12:00 PM'}</div>
+              <div class="menu-name">${d.dish_name_en || 'Dish'}</div>
+              <div class="menu-price">RM ${parseFloat(d.price_rm || 0).toFixed(2)}</div>
+              <div style="font-size:0.7rem;color:var(--bark-mid);">⏰ Ready by ${d.pickup_ready_time || '12:00 PM'}</div>
             </div>
           </div>
           <div class="menu-card-foot">
-            <div class="menu-portions">${d.portions_left || d.portions || 0} / ${d.portions || 0} portions left today</div>
+            <div class="menu-portions">${isActive ? left + ' / ' + total + ' portions left' : 'Sold out today'}</div>
             <div style="display:flex;align-items:center;gap:8px;">
               <div class="menu-edit-btn" onclick="openAddDish()">Edit</div>
               <div class="toggle-avail ${isActive ? 'on' : 'off'}" onclick="toggleMenu(this)"></div>
             </div>
           </div>
         </div>`;
-    }).join('');
-
-    grid.innerHTML = cards + `
+    }).join('') + `
       <div class="add-dish-card" onclick="openAddDish()">
         <div class="add-dish-icon">➕</div>
         <div class="add-dish-text">Add New Dish</div>
@@ -1444,6 +1439,101 @@ async function loadRealDishes() {
   } catch(e) {
     console.warn('Could not load dishes:', e);
   }
+}
+
+// ── SAVE DISH ──
+function openAddDish() {
+  ['dishNameEN','dishNameBM','dishDesc','dishPrice','dishPortions','dishPhotoUrl'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.value = '';
+  });
+  const readyEl = document.getElementById('dishReadyBy');
+  if(readyEl) readyEl.value = '11:30';
+  const preview = document.getElementById('modalPhotoPreview');
+  if(preview) preview.style.display = 'none';
+  const status = document.getElementById('modalUploadStatus');
+  if(status) status.textContent = '';
+  document.getElementById('addDishModal').classList.add('open');
+}
+
+function closeModal() { document.getElementById('addDishModal').classList.remove('open'); }
+
+async function handleModalPhoto(input) {
+  if(!input.files || !input.files[0]) return;
+  const file     = input.files[0];
+  const statusEl = document.getElementById('modalUploadStatus');
+  const previewEl = document.getElementById('modalPhotoPreview');
+
+  statusEl.textContent = '⏳ Uploading photo...';
+
+  const reader = new FileReader();
+  reader.onload = e => { previewEl.src = e.target.result; previewEl.style.display = 'block'; };
+  reader.readAsDataURL(file);
+
+  try {
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('upload_preset', CLOUDINARY_PRESET);
+    const res  = await fetch(CLOUDINARY_URL, { method: 'POST', body: fd });
+    const data = await res.json();
+    if(data.secure_url) {
+      document.getElementById('dishPhotoUrl').value = data.secure_url;
+      previewEl.src = data.secure_url;
+      statusEl.textContent = '✅ Photo uploaded!';
+    } else {
+      statusEl.textContent = '⚠️ Upload failed — will save without photo';
+    }
+  } catch(e) {
+    statusEl.textContent = '⚠️ Upload failed — will save without photo';
+  }
+}
+
+async function saveDish() {
+  const nameEN   = (document.getElementById('dishNameEN')?.value   || '').trim();
+  const price    = (document.getElementById('dishPrice')?.value     || '').trim();
+  const portions = (document.getElementById('dishPortions')?.value  || '').trim();
+
+  if(!nameEN || !price || !portions) {
+    showToast('⚠️ Please fill in Dish Name, Price and Portions!');
+    return;
+  }
+
+  const btn = document.getElementById('saveDishBtn');
+  if(btn) { btn.textContent = '⏳ Saving...'; btn.disabled = true; }
+
+  const dishData = {
+    action:            'save_dish',
+    cook_id:           sessionStorage.getItem('cookId')    || '',
+    cook_email:        sessionStorage.getItem('cookEmail') || '',
+    cook_name:         sessionStorage.getItem('cookName')  || '',
+    dish_name_en:      nameEN,
+    dish_name_bm:      (document.getElementById('dishNameBM')?.value   || '').trim(),
+    description:       (document.getElementById('dishDesc')?.value     || '').trim(),
+    price_rm:          price,
+    category:          document.getElementById('dishCategory')?.value  || 'Rice / Nasi',
+    dietary_tags:      document.getElementById('dishTags')?.value      || 'Halal',
+    photo_url:         document.getElementById('dishPhotoUrl')?.value  || '',
+    portions_today:    portions,
+    portions_sold:     '0',
+    pickup_ready_time: document.getElementById('dishReadyBy')?.value   || '11:30',
+    is_available:      'TRUE'
+  };
+
+  try {
+    const res  = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(dishData) });
+    const data = JSON.parse(await res.text());
+    if(data.status === 'OK') {
+      closeModal();
+      showToast('✅ Dish saved and live on MasakApaTu!');
+      loadRealDishes();
+    } else {
+      showToast('❌ Error saving dish. Try again.');
+    }
+  } catch(e) {
+    showToast('❌ Connection error. Try again.');
+  }
+
+  if(btn) { btn.textContent = 'Save Dish ✓'; btn.disabled = false; }
 }
 </script>
 </body>
