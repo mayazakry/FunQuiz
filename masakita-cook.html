@@ -1307,6 +1307,8 @@ async function saveDish() {
         cook_id:           sessionStorage.getItem('cookId')    || '',
         cook_email:        sessionStorage.getItem('cookEmail') || '',
         cook_name:         sessionStorage.getItem('cookName')  || '',
+        cook_city:         sessionStorage.getItem('cookCity')  || '',
+        cook_state:        sessionStorage.getItem('cookState') || '',
         dish_name_en:      nameEN,
         dish_name_bm:      (document.getElementById('dishNameBM')?.value   || '').trim(),
         description:       (document.getElementById('dishDesc')?.value     || '').trim(),
@@ -1316,7 +1318,7 @@ async function saveDish() {
         photo_url:         document.getElementById('dishPhotoUrl')?.value  || '',
         portions_today:    portions,
         portions_sold:     '0',
-        pickup_ready_time: document.getElementById('dishReadyBy')?.value   || '11:30',
+        pickup_ready_time: (document.getElementById('dishReadyBy')?.value  || '11:30'),
         is_available:      'TRUE'
       })
     });

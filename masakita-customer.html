@@ -667,10 +667,7 @@ let lalamoveQuoteId = null;
 // ── LOAD REAL DISHES ──
 async function loadRealDishes() {
   try {
-    const res  = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'get_dishes' })
-    });
+    const res  = await fetch(APPS_SCRIPT_URL + '?action=get_dishes');
     const data = JSON.parse(await res.text());
     if (data.status === 'OK' && data.dishes && data.dishes.length > 0) {
       const realFoods = data.dishes.map((d, i) => ({
@@ -678,8 +675,8 @@ async function loadRealDishes() {
         name:       d.dish_name_en || d.dish_name || 'Dish',
         nameBM:     d.dish_name_bm || d.dish_name_en || 'Dish',
         cook:       d.cook_name   || 'Home Cook',
-        location:   'Malaysia',
-        state:      'Pulau Pinang',
+        location:   [d.cook_city, d.cook_state].filter(Boolean).join(', ') || 'Malaysia',
+        state:      d.cook_state  || 'Pulau Pinang',
         price:      parseFloat(d.price_rm || 0),
         cat:        (d.category || 'malay').toLowerCase().split('/')[0].trim(),
         tags:       (d.dietary_tags||'').toLowerCase().includes('halal') ? ['halal'] : [],
@@ -691,7 +688,7 @@ async function loadRealDishes() {
         isNew:      true,
         isPopular:  false,
         isHalal:    (d.dietary_tags||'').toLowerCase().includes('halal'),
-        readyBy:    d.pickup_ready_time || '12:00 PM',
+        readyBy:    (d.pickup_ready_time||'12:00').includes('1899') ? '12:00' : (d.pickup_ready_time || '12:00'),
         portions:   parseInt(d.portions_today || 10)
       }));
       foods = [...realFoods, ...fallbackFoods];
