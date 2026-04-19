@@ -903,9 +903,8 @@ function showPanel(id, el) {
   if(id === 'earnings') loadRealEarnings();
 }
 
-// ── ACCEPTING ORDERS TOGGLE ──
 let acceptingOrders = true;
-function toggleOnline() {
+async function toggleOnline() {
   const t = document.getElementById('onlineToggle');
   t.classList.toggle('off');
   acceptingOrders = !t.classList.contains('off');
@@ -913,7 +912,16 @@ function toggleOnline() {
   if(statusDot) statusDot.innerHTML = acceptingOrders
     ? '<div class="status-dot"></div> Online & Accepting'
     : '<div class="status-dot" style="background:#ef4444;"></div> Offline';
-  showToast(acceptingOrders ? '✅ You are online — accepting orders!' : '⏸ You are now offline — not accepting new orders');
+  showToast(acceptingOrders ? '✅ You are online — accepting orders!' : '⏸ You are now offline');
+
+  // Save to sheet
+  const cookId = sessionStorage.getItem('cookId') || '';
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'set_accepting', cook_id: cookId, accepting: acceptingOrders ? 'TRUE' : 'FALSE' })
+    });
+  } catch(e) { console.warn('Could not save accepting status'); }
 }
 
 // ── DISH AVAILABILITY TOGGLE ──

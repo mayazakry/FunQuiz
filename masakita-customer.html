@@ -689,6 +689,7 @@ async function loadRealDishes() {
         isPopular:  false,
         isHalal:    (d.dietary_tags||'').toLowerCase().includes('halal'),
         available:  String(d.is_available).toUpperCase() === 'TRUE',
+        cookAccepting: String(d.is_active).toUpperCase() !== 'FALSE',
         readyBy:    (d.pickup_ready_time||'12:00').includes('1899') ? '12:00' : (d.pickup_ready_time || '12:00'),
         portions:   parseInt(d.portions_today || 10)
       }));
@@ -821,16 +822,14 @@ function addCurrentToCart() {
 
 // ── CART ──
 function addToCart(id, silent=false) {
-  // Check if cook is accepting orders
-  if(typeof acceptingOrders !== 'undefined' && !acceptingOrders) {
-    showToast('⚠️ Cook is not accepting orders right now');
-    return;
-  }
   const f = foods.find(x=>x.id===id);
   if(!f) return;
-  // Check dish availability
   if(f.available === false) {
     showToast('⚠️ This dish is not available right now');
+    return;
+  }
+  if(f.cookAccepting === false) {
+    showToast('⚠️ This cook is not accepting orders right now');
     return;
   }
   const existing = cart.find(c=>c.id===id);
