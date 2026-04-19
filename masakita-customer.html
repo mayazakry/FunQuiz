@@ -320,8 +320,8 @@ footer{background:var(--bark);border-top:1px solid rgba(255,255,255,0.06);paddin
   <div class="logo" onclick="goPage('browse')">Masak<span>ApaTu</span></div>
   <div class="nav-mid">
     <div class="nav-link active" onclick="goPage('browse')">Browse Food</div>
-    <div class="nav-link" onclick="goPage('browse')">How It Works</div>
-    <div class="nav-link" onclick="window.open('masakita-cook.html','_blank')">Become a Cook</div>
+    <div class="nav-link" onclick="document.getElementById('howItWorks').scrollIntoView({behavior:'smooth'})">How It Works</div>
+    <div class="nav-link" onclick="window.open('masakita-cook.html','_blank')">Become a Cook 👩‍🍳</div>
   </div>
   <div class="nav-right">
     <button class="cart-btn" onclick="toggleCart()">🛒<div class="cart-count" id="cartCount">0</div></button>
@@ -820,7 +820,18 @@ function addCurrentToCart() {
 
 // ── CART ──
 function addToCart(id, silent=false) {
-  const f        = foods.find(x=>x.id===id);
+  // Check if cook is accepting orders
+  if(typeof acceptingOrders !== 'undefined' && !acceptingOrders) {
+    showToast('⚠️ Cook is not accepting orders right now');
+    return;
+  }
+  const f = foods.find(x=>x.id===id);
+  if(!f) return;
+  // Check dish availability
+  if(f.available === false) {
+    showToast('⚠️ This dish is not available right now');
+    return;
+  }
   const existing = cart.find(c=>c.id===id);
   if(existing) existing.qty++;
   else cart.push({...f, qty:1});

@@ -399,21 +399,21 @@ input:focus,select:focus,textarea:focus{border-color:var(--saffron);background:w
       <div class="stat-grid">
         <div class="stat-card">
           <div class="stat-icon" style="background:var(--blue-light);">📋</div>
-          <div class="stat-val" style="color:var(--blue);">3</div>
+          <div class="stat-val" style="color:var(--blue);" id="statNewOrders">0</div>
           <div class="stat-label">New Orders Today</div>
-          <div class="stat-change up">↑ 2 more than yesterday</div>
+          <div class="stat-change" id="statNewChange"></div>
         </div>
         <div class="stat-card">
           <div class="stat-icon" style="background:var(--green-light);">💰</div>
-          <div class="stat-val" style="color:var(--green);">RM 84</div>
+          <div class="stat-val" style="color:var(--green);" id="statTodayEarnings">RM 0.00</div>
           <div class="stat-label">Today's Earnings</div>
-          <div class="stat-change up">↑ RM 24 vs yesterday</div>
+          <div class="stat-change" id="statEarnChange"></div>
         </div>
         <div class="stat-card">
           <div class="stat-icon" style="background:var(--saffron-light);">🍱</div>
-          <div class="stat-val" style="color:var(--saffron);">1,240</div>
+          <div class="stat-val" style="color:var(--saffron);" id="statMonthOrders">0</div>
           <div class="stat-label">Total Orders This Month</div>
-          <div class="stat-change up">↑ 111% vs last month</div>
+          <div class="stat-change" id="statMonthChange"></div>
         </div>
         <div class="stat-card">
           <div class="stat-icon" style="background:var(--red-light);">⭐</div>
@@ -431,32 +431,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--saffron);background:w
         </div>
         <table class="orders-table" id="overviewOrdersTable">
           <thead><tr><th>Order ID</th><th>Dish</th><th>Customer</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead>
-          <tbody id="overviewOrdersBody">
-            <tr>
-              <td><div class="order-id">MK-0414-007</div></td>
-              <td><div class="order-dish-cell">2× Nasi Lemak Rendang</div><div class="order-dish-sub">Pickup: 11:30 AM</div></td>
-              <td>Ahmad Firdaus<br><span style="font-size:0.72rem;color:var(--bark-mid);">George Town</span></td>
-              <td><strong>RM 24.00</strong><br><span style="font-size:0.72rem;color:var(--green);">+RM 22.08 yours</span></td>
-              <td><span class="status-chip status-new">🆕 New</span></td>
-              <td><button class="action-btn action-accept" onclick="acceptOrder(this)">✓ Accept</button></td>
-            </tr>
-            <tr>
-              <td><div class="order-id">MK-0414-008</div></td>
-              <td><div class="order-dish-cell">1× Mee Kari Ayam</div><div class="order-dish-sub">Pickup: 12:00 PM</div></td>
-              <td>Siti Aminah<br><span style="font-size:0.72rem;color:var(--bark-mid);">Butterworth</span></td>
-              <td><strong>RM 10.00</strong><br><span style="font-size:0.72rem;color:var(--green);">+RM 9.20 yours</span></td>
-              <td><span class="status-chip status-new">🆕 New</span></td>
-              <td><button class="action-btn action-accept" onclick="acceptOrder(this)">✓ Accept</button></td>
-            </tr>
-            <tr>
-              <td><div class="order-id">MK-0414-005</div></td>
-              <td><div class="order-dish-cell">3× Nasi Lemak Rendang</div><div class="order-dish-sub">Pickup: 11:30 AM</div></td>
-              <td>Rajan Kumar<br><span style="font-size:0.72rem;color:var(--bark-mid);">Air Itam</span></td>
-              <td><strong>RM 36.00</strong><br><span style="font-size:0.72rem;color:var(--green);">+RM 33.12 yours</span></td>
-              <td><span class="status-chip status-prep">🍳 Preparing</span></td>
-              <td><button class="action-btn action-ready" onclick="markReady(this)">✓ Mark Ready</button></td>
-            </tr>
-          </tbody>
+          <tbody id="overviewOrdersBody"><tr><td colspan="6" style="text-align:center;color:var(--bark-mid);padding:24px;">Loading orders...</td></tr></tbody>
         </table>
       </div>
 
@@ -466,22 +441,8 @@ input:focus,select:focus,textarea:focus{border-color:var(--saffron);background:w
           <div class="card-title">🍱 Today's Menu Status</div>
           <div class="card-action" onclick="showPanel('menu',document.querySelector('[onclick*=menu]'))">Manage Menu →</div>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;padding:16px;">
-          <div style="display:flex;align-items:center;gap:10px;background:var(--cream);border-radius:10px;padding:12px;">
-            <span style="font-size:1.4rem;">🍛</span>
-            <div style="flex:1;"><div style="font-weight:700;font-size:0.85rem;">Nasi Lemak Rendang</div><div style="font-size:0.72rem;color:var(--bark-mid);">8 / 20 portions left</div></div>
-            <div class="toggle-avail on" onclick="toggleMenu(this)"></div>
-          </div>
-          <div style="display:flex;align-items:center;gap:10px;background:var(--cream);border-radius:10px;padding:12px;">
-            <span style="font-size:1.4rem;">🍜</span>
-            <div style="flex:1;"><div style="font-weight:700;font-size:0.85rem;">Mee Kari Ayam</div><div style="font-size:0.72rem;color:var(--bark-mid);">14 / 15 portions left</div></div>
-            <div class="toggle-avail on" onclick="toggleMenu(this)"></div>
-          </div>
-          <div style="display:flex;align-items:center;gap:10px;background:var(--cream);border-radius:10px;padding:12px;opacity:0.6;">
-            <span style="font-size:1.4rem;">🎂</span>
-            <div style="flex:1;"><div style="font-weight:700;font-size:0.85rem;">Kek Batik</div><div style="font-size:0.72rem;color:var(--bark-mid);">Sold out</div></div>
-            <div class="toggle-avail off" onclick="toggleMenu(this)"></div>
-          </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;padding:16px;" id="overviewMenuGrid">
+          <div style="padding:16px;color:var(--bark-mid);font-size:0.85rem;">Loading menu...</div>
         </div>
       </div>
     </div>
@@ -502,13 +463,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--saffron);background:w
         </div>
         <table class="orders-table" id="allOrdersTable">
           <thead><tr><th>Order ID</th><th>Dish / Hidangan</th><th>Customer</th><th>Time</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead>
-          <tbody id="allOrdersBody">
-            <tr><td><div class="order-id">MK-0414-007</div></td><td><div class="order-dish-cell">2× Nasi Lemak Rendang</div></td><td>Ahmad Firdaus · George Town</td><td>10:32 AM</td><td><strong>RM 24.00</strong></td><td><span class="status-chip status-new">🆕 New</span></td><td><button class="action-btn action-accept" onclick="acceptOrder(this)">✓ Accept</button></td></tr>
-            <tr><td><div class="order-id">MK-0414-008</div></td><td><div class="order-dish-cell">1× Mee Kari Ayam</div></td><td>Siti Aminah · Butterworth</td><td>10:45 AM</td><td><strong>RM 10.00</strong></td><td><span class="status-chip status-new">🆕 New</span></td><td><button class="action-btn action-accept" onclick="acceptOrder(this)">✓ Accept</button></td></tr>
-            <tr><td><div class="order-id">MK-0414-005</div></td><td><div class="order-dish-cell">3× Nasi Lemak Rendang</div></td><td>Rajan Kumar · Air Itam</td><td>9:15 AM</td><td><strong>RM 36.00</strong></td><td><span class="status-chip status-prep">🍳 Preparing</span></td><td><button class="action-btn action-ready" onclick="markReady(this)">✓ Mark Ready</button></td></tr>
-            <tr><td><div class="order-id">MK-0414-003</div></td><td><div class="order-dish-cell">1× Nasi Lemak Rendang</div></td><td>Li Wei · Jelutong</td><td>8:50 AM</td><td><strong>RM 12.00</strong></td><td><span class="status-chip status-delivered">✅ Delivered</span></td><td><button class="action-btn action-done" disabled>Done</button></td></tr>
-            <tr><td><div class="order-id">MK-0414-002</div></td><td><div class="order-dish-cell">2× Mee Kari Ayam</div></td><td>Priya · Relau</td><td>8:30 AM</td><td><strong>RM 20.00</strong></td><td><span class="status-chip status-delivered">✅ Delivered</span></td><td><button class="action-btn action-done" disabled>Done</button></td></tr>
-          </tbody>
+          <tbody id="allOrdersBody"><tr><td colspan="7" style="text-align:center;color:var(--bark-mid);padding:24px;">Loading orders...</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -533,18 +488,13 @@ input:focus,select:focus,textarea:focus{border-color:var(--saffron);background:w
         <div><div class="dash-page-title">Earnings / Pendapatan 💰</div><div class="dash-page-sub">Your earnings go directly to your TNG eWallet</div></div>
       </div>
       <div class="earnings-summary">
-        <div class="earn-card"><div class="earn-val" style="color:var(--green);">RM 1,240</div><div class="earn-label">This Month / Bulan Ini</div></div>
-        <div class="earn-card"><div class="earn-val" style="color:var(--saffron);">RM 84</div><div class="earn-label">Today / Hari Ini</div></div>
-        <div class="earn-card"><div class="earn-val" style="color:var(--chili);">RM 107</div><div class="earn-label">Platform Fee (11%) Deducted</div></div>
+        <div class="earn-card"><div class="earn-val" style="color:var(--green);" id="earnMonth">RM 0.00</div><div class="earn-label">This Month / Bulan Ini</div></div>
+        <div class="earn-card"><div class="earn-val" style="color:var(--saffron);" id="earnToday">RM 0.00</div><div class="earn-label">Today / Hari Ini</div></div>
+        <div class="earn-card"><div class="earn-val" style="color:var(--chili);" id="earnFee">RM 0.00</div><div class="earn-label">Platform Fee (11%) Deducted</div></div>
       </div>
       <div class="card">
         <div class="card-header"><div class="card-title">💚 Recent TNG Payouts</div><div class="card-action">View All</div></div>
-        <div class="payout-list">
-          <div class="payout-item"><div class="payout-icon paid">💚</div><div class="payout-info"><div class="payout-label">Order MK-0414-003 · 1× Nasi Lemak</div><div class="payout-sub">Today, 10:47 AM · via TNG eWallet</div></div><div class="payout-amount paid">+RM 11.04</div></div>
-          <div class="payout-item"><div class="payout-icon paid">💚</div><div class="payout-info"><div class="payout-label">Order MK-0414-002 · 2× Mee Kari</div><div class="payout-sub">Today, 9:58 AM · via TNG eWallet</div></div><div class="payout-amount paid">+RM 18.40</div></div>
-          <div class="payout-item"><div class="payout-icon paid">💚</div><div class="payout-info"><div class="payout-label">Order MK-0413-009 · 3× Nasi Lemak</div><div class="payout-sub">Yesterday, 2:15 PM · via TNG eWallet</div></div><div class="payout-amount paid">+RM 33.12</div></div>
-          <div class="payout-item"><div class="payout-icon pending">⏳</div><div class="payout-info"><div class="payout-label">Order MK-0414-005 · 3× Nasi Lemak</div><div class="payout-sub">Pending delivery confirmation</div></div><div class="payout-amount pending">RM 33.12</div></div>
-        </div>
+        <div class="payout-list" id="payoutList"><div style="padding:24px;color:var(--bark-mid);text-align:center;">Loading payouts...</div></div>
       </div>
     </div>
 
@@ -567,10 +517,10 @@ input:focus,select:focus,textarea:focus{border-color:var(--saffron);background:w
                 <span class="pbadge pbadge-rating">★ 4.9</span>
               </div>
               <div class="profile-stats">
-                <div class="pstat"><div class="pstat-val">284</div><div class="pstat-label">Total Orders</div></div>
-                <div class="pstat"><div class="pstat-val">RM 3.1K</div><div class="pstat-label">Total Earned</div></div>
+                <div class="pstat"><div class="pstat-val" id="pstatOrders">—</div><div class="pstat-label">Total Orders</div></div>
+                <div class="pstat"><div class="pstat-val" id="pstatEarned">—</div><div class="pstat-label">Total Earned</div></div>
                 <div class="pstat"><div class="pstat-val">3</div><div class="pstat-label">Dishes Listed</div></div>
-                <div class="pstat"><div class="pstat-val">99%</div><div class="pstat-label">Acceptance Rate</div></div>
+                <div class="pstat"><div class="pstat-val" id="pstatRate">—</div><div class="pstat-label">Acceptance Rate</div></div>
               </div>
             </div>
           </div>
@@ -949,20 +899,39 @@ function showPanel(id, el) {
   document.getElementById('panel-'+id).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   if(el) el.classList.add('active');
-  if(id === 'menu') loadRealDishes();
+  if(id === 'menu')     loadRealDishes();
   if(id === 'earnings') loadRealEarnings();
 }
 
+// ── ACCEPTING ORDERS TOGGLE ──
+let acceptingOrders = true;
 function toggleOnline() {
   const t = document.getElementById('onlineToggle');
   t.classList.toggle('off');
-  showToast(t.classList.contains('off') ? '⏸ You are now offline' : '✅ You are online — accepting orders!');
+  acceptingOrders = !t.classList.contains('off');
+  const statusDot = document.querySelector('.cook-status-mini');
+  if(statusDot) statusDot.innerHTML = acceptingOrders
+    ? '<div class="status-dot"></div> Online & Accepting'
+    : '<div class="status-dot" style="background:#ef4444;"></div> Offline';
+  showToast(acceptingOrders ? '✅ You are online — accepting orders!' : '⏸ You are now offline — not accepting new orders');
 }
 
-function toggleMenu(el) {
+// ── DISH AVAILABILITY TOGGLE ──
+async function toggleMenu(el, dishId) {
+  const wasOn = el.classList.contains('on');
   el.classList.toggle('on');
   el.classList.toggle('off');
-  showToast(el.classList.contains('on') ? '✅ Dish is now available!' : '⏸ Dish paused for today');
+  const isNowOn = el.classList.contains('on');
+  showToast(isNowOn ? '✅ Dish is now available!' : '⏸ Dish paused for today');
+  // Update in sheet
+  if(dishId) {
+    try {
+      await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'toggle_dish', dish_id: dishId, is_available: isNowOn ? 'TRUE' : 'FALSE' })
+      });
+    } catch(e) { console.warn('Toggle dish failed:', e); }
+  }
 }
 
 function goToReg() {
@@ -1055,22 +1024,28 @@ async function loadRealOrders() {
     const data = JSON.parse(await res.text());
     if (data.status !== 'OK') return;
 
-    const today = new Date().toDateString();
-    const todayOrders = data.orders
+    const today      = new Date().toDateString();
+    const thisMonth  = new Date().getMonth();
+    const allOrders  = data.orders;
+    const todayOrders = allOrders
       .filter(o => new Date(o.timestamp).toDateString() === today)
       .sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+    const monthOrders = allOrders.filter(o => new Date(o.timestamp).getMonth() === thisMonth);
 
-    const newCount      = todayOrders.filter(o => ['new','Confirmed','Pending Payment'].includes(o.status)).length;
-    const todayEarnings = todayOrders
-      .filter(o => !['Rejected','Pending Payment'].includes(o.status))
-      .reduce((s,o) => s + parseFloat(o.cook_earnings || 0), 0);
+    const newCount      = todayOrders.filter(o => ['new','Confirmed'].includes(o.status)).length;
+    const todayEarnings = todayOrders.filter(o => !['Rejected','Pending Payment'].includes(o.status))
+      .reduce((s,o) => s + parseFloat(o.cook_earnings||0), 0);
+    const monthCount    = monthOrders.length;
 
-    // Update stat cards
-    const statVals = document.querySelectorAll('.stat-val');
-    if(statVals[0]) statVals[0].textContent = newCount;
-    if(statVals[1]) statVals[1].textContent = 'RM ' + todayEarnings.toFixed(2);
+    // Update stat cards by ID
+    const sNew   = document.getElementById('statNewOrders');
+    const sToday = document.getElementById('statTodayEarnings');
+    const sMon   = document.getElementById('statMonthOrders');
+    if(sNew)   sNew.textContent   = newCount;
+    if(sToday) sToday.textContent = 'RM ' + todayEarnings.toFixed(2);
+    if(sMon)   sMon.textContent   = monthCount;
 
-    // Update orders badge in sidebar
+    // Sidebar badge
     const badge = document.querySelector('.nav-item span[style*="chili"]');
     if(badge) badge.textContent = newCount;
 
@@ -1085,6 +1060,13 @@ async function loadRealOrders() {
     if(allBody) allBody.innerHTML = todayOrders.length
       ? todayOrders.map(renderAllOrderRow).join('')
       : '<tr><td colspan="7" style="text-align:center;color:var(--bark-mid);padding:24px;">No orders today 😊</td></tr>';
+
+    // Update profile stats
+    const totalOrders  = allOrders.length;
+    const totalEarned  = allOrders.filter(o=>o.status==='Delivered').reduce((s,o)=>s+parseFloat(o.cook_earnings||0),0);
+    const ps0 = document.getElementById('pstatOrders');  if(ps0) ps0.textContent = totalOrders;
+    const ps1 = document.getElementById('pstatEarned');  if(ps1) ps1.textContent = 'RM '+totalEarned.toFixed(0);
+    const ps3 = document.getElementById('pstatRate');    if(ps3) ps3.textContent = totalOrders > 0 ? Math.round((allOrders.filter(o=>o.status!=='Rejected').length/totalOrders)*100)+'%' : '—';
 
   } catch(e) { console.warn('Could not load orders:', e); }
 }
@@ -1180,35 +1162,64 @@ async function loadRealDishes() {
     if(data.status !== 'OK' || !data.dishes?.length) {
       if(countEl) countEl.textContent = '0 dishes';
       grid.innerHTML = '<div style="padding:24px;color:var(--bark-mid);">No dishes yet. Add your first dish! 🍱</div>'+addDishCard();
+      updateOverviewMenu([]);
       return;
     }
 
-    if(countEl) countEl.textContent = data.dishes.length + ' dish' + (data.dishes.length!==1?'es':'') + ' listed';
-    grid.innerHTML = data.dishes.map(d => {
+    const dishes = data.dishes;
+    if(countEl) countEl.textContent = dishes.length + ' dish' + (dishes.length!==1?'es':'') + ' listed';
+    const ps2 = document.getElementById('pstatDishes'); if(ps2) ps2.textContent = dishes.length;
+
+    grid.innerHTML = dishes.map(d => {
       const isActive = String(d.is_available).toUpperCase() === 'TRUE';
       const total    = parseInt(d.portions_today||0);
       const sold     = parseInt(d.portions_sold||0);
       const left     = Math.max(0, total-sold);
       const photo    = d.photo_url||'';
+      const dishId   = d.dish_id||'';
+      const dJson    = JSON.stringify(d).replace(/'/g,"&#39;");
       return '<div class="menu-card" style="'+(isActive?'':'opacity:0.6;')+'">'+
         '<div class="menu-card-top">'+
         '<div class="menu-emoji">'+(photo ? '<img src="'+photo+'" style="width:48px;height:48px;border-radius:10px;object-fit:cover;">' : '🍱')+'</div>'+
         '<div class="menu-info">'+
         '<div class="menu-name">'+(d.dish_name_en||'Dish')+'</div>'+
         '<div class="menu-price">RM '+parseFloat(d.price_rm||0).toFixed(2)+'</div>'+
-        '<div style="font-size:0.7rem;color:var(--bark-mid);">⏰ Ready by '+(d.pickup_ready_time||'12:00 PM')+'</div>'+
+        '<div style="font-size:0.7rem;color:var(--bark-mid);">⏰ Ready by '+(d.pickup_ready_time||'12:00')+'</div>'+
         '</div></div>'+
         '<div class="menu-card-foot">'+
         '<div class="menu-portions">'+(isActive ? left+' / '+total+' portions left' : 'Sold out today')+'</div>'+
         '<div style="display:flex;align-items:center;gap:8px;">'+
-        '<div class="menu-edit-btn" onclick="openAddDish()">Edit</div>'+
-        '<div class="toggle-avail '+(isActive?'on':'off')+'" onclick="toggleMenu(this)"></div>'+
+        '<div class="menu-edit-btn" onclick="editDish(\''+dishId+'\')">Edit</div>'+
+        '<div class="toggle-avail '+(isActive?'on':'off')+'" onclick="toggleMenu(this,\''+dishId+'\')"></div>'+
         '</div></div></div>';
     }).join('') + addDishCard();
+
+    updateOverviewMenu(dishes);
   } catch(e) {
     console.warn('Could not load dishes:', e);
     grid.innerHTML = '<div style="padding:24px;color:var(--chili);">Error loading dishes.</div>'+addDishCard();
   }
+}
+
+function updateOverviewMenu(dishes) {
+  const miniGrid = document.getElementById('overviewMenuGrid');
+  if(!miniGrid) return;
+  if(!dishes.length) {
+    miniGrid.innerHTML = '<div style="padding:12px;color:var(--bark-mid);font-size:0.85rem;">No dishes listed yet.</div>';
+    return;
+  }
+  miniGrid.innerHTML = dishes.map(d => {
+    const isActive = String(d.is_available).toUpperCase() === 'TRUE';
+    const total = parseInt(d.portions_today||0);
+    const sold  = parseInt(d.portions_sold||0);
+    const left  = Math.max(0, total-sold);
+    return '<div style="display:flex;align-items:center;gap:10px;background:var(--cream);border-radius:10px;padding:12px;'+(isActive?'':'opacity:0.6;')+'">'+
+      '<span style="font-size:1.4rem;">🍱</span>'+
+      '<div style="flex:1;"><div style="font-weight:700;font-size:0.85rem;">'+(d.dish_name_en||'Dish')+'</div>'+
+      '<div style="font-size:0.72rem;color:var(--bark-mid);">'+(isActive ? left+' / '+total+' left' : 'Sold out')+'</div></div>'+
+      '<div class="toggle-avail '+(isActive?'on':'off')+'" onclick="toggleMenu(this,\''+(d.dish_id||'')+'\')"></div>'+
+      '</div>';
+  }).join('');
 }
 
 function addDishCard() {
@@ -1226,25 +1237,27 @@ async function loadRealEarnings() {
     const data = JSON.parse(await res.text());
     if(data.status !== 'OK') return;
 
-    const orders       = data.orders.filter(o => !['Rejected','Pending Payment'].includes(o.status));
-    const today        = new Date().toDateString();
-    const thisMonth    = new Date().getMonth();
-    const todayTotal   = orders.filter(o => new Date(o.timestamp).toDateString()===today).reduce((s,o)=>s+parseFloat(o.cook_earnings||0),0);
-    const monthTotal   = orders.filter(o => new Date(o.timestamp).getMonth()===thisMonth).reduce((s,o)=>s+parseFloat(o.cook_earnings||0),0);
-    const platformFee  = orders.filter(o => new Date(o.timestamp).getMonth()===thisMonth).reduce((s,o)=>s+parseFloat(o.food_subtotal||0)*0.11,0);
+    const orders      = data.orders.filter(o => !['Rejected','Pending Payment'].includes(o.status));
+    const today       = new Date().toDateString();
+    const thisMonth   = new Date().getMonth();
+    const todayTotal  = orders.filter(o => new Date(o.timestamp).toDateString()===today).reduce((s,o)=>s+parseFloat(o.cook_earnings||0),0);
+    const monthTotal  = orders.filter(o => new Date(o.timestamp).getMonth()===thisMonth).reduce((s,o)=>s+parseFloat(o.cook_earnings||0),0);
+    const platformFee = orders.filter(o => new Date(o.timestamp).getMonth()===thisMonth).reduce((s,o)=>s+parseFloat(o.cook_earnings||0)/0.89*0.11,0);
 
-    const earnVals = document.querySelectorAll('.earn-val');
-    if(earnVals[0]) earnVals[0].textContent = 'RM ' + monthTotal.toFixed(2);
-    if(earnVals[1]) earnVals[1].textContent = 'RM ' + todayTotal.toFixed(2);
-    if(earnVals[2]) earnVals[2].textContent = 'RM ' + platformFee.toFixed(2);
+    const em = document.getElementById('earnMonth'); if(em) em.textContent = 'RM '+monthTotal.toFixed(2);
+    const et = document.getElementById('earnToday'); if(et) et.textContent = 'RM '+todayTotal.toFixed(2);
+    const ef = document.getElementById('earnFee');   if(ef) ef.textContent = 'RM '+platformFee.toFixed(2);
 
-    // Payout list
-    const payoutList = document.querySelector('.payout-list');
+    const payoutList = document.getElementById('payoutList');
     if(payoutList) {
-      const recent = data.orders.slice().reverse().slice(0,5);
+      const recent = data.orders.slice().reverse().slice(0,6);
+      if(!recent.length) {
+        payoutList.innerHTML = '<div style="padding:24px;text-align:center;color:var(--bark-mid);">No transactions yet.</div>';
+        return;
+      }
       payoutList.innerHTML = recent.map(o => {
         const isPaid = o.status === 'Delivered';
-        const dt     = new Date(o.timestamp).toLocaleDateString('en-MY');
+        const dt = new Date(o.timestamp).toLocaleDateString('en-MY',{day:'numeric',month:'short'});
         return '<div class="payout-item">'+
           '<div class="payout-icon '+(isPaid?'paid':'pending')+'">'+(isPaid?'💚':'⏳')+'</div>'+
           '<div class="payout-info"><div class="payout-label">'+o.order_id+' · '+o.items+'</div>'+
@@ -1256,15 +1269,56 @@ async function loadRealEarnings() {
   } catch(e) { console.warn('Could not load earnings:', e); }
 }
 
-// ── ADD DISH MODAL ──
+// ── ADD / EDIT DISH MODAL ──
 function openAddDish() {
+  document.getElementById('addDishModal').querySelector('.modal-title').textContent = '➕ Add New Dish';
   ['dishNameEN','dishNameBM','dishDesc','dishPrice','dishPortions','dishPhotoUrl'].forEach(id => {
     const el = document.getElementById(id); if(el) el.value='';
   });
   const readyEl = document.getElementById('dishReadyBy'); if(readyEl) readyEl.value='11:30';
-  const prev = document.getElementById('modalPhotoPreview'); if(prev) prev.style.display='none';
-  const stat = document.getElementById('modalUploadStatus'); if(stat) stat.textContent='';
+  const catEl   = document.getElementById('dishCategory'); if(catEl) catEl.selectedIndex=0;
+  const tagEl   = document.getElementById('dishTags');     if(tagEl) tagEl.selectedIndex=0;
+  const prev    = document.getElementById('modalPhotoPreview'); if(prev) prev.style.display='none';
+  const stat    = document.getElementById('modalUploadStatus'); if(stat) stat.textContent='';
+  document.getElementById('saveDishBtn').dataset.editId = '';
   document.getElementById('addDishModal').classList.add('open');
+}
+
+function editDish(dishId) {
+  // Find dish from current loaded data — re-fetch to get fresh data
+  fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action: 'get_dishes', cook_email: sessionStorage.getItem('cookEmail')||'' })
+  }).then(r=>r.text()).then(t=>{
+    const data = JSON.parse(t);
+    const d = data.dishes?.find(x => x.dish_id === dishId);
+    if(!d) { openAddDish(); return; }
+
+    document.getElementById('addDishModal').querySelector('.modal-title').textContent = '✏️ Edit Dish';
+    const set = (id,val) => { const el=document.getElementById(id); if(el) el.value=val||''; };
+    set('dishNameEN',  d.dish_name_en);
+    set('dishNameBM',  d.dish_name_bm);
+    set('dishDesc',    d.description);
+    set('dishPrice',   d.price_rm);
+    set('dishPortions',d.portions_today);
+    set('dishReadyBy', (d.pickup_ready_time||'11:30').substring(0,5));
+    set('dishPhotoUrl',d.photo_url);
+
+    // Set selects
+    const catEl = document.getElementById('dishCategory');
+    if(catEl) [...catEl.options].forEach(o=>{ if(o.value===d.category) o.selected=true; });
+    const tagEl = document.getElementById('dishTags');
+    if(tagEl) [...tagEl.options].forEach(o=>{ if(o.value===d.dietary_tags) o.selected=true; });
+
+    // Show photo preview
+    if(d.photo_url) {
+      const prev = document.getElementById('modalPhotoPreview');
+      if(prev) { prev.src=d.photo_url; prev.style.display='block'; }
+    }
+
+    document.getElementById('saveDishBtn').dataset.editId = dishId;
+    document.getElementById('addDishModal').classList.add('open');
+  }).catch(()=>openAddDish());
 }
 
 function closeModal() { document.getElementById('addDishModal').classList.remove('open'); }
