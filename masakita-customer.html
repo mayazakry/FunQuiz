@@ -688,6 +688,7 @@ async function loadRealDishes() {
         isNew:      true,
         isPopular:  false,
         isHalal:    (d.dietary_tags||'').toLowerCase().includes('halal'),
+        available:  String(d.is_available).toUpperCase() === 'TRUE',
         readyBy:    (d.pickup_ready_time||'12:00').includes('1899') ? '12:00' : (d.pickup_ready_time || '12:00'),
         portions:   parseInt(d.portions_today || 10)
       }));
@@ -734,7 +735,7 @@ function renderGrid(items) {
             <div class="food-price">RM ${f.price.toFixed(2)} <span>/ portion</span></div>
             <div class="food-rating"><span class="star-icon">★</span> ${f.rating} (${f.orders} orders)</div>
           </div>
-          <button class="add-to-cart" onclick="event.stopPropagation();addToCart(${f.id})">+</button>
+          <button class="add-to-cart" ${f.available===false ? 'disabled style="opacity:0.4;cursor:not-allowed;"' : ''} onclick="event.stopPropagation();addToCart(${f.id})">+</button>
         </div>
       </div>
     </div>
