@@ -4,681 +4,1495 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Python Learning Hub — Job-Ready in 12 Weeks</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/iconfont/tabler-icons.min.css">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --bg: #fafaf8;
-    --surface: #ffffff;
-    --surface2: #f4f3ef;
-    --border: rgba(0,0,0,0.1);
-    --border-strong: rgba(0,0,0,0.2);
-    --text: #1a1a18;
-    --text2: #5a5a55;
-    --text3: #9a9a94;
-    --blue: #185FA5;
-    --blue-bg: #E6F1FB;
-    --blue-text: #042C53;
-    --green: #1D9E75;
-    --green-bg: #EAF3DE;
-    --green-text: #27500A;
-    --amber-bg: #FAEEDA;
-    --amber-text: #854F0B;
-    --coral-bg: #FAECE7;
-    --coral-text: #993C1D;
-    --radius: 10px;
-    --radius-sm: 6px;
-    --mono: 'DM Mono', monospace;
-    --sans: 'DM Sans', sans-serif;
-  }
-
-  body {
-    font-family: var(--sans);
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    line-height: 1.6;
-  }
-
-  /* Layout */
-  .wrapper { max-width: 860px; margin: 0 auto; padding: 0 1.5rem 4rem; }
-
-  /* Header */
-  header {
-    background: var(--surface);
-    border-bottom: 0.5px solid var(--border);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-  .header-inner {
-    max-width: 860px;
-    margin: 0 auto;
-    padding: 0 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 56px;
-  }
-  .logo { font-size: 15px; font-weight: 500; color: var(--text); display: flex; align-items: center; gap: 8px; }
-  .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
-
-  /* Nav */
-  nav { display: flex; gap: 4px; flex-wrap: wrap; padding: 1.25rem 0 0; }
-  .nav-btn {
-    padding: 7px 15px;
-    border-radius: 20px;
-    border: 0.5px solid var(--border);
-    font-size: 13px;
-    font-family: var(--sans);
-    cursor: pointer;
-    background: transparent;
-    color: var(--text2);
-    transition: all 0.15s;
-  }
-  .nav-btn:hover { background: var(--surface2); }
-  .nav-btn.active { background: #042C53; color: #E6F1FB; border-color: transparent; }
-
-  /* Pages */
-  .page { display: none; padding-top: 1.5rem; }
-  .page.active { display: block; }
-
-  /* Hero */
-  .hero { padding: 2rem 0 1.5rem; }
-  .hero h1 { font-size: 28px; font-weight: 500; margin-bottom: 8px; letter-spacing: -0.3px; }
-  .hero p { font-size: 15px; color: var(--text2); max-width: 560px; }
-
-  /* Section headings */
-  .sec { font-size: 15px; font-weight: 500; color: var(--text); margin: 1.5rem 0 0.4rem; }
-  .sec-sub { font-size: 13px; color: var(--text2); margin-bottom: 1rem; }
-
-  /* Track grid */
-  .track-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-top: 0.75rem; }
-  .track-card {
-    background: var(--surface);
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.25rem;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .track-card:hover { border-color: var(--border-strong); transform: translateY(-1px); }
-  .track-card .icon { font-size: 24px; margin-bottom: 10px; }
-  .track-card h3 { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
-  .track-card p { font-size: 12px; color: var(--text2); line-height: 1.5; }
-  .track-card .salary { font-size: 11px; margin-top: 10px; color: var(--blue); font-weight: 500; }
-
-  /* Overview chips */
-  .chip-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 6px; margin-top: 0.5rem; }
-  .chip { padding: 9px 14px; border-radius: var(--radius-sm); border: 0.5px solid var(--border); font-size: 12px; color: var(--text2); }
-  .chip .dot { margin-right: 6px; }
-
-  /* Concepts */
-  .concept-list { display: flex; flex-direction: column; gap: 8px; }
-  .concept { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); overflow: hidden; }
-  .concept-header { display: flex; align-items: center; gap: 10px; padding: 0.875rem 1rem; cursor: pointer; user-select: none; }
-  .concept-header:hover { background: var(--surface2); }
-  .badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 500; white-space: nowrap; }
-  .badge.beginner { background: var(--green-bg); color: var(--green-text); }
-  .badge.intermediate { background: var(--amber-bg); color: var(--amber-text); }
-  .badge.advanced { background: var(--coral-bg); color: var(--coral-text); }
-  .concept-title { font-size: 14px; font-weight: 500; flex: 1; }
-  .chevron { font-size: 16px; color: var(--text3); transition: transform 0.2s; }
-  .chevron.open { transform: rotate(90deg); }
-  .concept-body { padding: 0 1rem 1rem; display: none; }
-  .concept-body.open { display: block; }
-  .concept-body p { font-size: 13px; color: var(--text2); line-height: 1.6; margin-bottom: 8px; }
-  .concept-body pre {
-    background: var(--surface2);
-    border-radius: var(--radius-sm);
-    padding: 14px;
-    font-size: 12px;
-    font-family: var(--mono);
-    line-height: 1.7;
-    overflow-x: auto;
-    color: var(--text);
-    margin: 8px 0 12px;
-    border: 0.5px solid var(--border);
-  }
-  .job-tag { display: inline-block; font-size: 11px; padding: 2px 8px; background: var(--blue-bg); color: var(--blue); border-radius: 10px; margin: 2px; }
-
-  /* Jobs */
-  .job-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
-  .job-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 1.25rem; }
-  .job-card h3 { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
-  .job-card .salary-range { font-size: 13px; color: var(--blue); font-weight: 500; margin-bottom: 12px; }
-  .skill-tags { display: flex; flex-wrap: wrap; gap: 4px; }
-  .skill-tag { font-size: 11px; padding: 2px 8px; border-radius: 10px; border: 0.5px solid var(--border-strong); color: var(--text2); }
-
-  /* Roadmap */
-  .roadmap { position: relative; padding-left: 1.5rem; }
-  .roadmap::before { content: ''; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 1px; background: var(--border-strong); }
-  .step { position: relative; margin-bottom: 1.5rem; }
-  .step-dot { position: absolute; left: -1.5rem; top: 4px; width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--border-strong); background: var(--bg); }
-  .step-dot.done { background: var(--green); border-color: var(--green); }
-  .step-dot.current { background: var(--blue); border-color: var(--blue); }
-  .step .week { font-size: 11px; color: var(--green-text); font-weight: 500; margin-bottom: 2px; }
-  .step h4 { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
-  .step p { font-size: 13px; color: var(--text2); line-height: 1.6; }
-  .tip-box { margin-top: 2rem; padding: 1rem 1.25rem; background: var(--green-bg); border-radius: var(--radius); border-left: 3px solid var(--green); }
-  .tip-box p { font-size: 13px; color: var(--green-text); line-height: 1.6; }
-
-  /* Quiz */
-  .quiz-q { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1rem; }
-  .quiz-q > p { font-size: 14px; font-weight: 500; margin-bottom: 10px; }
-  .quiz-q pre { font-family: var(--mono); font-size: 12px; color: var(--text); background: var(--surface2); border: 0.5px solid var(--border); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 12px; }
-  .quiz-opt {
-    display: block; width: 100%; text-align: left;
-    padding: 9px 14px; margin-bottom: 6px;
-    border-radius: var(--radius-sm); border: 0.5px solid var(--border-strong);
-    font-size: 13px; font-family: var(--sans); cursor: pointer;
-    background: var(--bg); color: var(--text);
-    transition: all 0.12s;
-  }
-  .quiz-opt:hover:not(:disabled) { background: var(--blue-bg); border-color: var(--blue); }
-  .quiz-opt.correct { background: var(--green-bg); border-color: var(--green); color: var(--green-text); }
-  .quiz-opt.wrong { background: #FCEBEB; border-color: #A32D2D; color: #501313; }
-  .quiz-explain { font-size: 12px; margin-top: 8px; padding: 10px 14px; border-radius: var(--radius-sm); background: var(--surface2); border: 0.5px solid var(--border); color: var(--text2); display: none; line-height: 1.6; }
-  .more-btn { margin-top: 0.5rem; padding: 10px 18px; border-radius: var(--radius-sm); border: 0.5px solid var(--border-strong); font-size: 13px; font-family: var(--sans); cursor: pointer; background: transparent; color: var(--text); text-decoration: none; display: inline-block; }
-  .more-btn:hover { background: var(--surface2); }
-
-  /* Footer */
-  footer { text-align: center; padding: 2rem 0 1rem; font-size: 12px; color: var(--text3); border-top: 0.5px solid var(--border); margin-top: 3rem; }
-
-  /* Responsive */
-  @media (max-width: 600px) {
-    .hero h1 { font-size: 22px; }
-    .track-grid { grid-template-columns: 1fr 1fr; }
-    .job-grid { grid-template-columns: 1fr; }
-    .header-inner { padding: 0 1rem; }
-    .wrapper { padding: 0 1rem 3rem; }
-  }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fafaf8;--surface:#fff;--surface2:#f4f3ef;
+  --border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.2);
+  --text:#1a1a18;--text2:#5a5a55;--text3:#9a9a94;
+  --blue:#185FA5;--blue-bg:#E6F1FB;--blue-dark:#042C53;
+  --green:#1D9E75;--green-bg:#EAF3DE;--green-dark:#27500A;
+  --amber-bg:#FAEEDA;--amber-dark:#854F0B;
+  --coral-bg:#FAECE7;--coral-dark:#993C1D;
+  --red-bg:#FCEBEB;--red-dark:#501313;
+  --r:10px;--rs:6px;
+  --mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;
+}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+header{background:var(--surface);border-bottom:.5px solid var(--border);position:sticky;top:0;z-index:100}
+.header-inner{max-width:960px;margin:0 auto;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:56px}
+.logo{font-size:15px;font-weight:500;display:flex;align-items:center;gap:8px}
+.logo-dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
+.wrapper{max-width:960px;margin:0 auto;padding:0 1.5rem 4rem}
+nav{display:flex;gap:4px;flex-wrap:wrap;padding:1.25rem 0 0}
+.nav-btn{padding:7px 15px;border-radius:20px;border:.5px solid var(--border);font-size:13px;font-family:var(--sans);cursor:pointer;background:transparent;color:var(--text2);transition:all .15s}
+.nav-btn:hover{background:var(--surface2)}
+.nav-btn.active{background:var(--blue-dark);color:#E6F1FB;border-color:transparent}
+.page{display:none;padding-top:1.5rem}
+.page.active{display:block}
+.hero{padding:2rem 0 1.5rem}
+.hero h1{font-size:28px;font-weight:500;margin-bottom:8px;letter-spacing:-.3px}
+.hero p{font-size:15px;color:var(--text2);max-width:560px}
+.sec{font-size:15px;font-weight:500;color:var(--text);margin:1.5rem 0 .4rem}
+.sec-sub{font-size:13px;color:var(--text2);margin-bottom:1rem}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px;margin:1.5rem 0}
+.stat{background:var(--surface2);border-radius:var(--r);padding:1rem;text-align:center}
+.stat .num{font-size:24px;font-weight:500}
+.stat .lbl{font-size:12px;color:var(--text2);margin-top:2px}
+.track-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:.75rem}
+.track-card{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);padding:1.25rem;cursor:pointer;transition:all .15s}
+.track-card:hover{border-color:var(--border2);transform:translateY(-1px)}
+.track-card .icon{font-size:24px;margin-bottom:10px}
+.track-card h3{font-size:14px;font-weight:500;margin-bottom:4px}
+.track-card p{font-size:12px;color:var(--text2);line-height:1.5}
+.track-card .salary{font-size:11px;margin-top:10px;color:var(--blue);font-weight:500}
+.chip-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:6px;margin-top:.5rem}
+.chip{padding:9px 14px;border-radius:var(--rs);border:.5px solid var(--border);font-size:12px;color:var(--text2)}
+.prog-wrap{background:var(--surface2);border-radius:20px;height:6px;overflow:hidden;margin:.5rem 0}
+.prog-bar{height:100%;border-radius:20px;background:var(--green);transition:width .4s}
+.week-grid{display:flex;flex-direction:column;gap:10px}
+.week-card{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);overflow:hidden}
+.week-header{display:flex;align-items:center;gap:12px;padding:1rem 1.25rem;cursor:pointer;user-select:none}
+.week-header:hover{background:var(--surface2)}
+.week-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0}
+.week-num.done{background:var(--green-bg);color:var(--green-dark)}
+.week-num.curr{background:var(--blue-bg);color:var(--blue-dark)}
+.week-num.locked{background:var(--surface2);color:var(--text3)}
+.week-meta{flex:1}
+.week-meta h3{font-size:14px;font-weight:500}
+.week-meta p{font-size:12px;color:var(--text2);margin-top:1px}
+.week-chevron{font-size:16px;color:var(--text3);transition:transform .2s}
+.week-chevron.open{transform:rotate(90deg)}
+.week-body{display:none;padding:0 1.25rem 1.25rem}
+.week-body.open{display:block}
+.lesson-list{display:flex;flex-direction:column;gap:6px;margin-bottom:.5rem}
+.lesson{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:var(--rs);border:.5px solid var(--border);cursor:pointer;background:var(--bg);transition:all .12s}
+.lesson:hover{background:var(--blue-bg);border-color:var(--blue)}
+.lesson.done-lesson{background:var(--green-bg);border-color:var(--green)}
+.lesson-check{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border2);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff}
+.done-lesson .lesson-check{background:var(--green);border-color:var(--green)}
+.lesson-info h4{font-size:13px;font-weight:500}
+.lesson-info p{font-size:12px;color:var(--text2);margin-top:1px}
+.lesson-duration{font-size:11px;color:var(--text3);white-space:nowrap;margin-left:auto;padding-left:8px;margin-top:2px}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:flex-start;justify-content:center;padding:1.5rem;overflow-y:auto}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:var(--r);max-width:680px;width:100%;padding:1.5rem;margin:auto}
+.modal-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem}
+.modal-header h2{font-size:18px;font-weight:500;flex:1;padding-right:1rem}
+.modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--text2);line-height:1}
+.modal h3{font-size:14px;font-weight:500;margin:1.25rem 0 .5rem;color:var(--text)}
+.modal p{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:.75rem}
+.modal pre{background:var(--surface2);border-radius:var(--rs);padding:14px;font-size:12px;font-family:var(--mono);line-height:1.7;overflow-x:auto;color:var(--text);margin:.75rem 0 1rem;border:.5px solid var(--border);white-space:pre}
+.modal ul{padding-left:1.25rem;margin-bottom:.75rem}
+.modal ul li{font-size:14px;color:var(--text2);margin-bottom:4px;line-height:1.6}
+.modal-actions{display:flex;gap:10px;margin-top:1.5rem;padding-top:1rem;border-top:.5px solid var(--border)}
+.btn{padding:9px 18px;border-radius:var(--rs);font-size:13px;font-family:var(--sans);cursor:pointer;border:.5px solid var(--border2);background:transparent;color:var(--text);transition:all .12s}
+.btn:hover{background:var(--surface2)}
+.btn.primary{background:var(--green);color:#fff;border-color:var(--green)}
+.btn.primary:hover{background:#0F6E56}
+.exercise-box{background:var(--surface2);border-radius:var(--rs);padding:1rem;margin-top:1rem;border:.5px solid var(--border)}
+.exercise-box h4{font-size:13px;font-weight:500;margin-bottom:.5rem;color:var(--blue-dark)}
+.exercise-box p{font-size:13px;color:var(--text2);line-height:1.6}
+.exercise-box textarea{width:100%;margin-top:.75rem;padding:10px;border-radius:var(--rs);border:.5px solid var(--border2);font-family:var(--mono);font-size:12px;resize:vertical;min-height:80px;background:var(--surface);color:var(--text)}
+.exercise-answer{display:none;margin-top:.75rem;padding:10px;background:var(--green-bg);border-radius:var(--rs);border:.5px solid var(--green);font-size:12px;color:var(--green-dark);font-family:var(--mono);white-space:pre-wrap}
+.concept-list{display:flex;flex-direction:column;gap:8px}
+.concept{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);overflow:hidden}
+.concept-header{display:flex;align-items:center;gap:10px;padding:.875rem 1rem;cursor:pointer;user-select:none}
+.concept-header:hover{background:var(--surface2)}
+.badge{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:500;white-space:nowrap}
+.badge.beginner{background:var(--green-bg);color:var(--green-dark)}
+.badge.intermediate{background:var(--amber-bg);color:var(--amber-dark)}
+.badge.advanced{background:var(--coral-bg);color:var(--coral-dark)}
+.concept-title{font-size:14px;font-weight:500;flex:1}
+.chevron{font-size:16px;color:var(--text3);transition:transform .2s}
+.chevron.open{transform:rotate(90deg)}
+.concept-body{display:none;padding:0 1rem 1rem}
+.concept-body.open{display:block}
+.concept-body p{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:8px}
+.concept-body pre{background:var(--surface2);border-radius:var(--rs);padding:14px;font-size:12px;font-family:var(--mono);line-height:1.7;overflow-x:auto;color:var(--text);margin:8px 0 12px;border:.5px solid var(--border)}
+.job-tag{display:inline-block;font-size:11px;padding:2px 8px;background:var(--blue-bg);color:var(--blue);border-radius:10px;margin:2px}
+.job-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.job-card{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);padding:1.25rem}
+.job-card h3{font-size:14px;font-weight:500;margin-bottom:4px}
+.job-card .salary-range{font-size:13px;color:var(--blue);font-weight:500;margin-bottom:12px}
+.skill-tags{display:flex;flex-wrap:wrap;gap:4px}
+.skill-tag{font-size:11px;padding:2px 8px;border-radius:10px;border:.5px solid var(--border2);color:var(--text2)}
+.quiz-score-bar{background:var(--surface2);border-radius:var(--r);padding:1rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:1rem}
+.quiz-score-bar .score-num{font-size:22px;font-weight:500}
+.quiz-filter{display:flex;gap:6px;margin-bottom:1rem;flex-wrap:wrap}
+.filter-btn{padding:5px 12px;border-radius:20px;border:.5px solid var(--border);font-size:12px;cursor:pointer;background:transparent;color:var(--text2);font-family:var(--sans)}
+.filter-btn.active{background:var(--blue-dark);color:#E6F1FB;border-color:transparent}
+.quiz-q{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);padding:1.25rem;margin-bottom:1rem}
+.quiz-q>p.qtext{font-size:14px;font-weight:500;margin-bottom:10px}
+.quiz-q pre{font-family:var(--mono);font-size:12px;color:var(--text);background:var(--surface2);border:.5px solid var(--border);border-radius:var(--rs);padding:12px;margin-bottom:12px}
+.quiz-opt{display:block;width:100%;text-align:left;padding:9px 14px;margin-bottom:6px;border-radius:var(--rs);border:.5px solid var(--border2);font-size:13px;font-family:var(--sans);cursor:pointer;background:var(--bg);color:var(--text);transition:all .12s}
+.quiz-opt:hover:not(:disabled){background:var(--blue-bg);border-color:var(--blue)}
+.quiz-opt.correct{background:var(--green-bg);border-color:var(--green);color:var(--green-dark)}
+.quiz-opt.wrong{background:var(--red-bg);border-color:#A32D2D;color:var(--red-dark)}
+.quiz-explain{font-size:12px;margin-top:8px;padding:10px 14px;border-radius:var(--rs);background:var(--surface2);border:.5px solid var(--border);color:var(--text2);display:none;line-height:1.6}
+.diff-tag{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500;float:right;margin-left:8px}
+.diff-tag.easy{background:var(--green-bg);color:var(--green-dark)}
+.diff-tag.medium{background:var(--amber-bg);color:var(--amber-dark)}
+.diff-tag.hard{background:var(--coral-bg);color:var(--coral-dark)}
+footer{text-align:center;padding:2rem 0 1rem;font-size:12px;color:var(--text3);border-top:.5px solid var(--border);margin-top:3rem}
+@media(max-width:600px){.hero h1{font-size:22px}.track-grid{grid-template-columns:1fr 1fr}.job-grid{grid-template-columns:1fr}.modal{padding:1rem}.stats{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
 
 <header>
   <div class="header-inner">
-    <div class="logo">
-      <div class="logo-dot"></div>
-      Python Learning Hub
+    <div class="logo"><div class="logo-dot"></div>Python Learning Hub</div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <span style="font-size:12px;color:var(--text3)">Progress: <span id="global-progress" style="color:var(--green);font-weight:500">0</span> / 40 lessons</span>
+      <button onclick="resetProgress()" style="font-size:11px;padding:4px 10px;border-radius:20px;border:.5px solid var(--border2);background:transparent;color:var(--text3);cursor:pointer;font-family:var(--sans)" title="Clear all progress">Reset</button>
     </div>
-    <span style="font-size:12px; color:var(--text3)">Job-ready in 12 weeks</span>
   </div>
 </header>
 
 <div class="wrapper">
-
   <nav>
     <button class="nav-btn active" onclick="showPage('home')">🏠 Start here</button>
-    <button class="nav-btn" onclick="showPage('concepts')">📖 Concepts</button>
+    <button class="nav-btn" onclick="showPage('course')">📚 Full course</button>
+    <button class="nav-btn" onclick="showPage('concepts')">📖 Quick ref</button>
     <button class="nav-btn" onclick="showPage('jobs')">💼 Job tracks</button>
-    <button class="nav-btn" onclick="showPage('roadmap')">🗺 Roadmap</button>
-    <button class="nav-btn" onclick="showPage('quiz')">⚡ Quiz yourself</button>
+    <button class="nav-btn" onclick="showPage('quiz')">⚡ Quiz</button>
   </nav>
 
   <!-- HOME -->
   <div id="home" class="page active">
     <div class="hero">
       <h1>Learn Python the right way</h1>
-      <p>Simple explanations, real code examples, and exactly what employers ask for — from first line to first job.</p>
+      <p>40 lessons across 12 weeks — from first line of code to job-ready portfolio. Built around what employers actually ask for.</p>
     </div>
-
+    <div class="stats">
+      <div class="stat"><div class="num">12</div><div class="lbl">Weeks</div></div>
+      <div class="stat"><div class="num">40</div><div class="lbl">Lessons</div></div>
+      <div class="stat"><div class="num">20+</div><div class="lbl">Code examples</div></div>
+      <div class="stat"><div class="num">6</div><div class="lbl">Career tracks</div></div>
+    </div>
     <p class="sec">Pick your career track</p>
-    <p class="sec-sub">Each track shows you which Python skills employers actually look for.</p>
+    <p class="sec-sub">All tracks share the same Python foundation (weeks 1–6). Specialise after that.</p>
     <div class="track-grid">
-      <div class="track-card" onclick="showPage('jobs')">
-        <div class="icon">🤖</div>
-        <h3>Data / ML Engineer</h3>
-        <p>Pandas, NumPy, Scikit-learn, SQL, model deployment</p>
-        <div class="salary">RM 7k – 20k / month</div>
-      </div>
-      <div class="track-card" onclick="showPage('jobs')">
-        <div class="icon">🌐</div>
-        <h3>Backend Developer</h3>
-        <p>Django, FastAPI, REST APIs, databases, Docker</p>
-        <div class="salary">RM 5k – 18k / month</div>
-      </div>
-      <div class="track-card" onclick="showPage('jobs')">
-        <div class="icon">⚙️</div>
-        <h3>DevOps / Automation</h3>
-        <p>Scripts, CI/CD, cloud, infrastructure as code</p>
-        <div class="salary">RM 6k – 22k / month</div>
-      </div>
-      <div class="track-card" onclick="showPage('jobs')">
-        <div class="icon">📊</div>
-        <h3>Data Analyst</h3>
-        <p>Pandas, Matplotlib, Seaborn, Excel automation, BI</p>
-        <div class="salary">RM 4k – 12k / month</div>
-      </div>
+      <div class="track-card" onclick="showPage('jobs')"><div class="icon">🤖</div><h3>Data / ML Engineer</h3><p>Pandas, NumPy, Scikit-learn, SQL, model deployment</p><div class="salary">RM 7k – 20k / month</div></div>
+      <div class="track-card" onclick="showPage('jobs')"><div class="icon">🌐</div><h3>Backend Developer</h3><p>Django, FastAPI, REST APIs, databases, Docker</p><div class="salary">RM 5k – 18k / month</div></div>
+      <div class="track-card" onclick="showPage('jobs')"><div class="icon">⚙️</div><h3>DevOps / Automation</h3><p>Scripts, CI/CD, cloud, infrastructure as code</p><div class="salary">RM 6k – 22k / month</div></div>
+      <div class="track-card" onclick="showPage('jobs')"><div class="icon">📊</div><h3>Data Analyst</h3><p>Pandas, Matplotlib, Seaborn, Excel automation, BI</p><div class="salary">RM 4k – 12k / month</div></div>
     </div>
-
-    <p class="sec" style="margin-top:2rem">Core topics covered</p>
+    <p class="sec" style="margin-top:2rem">What you'll learn</p>
     <div class="chip-grid">
-      <div class="chip"><span class="dot" style="color:#3B6D11">●</span>Variables & types</div>
-      <div class="chip"><span class="dot" style="color:#3B6D11">●</span>Functions & scope</div>
-      <div class="chip"><span class="dot" style="color:#185FA5">●</span>OOP & classes</div>
-      <div class="chip"><span class="dot" style="color:#185FA5">●</span>Error handling</div>
-      <div class="chip"><span class="dot" style="color:#185FA5">●</span>File & API work</div>
-      <div class="chip"><span class="dot" style="color:#D85A30">●</span>Libraries & pip</div>
-      <div class="chip"><span class="dot" style="color:#D85A30">●</span>Testing & Git</div>
-      <div class="chip"><span class="dot" style="color:#D85A30">●</span>Async & concurrency</div>
+      <div class="chip"><span style="color:#3B6D11">●</span> Variables &amp; types</div>
+      <div class="chip"><span style="color:#3B6D11">●</span> Functions &amp; scope</div>
+      <div class="chip"><span style="color:#3B6D11">●</span> Lists &amp; dicts</div>
+      <div class="chip"><span style="color:#185FA5">●</span> OOP &amp; classes</div>
+      <div class="chip"><span style="color:#185FA5">●</span> Error handling</div>
+      <div class="chip"><span style="color:#185FA5">●</span> File &amp; API work</div>
+      <div class="chip"><span style="color:#D85A30">●</span> Pandas &amp; NumPy</div>
+      <div class="chip"><span style="color:#D85A30">●</span> FastAPI / Django</div>
+      <div class="chip"><span style="color:#D85A30">●</span> SQL &amp; databases</div>
+      <div class="chip"><span style="color:#D85A30">●</span> Docker &amp; deploy</div>
+      <div class="chip"><span style="color:#D85A30">●</span> Testing &amp; Git</div>
+      <div class="chip"><span style="color:#D85A30">●</span> Portfolio project</div>
     </div>
-    <div style="font-size:12px; color:var(--text3); margin-top:8px">
-      <span style="color:#3B6D11">●</span> Beginner &nbsp;
-      <span style="color:#185FA5">●</span> Intermediate &nbsp;
-      <span style="color:#D85A30">●</span> Advanced
+    <div style="font-size:12px;color:var(--text3);margin-top:8px"><span style="color:#3B6D11">●</span> Beginner &nbsp;<span style="color:#185FA5">●</span> Intermediate &nbsp;<span style="color:#D85A30">●</span> Advanced</div>
+    <div style="margin-top:2rem"><button class="btn primary" onclick="showPage('course')" style="font-size:14px;padding:12px 24px">Start the course →</button></div>
+  </div>
+
+  <!-- COURSE -->
+  <div id="course" class="page">
+    <p class="sec">Full 12-week course</p>
+    <p class="sec-sub">Click a week to expand lessons. Click a lesson to open it. Mark complete as you go — progress saves automatically.</p>
+    <div style="margin-bottom:1.5rem">
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span>Overall progress</span><span id="prog-label">0 / 40 lessons</span></div>
+      <div class="prog-wrap"><div class="prog-bar" id="prog-bar" style="width:0%"></div></div>
+    </div>
+    <div class="week-grid" id="week-grid"></div>
+  </div>
+
+  <!-- QUICK REF -->
+  <div id="concepts" class="page">
+    <p class="sec">Quick reference</p>
+    <p class="sec-sub">Tap any topic for a plain-English explanation, real code, and which jobs need it.</p>
+    <div class="concept-list" id="concept-list"></div>
+  </div>
+
+  <!-- JOBS -->
+  <div id="jobs" class="page">
+    <p class="sec">What employers actually want</p>
+    <p class="sec-sub">Real skills from Jobstreet, LinkedIn, and tech companies in Malaysia &amp; Singapore.</p>
+    <div class="job-grid">
+      <div class="job-card"><h3>🤖 Data Scientist / ML Engineer</h3><div class="salary-range">RM 7,000 – 20,000</div><div class="skill-tags"><span class="skill-tag">Python</span><span class="skill-tag">Pandas</span><span class="skill-tag">NumPy</span><span class="skill-tag">Scikit-learn</span><span class="skill-tag">TensorFlow/PyTorch</span><span class="skill-tag">SQL</span><span class="skill-tag">Jupyter</span><span class="skill-tag">Git</span><span class="skill-tag">Docker</span><span class="skill-tag">MLflow</span></div></div>
+      <div class="job-card"><h3>🌐 Backend Python Developer</h3><div class="salary-range">RM 5,000 – 18,000</div><div class="skill-tags"><span class="skill-tag">Django/FastAPI</span><span class="skill-tag">REST APIs</span><span class="skill-tag">PostgreSQL</span><span class="skill-tag">Redis</span><span class="skill-tag">Docker</span><span class="skill-tag">AWS/GCP</span><span class="skill-tag">Git</span><span class="skill-tag">pytest</span><span class="skill-tag">CI/CD</span></div></div>
+      <div class="job-card"><h3>📊 Data Analyst</h3><div class="salary-range">RM 4,000 – 12,000</div><div class="skill-tags"><span class="skill-tag">Python</span><span class="skill-tag">Pandas</span><span class="skill-tag">Matplotlib/Seaborn</span><span class="skill-tag">SQL</span><span class="skill-tag">Excel automation</span><span class="skill-tag">Power BI/Tableau</span><span class="skill-tag">Statistics</span></div></div>
+      <div class="job-card"><h3>⚙️ DevOps / Automation</h3><div class="salary-range">RM 6,000 – 22,000</div><div class="skill-tags"><span class="skill-tag">Python scripting</span><span class="skill-tag">Bash</span><span class="skill-tag">Docker/K8s</span><span class="skill-tag">Terraform</span><span class="skill-tag">AWS/Azure</span><span class="skill-tag">GitHub Actions</span><span class="skill-tag">Ansible</span></div></div>
+      <div class="job-card"><h3>🔬 Data Engineer</h3><div class="salary-range">RM 7,000 – 18,000</div><div class="skill-tags"><span class="skill-tag">Python</span><span class="skill-tag">Apache Spark</span><span class="skill-tag">Airflow</span><span class="skill-tag">dbt</span><span class="skill-tag">SQL</span><span class="skill-tag">Kafka</span><span class="skill-tag">BigQuery/Redshift</span></div></div>
+      <div class="job-card"><h3>🤖 AI/LLM App Developer</h3><div class="salary-range">RM 8,000 – 25,000</div><div class="skill-tags"><span class="skill-tag">Python</span><span class="skill-tag">LangChain</span><span class="skill-tag">OpenAI API</span><span class="skill-tag">FastAPI</span><span class="skill-tag">Vector DBs</span><span class="skill-tag">RAG</span><span class="skill-tag">Prompt engineering</span></div></div>
     </div>
   </div>
 
-  <!-- CONCEPTS -->
-  <div id="concepts" class="page">
-    <p class="sec">Python concepts — plain & clear</p>
-    <p class="sec-sub">Click any topic to see an explanation, real code, and which jobs use it.</p>
+  <!-- QUIZ -->
+  <div id="quiz" class="page">
+    <p class="sec">Interview quiz — 20 questions</p>
+    <p class="sec-sub">Based on real Python interview scenarios. Filter by difficulty.</p>
+    <div class="quiz-score-bar">
+      <div><div class="score-num"><span id="q-correct">0</span> / <span id="q-total">0</span></div><div style="font-size:12px;color:var(--text2)">answered correctly</div></div>
+      <div style="flex:1"><div class="prog-wrap" style="margin:0"><div class="prog-bar" id="quiz-prog" style="width:0%;background:var(--blue)"></div></div></div>
+    </div>
+    <div class="quiz-filter">
+      <button class="filter-btn active" onclick="filterQuiz('all',this)">All (20)</button>
+      <button class="filter-btn" onclick="filterQuiz('easy',this)">Easy (7)</button>
+      <button class="filter-btn" onclick="filterQuiz('medium',this)">Medium (7)</button>
+      <button class="filter-btn" onclick="filterQuiz('hard',this)">Hard (6)</button>
+    </div>
+    <div id="quiz-container"></div>
+  </div>
+</div>
 
-    <div class="concept-list">
+<!-- LESSON MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
+  <div class="modal" id="modal-content">
+    <div class="modal-header">
+      <h2 id="modal-title"></h2>
+      <button class="modal-close" onclick="closeModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div id="modal-body"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">Close</button>
+      <button class="btn primary" id="modal-complete-btn" onclick="markCurrentDone()">Mark as complete ✓</button>
+    </div>
+  </div>
+</div>
 
-      <div class="concept">
-        <div class="concept-header" onclick="toggleConcept(this)">
-          <span class="badge beginner">Beginner</span>
-          <span class="concept-title">Variables, data types & operators</span>
-          <i class="ti ti-chevron-right chevron" aria-hidden="true"></i>
-        </div>
-        <div class="concept-body">
-          <p>Variables are like labelled boxes that store information. Python figures out the type automatically — no need to declare it.</p>
-          <pre>name = "Alice"        # string (text)
-age = 28              # integer (whole number)
-salary = 7500.50      # float (decimal)
-is_employed = True    # boolean (True/False)
+<footer><div style="max-width:960px;margin:0 auto;padding:0 1.5rem">Python Learning Hub &nbsp;·&nbsp; Python 3.11+ &nbsp;·&nbsp; Malaysia/Singapore salaries 2025</div></footer>
 
-# f-strings — used constantly in real code
-print(f"{name} is {age} years old, earning RM{salary}")</pre>
-          <p><strong>Why it matters:</strong> Every program starts here. Analysts store data in variables. Developers use them to hold API responses, user inputs, config values.</p>
-          <div><span class="job-tag">All jobs</span><span class="job-tag">Data Analyst</span><span class="job-tag">Backend Dev</span></div>
-        </div>
-      </div>
+<script>
+const WEEKS=[
+{num:1,title:"Python basics — your first programs",desc:"Variables, types, input/output, conditionals",status:"done",lessons:[
+{id:"1a",title:"Installing Python & your first print()",duration:"15 min",
+content:`<h3>Getting started</h3><p>Python is one of the most popular languages in the world. Let's install it and write your first program.</p><h3>Install Python</h3><ul><li>Go to <strong>python.org/downloads</strong></li><li>Download Python 3.11 or newer</li><li>Tick "Add Python to PATH" on Windows</li></ul><h3>Your first program</h3><pre># This is a comment
+print("Hello, world!")
+print("My name is Alice")
+print(2 + 3)        # 5
+print(10 / 3)       # 3.333...</pre><p>Save as <code>hello.py</code> and run: <code>python hello.py</code></p>`,
+exercise:"Write a program that prints your name, age, and dream job on 3 separate lines.",
+answer:`print("Alice")
+print(28)
+print("Data Scientist")`},
+{id:"1b",title:"Variables and data types",duration:"20 min",
+content:`<h3>What is a variable?</h3><p>A variable is a labelled box that stores a value. Python figures out the type automatically.</p><pre>name = "Alice"       # str — text
+age = 28             # int — whole number
+salary = 7500.50     # float — decimal
+is_employed = True   # bool — True/False
 
-      <div class="concept">
-        <div class="concept-header" onclick="toggleConcept(this)">
-          <span class="badge beginner">Beginner</span>
-          <span class="concept-title">Lists, dicts & loops</span>
-          <i class="ti ti-chevron-right chevron" aria-hidden="true"></i>
-        </div>
-        <div class="concept-body">
-          <p>Lists hold ordered items. Dicts hold key-value pairs. Loops let you repeat actions over data — you'll do this every single day.</p>
-          <pre>employees = ["Alice", "Bob", "Carol"]
-salary_map = {"Alice": 7500, "Bob": 6000, "Carol": 8200}
+print(f"{name} is {age}, earns RM{salary:,.2f}")</pre><h3>Type conversion</h3><pre>int("42")      # 42
+float("3.14")  # 3.14
+str(100)       # "100"</pre>`,
+exercise:"Create variables for your city, years of experience, and salary goal. Print them with an f-string.",
+answer:`city = "Penang"
+years_exp = 0
+salary_goal = 8000
+print(f"From {city}, {years_exp} yrs exp, want RM{salary_goal}/mo")`},
+{id:"1c",title:"User input and type conversion",duration:"15 min",
+content:`<h3>Getting input from users</h3><pre>name = input("Your name: ")
+age_str = input("Your age: ")
+age = int(age_str)      # convert string to int
+print(f"In 5 years you'll be {age + 5}")</pre><h3>Common mistake</h3><pre># input() ALWAYS returns a string!
+age = input("Age: ")
+# print(age + 5)   # CRASH — can't add string + int
+print(int(age) + 5) # correct</pre>`,
+exercise:"Ask for two numbers and print their sum, difference, and product.",
+answer:`a = int(input("First number: "))
+b = int(input("Second number: "))
+print(f"Sum: {a+b}, Diff: {a-b}, Product: {a*b}")`},
+{id:"1d",title:"Conditionals — if, elif, else",duration:"20 min",
+content:`<h3>Making decisions</h3><pre>age = 20
+if age >= 18:
+    print("Adult")
+elif age >= 13:
+    print("Teenager")
+else:
+    print("Child")</pre><h3>Comparison operators</h3><pre>x = 10
+x == 10  # True (equal)
+x != 5   # True (not equal)
+x > 5    # True
+x >= 10  # True
+x < 3    # False</pre><h3>Combining</h3><pre>if salary > 7000 and experience >= 2:
+    print("Senior role eligible")</pre>`,
+exercise:"Ask for a score (0-100) and print: Distinction (>=80), Pass (>=50), or Fail (<50).",
+answer:`score = int(input("Score: "))
+if score >= 80: print("Distinction")
+elif score >= 50: print("Pass")
+else: print("Fail")`}
+]},
+{num:2,title:"Loops and collections",desc:"Lists, dicts, for/while loops, tuples, sets",status:"done",lessons:[
+{id:"2a",title:"Lists — ordered collections",duration:"20 min",
+content:`<h3>What is a list?</h3><pre>fruits = ["apple", "banana", "mango"]
+scores = [95, 87, 73, 91]
 
-for emp in employees:
-    pay = salary_map[emp]
-    print(f"{emp}: RM{pay}")
+print(fruits[0])     # apple (index from 0)
+print(fruits[-1])    # mango (last item)
+print(scores[1:3])   # [87, 73] (slice)</pre><h3>Common methods</h3><pre>fruits.append("orange")
+fruits.remove("banana")
+fruits.sort()
+print(len(fruits))</pre><h3>List comprehension</h3><pre>numbers = [1,2,3,4,5,6]
+evens   = [n for n in numbers if n%2==0]  # [2,4,6]
+squared = [n**2 for n in numbers]          # [1,4,9,16,25,36]</pre>`,
+exercise:"Create a list of 5 salaries. Print the highest, lowest, and average.",
+answer:`salaries = [6000,8500,7200,9000,5500]
+print(f"Max: RM{max(salaries)}")
+print(f"Min: RM{min(salaries)}")
+print(f"Avg: RM{sum(salaries)/len(salaries):.0f}")`},
+{id:"2b",title:"Dictionaries — key-value pairs",duration:"20 min",
+content:`<h3>What is a dict?</h3><pre>employee = {
+    "name": "Alice",
+    "age": 28,
+    "salary": 7500
+}
+print(employee["name"])           # Alice
+print(employee.get("bonus", 0))  # safe access</pre><h3>Update & loop</h3><pre>employee["salary"] = 8000   # update
+employee["city"] = "Penang" # add new key
 
-# List comprehension — clean, industry-standard style
-high_earners = [e for e in employees if salary_map[e] > 7000]
-print(high_earners)  # ['Alice', 'Carol']</pre>
-          <div><span class="job-tag">Data Analyst</span><span class="job-tag">Backend Dev</span><span class="job-tag">ML Engineer</span></div>
-        </div>
-      </div>
+for key, value in employee.items():
+    print(f"{key}: {value}")</pre><h3>List of dicts — most common pattern</h3><pre>team = [
+    {"name":"Alice","salary":8000},
+    {"name":"Bob",  "salary":6500},
+]
+top = max(team, key=lambda p: p["salary"])
+print(top["name"])  # Alice</pre>`,
+exercise:"Create a product dict with name, price, stock. Print a summary and warn if stock < 10.",
+answer:`product = {"name":"Laptop","price":3499.99,"stock":7}
+print(f"{product['name']}: RM{product['price']:.2f}, {product['stock']} units")
+if product["stock"] < 10: print("WARNING: Low stock!")`},
+{id:"2c",title:"for loops and while loops",duration:"20 min",
+content:`<h3>for loop</h3><pre>fruits = ["apple","banana","mango"]
+for fruit in fruits:
+    print(f"I like {fruit}")
 
-      <div class="concept">
-        <div class="concept-header" onclick="toggleConcept(this)">
-          <span class="badge beginner">Beginner</span>
-          <span class="concept-title">Functions & reusable code</span>
-          <i class="ti ti-chevron-right chevron" aria-hidden="true"></i>
-        </div>
-        <div class="concept-body">
-          <p>Functions are reusable blocks of code. Good developers never copy-paste — they write a function once and call it many times. "Write clean, maintainable code" in job descriptions = this.</p>
-          <pre>def calculate_tax(salary, rate=0.15):
-    """Returns tax amount for a given salary."""
-    return salary * rate
+for i in range(5):    # 0 1 2 3 4
+    print(i)
 
-def net_pay(salary):
-    tax = calculate_tax(salary)
-    return salary - tax
+for idx, fruit in enumerate(fruits):
+    print(f"{idx}: {fruit}")</pre><h3>while loop</h3><pre>count = 0
+while count < 5:
+    print(count)
+    count += 1
 
-print(net_pay(7500))   # 6375.0
-print(net_pay(10000))  # 8500.0</pre>
-          <div><span class="job-tag">All jobs</span><span class="job-tag">Code quality</span></div>
-        </div>
-      </div>
+while True:            # keep asking until valid
+    age = input("Age: ")
+    if age.isdigit(): break</pre>`,
+exercise:"Print the 7 times table (7x1 through 7x10) using a for loop.",
+answer:`for i in range(1, 11):
+    print(f"7 x {i} = {7*i}")`},
+{id:"2d",title:"Tuples and sets",duration:"15 min",
+content:`<h3>Tuples — immutable lists</h3><pre>point  = (10, 20)          # can't change after creation
+rgb    = (255, 128, 0)
+x, y   = point              # unpacking</pre><h3>Sets — unique values only</h3><pre>tags = {"python","api","data","python"}
+print(tags)  # {'python','api','data'} — no duplicate
 
-      <div class="concept">
-        <div class="concept-header" onclick="toggleConcept(this)">
-          <span class="badge intermediate">Intermediate</span>
-          <span class="concept-title">Classes & Object-Oriented Programming</span>
-          <i class="ti ti-chevron-right chevron" aria-hidden="true"></i>
-        </div>
-        <div class="concept-body">
-          <p>OOP lets you model real things as objects with properties and actions. Almost every developer interview asks about this. Frameworks like Django are built entirely on classes.</p>
-          <pre>class Employee:
+a = {1,2,3,4}
+b = {3,4,5,6}
+print(a & b)  # {3,4} intersection
+print(a | b)  # {1,2,3,4,5,6} union
+print(a - b)  # {1,2} difference</pre>`,
+exercise:"Given two lists of skills, find the skills that appear in both lists using sets.",
+answer:`job1 = ["python","sql","pandas","git"]
+job2 = ["python","java","sql","docker"]
+common = set(job1) & set(job2)
+print(f"Common: {common}")`}
+]},
+{num:3,title:"Functions and clean code",desc:"def, return, scope, lambda, modules",status:"done",lessons:[
+{id:"3a",title:"Defining and calling functions",duration:"20 min",
+content:`<h3>What is a function?</h3><p>A function is a reusable block of code. Never repeat yourself — write once, call many times.</p><pre>def greet(name):
+    """Says hello."""       # docstring
+    print(f"Hello, {name}!")
+
+greet("Alice")
+greet("Bob")</pre><h3>Return values & defaults</h3><pre>def net_pay(salary, tax_rate=0.15):
+    return salary * (1 - tax_rate)
+
+print(net_pay(7500))         # uses 0.15
+print(net_pay(7500, 0.20))   # overrides</pre>`,
+exercise:"Write net_pay(salary, tax_rate=0.15). Test with 3 different salaries.",
+answer:`def net_pay(salary, tax_rate=0.15):
+    return salary * (1 - tax_rate)
+print(net_pay(7500))
+print(net_pay(10000))
+print(net_pay(5000, 0.10))`},
+{id:"3b",title:"Scope, *args and **kwargs",duration:"20 min",
+content:`<h3>Variable scope</h3><pre>company = "Acme"        # global
+
+def show():
+    print(company)       # can read global
+
+def calc(price):
+    discount = 0.1       # local only
+    return price*(1-discount)</pre><h3>*args and **kwargs</h3><pre>def total(*amounts):
+    return sum(amounts)
+
+print(total(100,200,300))   # 600
+
+def profile(**info):
+    for k,v in info.items():
+        print(f"{k}: {v}")
+
+profile(name="Alice", role="Engineer")</pre>`,
+exercise:"Write a function that accepts any number of salaries and returns the average.",
+answer:`def avg_salary(*salaries):
+    return sum(salaries) / len(salaries)
+print(avg_salary(6000,7500,9000,8200))`},
+{id:"3c",title:"Lambda, map, and filter",duration:"20 min",
+content:`<h3>Lambda — one-line functions</h3><pre>double = lambda x: x*2
+print(double(5))  # 10
+
+employees = [
+    {"name":"Alice","salary":8000},
+    {"name":"Bob",  "salary":6500},
+]
+employees.sort(key=lambda e: e["salary"])
+print(employees[0]["name"])  # Bob</pre><h3>map() and filter()</h3><pre>salaries = [5000,7500,8200,4800,9000]
+after_tax = list(map(lambda s: s*0.85, salaries))
+high_pay  = list(filter(lambda s: s>7000, salaries))
+print(high_pay)  # [7500, 8200, 9000]</pre>`,
+exercise:"From a price list, apply 10% discount with map() and keep only items above RM50 with filter().",
+answer:`prices = [30,80,120,45,200,55]
+discounted = list(map(lambda p: p*0.9, prices))
+result = list(filter(lambda p: p>50, discounted))
+print(result)`},
+{id:"3d",title:"Modules and the standard library",duration:"20 min",
+content:`<h3>Built-in modules</h3><pre>import math, random, datetime
+
+print(math.sqrt(144))          # 12.0
+print(random.randint(1,100))   # random 1-100
+print(datetime.date.today())</pre><h3>json module</h3><pre>import json
+data = {"name":"Alice","salary":7500}
+
+with open("data.json","w") as f:
+    json.dump(data, f, indent=2)
+
+with open("data.json") as f:
+    loaded = json.load(f)
+print(loaded["name"])</pre>`,
+exercise:"Use datetime to print today's date and calculate days until 1 Jan 2026.",
+answer:`import datetime
+today = datetime.date.today()
+target = datetime.date(2026,1,1)
+print(f"Today: {today}, Days until 2026: {(target-today).days}")`}
+]},
+{num:4,title:"Object-Oriented Programming",desc:"Classes, inheritance, magic methods — interview essential",status:"active",lessons:[
+{id:"4a",title:"Classes and objects",duration:"25 min",
+content:`<h3>What is OOP?</h3><p>Model real things as objects with properties and methods. Django and FastAPI are built on OOP.</p><pre>class Employee:
     def __init__(self, name, salary):
         self.name = name
         self.salary = salary
 
-    def give_raise(self, percent):
-        self.salary *= (1 + percent / 100)
-        return self.salary
+    def give_raise(self, pct):
+        self.salary *= (1 + pct/100)
 
     def __repr__(self):
         return f"Employee({self.name}, RM{self.salary:.0f})"
 
 alice = Employee("Alice", 7500)
 alice.give_raise(10)
-print(alice)  # Employee(Alice, RM8250)</pre>
-          <div><span class="job-tag">Backend Dev</span><span class="job-tag">Django</span><span class="job-tag">ML Engineer</span></div>
-        </div>
-      </div>
+print(alice)   # Employee(Alice, RM8250)</pre>`,
+exercise:"Create a BankAccount class with deposit(), withdraw() (prevent overdraft), and balance attribute.",
+answer:`class BankAccount:
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        self.balance = balance
+    def deposit(self, amt):
+        self.balance += amt
+    def withdraw(self, amt):
+        if amt > self.balance:
+            print("Insufficient funds")
+        else:
+            self.balance -= amt
 
-      <div class="concept">
-        <div class="concept-header" onclick="toggleConcept(this)">
-          <span class="badge intermediate">Intermediate</span>
-          <span class="concept-title">Error handling & exceptions</span>
-          <i class="ti ti-chevron-right chevron" aria-hidden="true"></i>
-        </div>
-        <div class="concept-body">
-          <p>Real programs encounter errors — bad input, network failures, missing files. Professional code handles these gracefully instead of crashing. Common interview topic.</p>
-          <pre>import requests
+acc = BankAccount("Alice", 1000)
+acc.deposit(500)
+acc.withdraw(200)
+acc.withdraw(2000)`},
+{id:"4b",title:"Inheritance and polymorphism",duration:"25 min",
+content:`<h3>Inheritance — extend a class</h3><pre>class Animal:
+    def __init__(self, name):
+        self.name = name
+    def speak(self): return "..."
 
-def get_user_data(user_id):
+class Dog(Animal):
+    def speak(self): return "Woof!"
+
+class Cat(Animal):
+    def speak(self): return "Meow!"
+
+animals = [Dog("Rex"), Cat("Whiskers")]
+for a in animals:
+    print(f"{a.name}: {a.speak()}")</pre><h3>super()</h3><pre>class Manager(Employee):
+    def __init__(self, name, salary, team_size):
+        super().__init__(name, salary)
+        self.team_size = team_size</pre>`,
+exercise:"Create a Shape base class with area(). Create Rectangle and Circle subclasses that override area().",
+answer:`import math
+class Shape:
+    def area(self): return 0
+class Rectangle(Shape):
+    def __init__(self, w, h): self.w=w; self.h=h
+    def area(self): return self.w*self.h
+class Circle(Shape):
+    def __init__(self, r): self.r=r
+    def area(self): return math.pi*self.r**2
+for s in [Rectangle(4,5), Circle(3)]:
+    print(f"{s.__class__.__name__}: {s.area():.2f}")`},
+{id:"4c",title:"@property, classmethods, staticmethods",duration:"20 min",
+content:`<h3>@property</h3><pre>class Employee:
+    def __init__(self, name, salary):
+        self.name = name
+        self._salary = salary
+
+    @property
+    def salary(self): return self._salary
+
+    @salary.setter
+    def salary(self, value):
+        if value < 0: raise ValueError("Negative salary!")
+        self._salary = value
+
+alice = Employee("Alice", 7500)
+print(alice.salary)   # 7500
+alice.salary = 8000   # uses setter</pre>`,
+exercise:"Add a @property status to BankAccount that returns 'Rich' if balance > 10000, else 'Normal'.",
+answer:`class BankAccount:
+    def __init__(self, owner, balance=0):
+        self.owner=owner; self.balance=balance
+    @property
+    def status(self):
+        return "Rich" if self.balance > 10000 else "Normal"
+acc = BankAccount("Alice", 15000)
+print(acc.status)`},
+{id:"4d",title:"Magic methods",duration:"20 min",
+content:`<h3>Dunder methods</h3><pre>class Product:
+    def __init__(self, name, price):
+        self.name=name; self.price=price
+    def __repr__(self):
+        return f"Product({self.name}, RM{self.price})"
+    def __lt__(self, other):    # enables sorting
+        return self.price < other.price
+    def __add__(self, other):   # enables +
+        return self.price + other.price
+
+p1 = Product("Laptop", 3499)
+p2 = Product("Phone",  1999)
+products = [p1, p2]
+products.sort()          # uses __lt__
+print(p1 + p2)           # 5498</pre>`,
+exercise:"Add __len__ (number of items) and __contains__ (check if item exists) to a ShoppingCart class.",
+answer:`class ShoppingCart:
+    def __init__(self): self.items=[]
+    def add(self, item): self.items.append(item)
+    def __len__(self): return len(self.items)
+    def __contains__(self, item): return item in self.items
+cart = ShoppingCart()
+cart.add("Laptop"); cart.add("Mouse")
+print(len(cart), "Laptop" in cart)`}
+]},
+{num:5,title:"Error handling and file I/O",desc:"Exceptions, files, CSV, JSON, pathlib",status:"locked",lessons:[
+{id:"5a",title:"try, except, finally",duration:"20 min",
+content:`<h3>Handle errors gracefully</h3><pre>def divide(a, b):
     try:
-        response = requests.get(f"/api/users/{user_id}", timeout=5)
-        response.raise_for_status()   # raises if 4xx/5xx
-        return response.json()
-    except requests.exceptions.Timeout:
-        print("Server too slow, try again")
-    except requests.exceptions.HTTPError as e:
-        print(f"HTTP error: {e}")
-    except Exception as e:
-        print(f"Unexpected error: {e}")
-    return None</pre>
-          <div><span class="job-tag">Backend Dev</span><span class="job-tag">Data Engineer</span><span class="job-tag">DevOps</span></div>
-        </div>
-      </div>
+        return a / b
+    except ZeroDivisionError:
+        print("Cannot divide by zero!")
+        return None
+    except TypeError as e:
+        print(f"Wrong type: {e}")
+    finally:
+        print("divide() called")   # always runs</pre><h3>Raise your own</h3><pre>def set_salary(amount):
+    if amount < 0:
+        raise ValueError(f"Negative salary: {amount}")
+    return amount</pre>`,
+exercise:"Write safe_int(s) that converts a string to int and returns None on failure.",
+answer:`def safe_int(s):
+    try: return int(s)
+    except (ValueError, TypeError): return None
+print(safe_int("42"), safe_int("abc"))`},
+{id:"5b",title:"Reading and writing files",duration:"20 min",
+content:`<h3>Text files</h3><pre>with open("notes.txt","w") as f:
+    f.write("Python is great\n")
 
-      <div class="concept">
-        <div class="concept-header" onclick="toggleConcept(this)">
-          <span class="badge intermediate">Intermediate</span>
-          <span class="concept-title">Working with APIs & JSON</span>
-          <i class="ti ti-chevron-right chevron" aria-hidden="true"></i>
-        </div>
-        <div class="concept-body">
-          <p>Most modern software talks to other systems via APIs. Every job involving data, web, or automation requires this. JSON is the universal language of data exchange.</p>
-          <pre>import requests, json
+with open("notes.txt") as f:
+    for line in f:
+        print(line.strip())</pre><h3>CSV files</h3><pre>import csv
+with open("emp.csv","w",newline="") as f:
+    writer = csv.DictWriter(f, fieldnames=["name","salary"])
+    writer.writeheader()
+    writer.writerow({"name":"Alice","salary":7500})</pre>`,
+exercise:"Write 3 employee dicts to CSV, then read it back and print each row.",
+answer:`import csv
+emps=[{"name":"Alice","salary":8000},{"name":"Bob","salary":6000},{"name":"Carol","salary":7000}]
+with open("emp.csv","w",newline="") as f:
+    w=csv.DictWriter(f,fieldnames=["name","salary"])
+    w.writeheader(); w.writerows(emps)
+with open("emp.csv") as f:
+    for row in csv.DictReader(f): print(row)`},
+{id:"5c",title:"pathlib and custom exceptions",duration:"20 min",
+content:`<h3>pathlib — modern paths</h3><pre>from pathlib import Path
+p = Path("reports")
+p.mkdir(exist_ok=True)
+file = p / "summary.txt"
+file.write_text("Report ready")
+print(file.read_text())</pre><h3>Custom exceptions</h3><pre>class InsufficientFundsError(Exception):
+    def __init__(self, amount, balance):
+        super().__init__(f"Cannot withdraw RM{amount}, balance RM{balance}")
 
-# Fetch data from a public API
+def withdraw(balance, amount):
+    if amount > balance:
+        raise InsufficientFundsError(amount, balance)
+    return balance - amount</pre>`,
+exercise:"Create an AgeError and raise it if age is below 0 or above 130.",
+answer:`class AgeError(Exception): pass
+def set_age(age):
+    if not (0<=age<=130): raise AgeError(f"Invalid: {age}")
+    return age
+try: set_age(-5)
+except AgeError as e: print(e)`},
+{id:"5d",title:"Environment variables and .env files",duration:"15 min",
+content:`<h3>Never hardcode secrets!</h3><pre>import os
+from dotenv import load_dotenv  # pip install python-dotenv
+
+load_dotenv()   # reads .env file
+
+API_KEY = os.getenv("API_KEY")
+DB_URL  = os.getenv("DATABASE_URL")
+DEBUG   = os.getenv("DEBUG","False") == "True"</pre><h3>.env file (never commit to Git!)</h3><pre>API_KEY=sk-abc123xyz
+DATABASE_URL=postgresql://user:pass@localhost/mydb</pre><h3>.gitignore</h3><pre>.env
+__pycache__/
+venv/</pre>`,
+exercise:"Load a SECRET_KEY from a .env file and print it with only the last 4 characters visible.",
+answer:`import os
+from dotenv import load_dotenv
+load_dotenv()
+key = os.getenv("SECRET_KEY","")
+print(f"Key: ...{key[-4:]}")`}
+]},
+{num:6,title:"APIs — working with real data",desc:"requests, JSON, REST, building CLI tools",status:"locked",lessons:[
+{id:"6a",title:"HTTP basics and the requests library",duration:"25 min",
+content:`<h3>Every job uses APIs</h3><pre>import requests
+
 r = requests.get("https://api.github.com/users/octocat")
-data = r.json()   # auto-parses JSON into a Python dict
-
+print(r.status_code)         # 200
+data = r.json()
 print(data["name"])          # The Octocat
-print(data["public_repos"])  # number of repos
+print(data["public_repos"])</pre><h3>HTTP status codes</h3><ul><li>200 OK — success</li><li>201 Created — new resource made</li><li>400 Bad Request — wrong data sent</li><li>401 Unauthorized — not logged in</li><li>404 Not Found — missing</li><li>500 Server Error — server crashed</li></ul>`,
+exercise:"Fetch your GitHub profile from api.github.com/users/YOUR_USERNAME and print name, bio, followers.",
+answer:`import requests
+r = requests.get("https://api.github.com/users/octocat")
+d = r.json()
+print(d.get("name"), d.get("bio"), d.get("followers"))`},
+{id:"6b",title:"Handling API errors",duration:"20 min",
+content:`<h3>Always handle errors</h3><pre>def fetch_user(user_id):
+    try:
+        r = requests.get(
+            f"https://jsonplaceholder.typicode.com/users/{user_id}",
+            timeout=10
+        )
+        r.raise_for_status()
+        return r.json()
+    except requests.exceptions.Timeout:
+        print("Timed out")
+    except requests.exceptions.HTTPError as e:
+        print(f"HTTP {e.response.status_code}")
+    return None</pre><h3>API keys in headers</h3><pre>headers = {"Authorization": f"Bearer {API_KEY}"}
+r = requests.get("https://api.example.com/data", headers=headers)</pre>`,
+exercise:"Create get_post(id) that fetches from jsonplaceholder.typicode.com/posts/{id} with full error handling.",
+answer:`import requests
+def get_post(pid):
+    try:
+        r=requests.get(f"https://jsonplaceholder.typicode.com/posts/{pid}",timeout=10)
+        r.raise_for_status(); return r.json()
+    except Exception as e: print(f"Error: {e}"); return None
+print(get_post(1))`},
+{id:"6c",title:"POST requests and authentication",duration:"20 min",
+content:`<h3>Sending data with POST</h3><pre>import requests
 
-# Save to file
-with open("user.json", "w") as f:
-    json.dump(data, f, indent=2)</pre>
-          <div><span class="job-tag">Backend Dev</span><span class="job-tag">Data Engineer</span><span class="job-tag">Automation</span></div>
-        </div>
-      </div>
+payload = {"username":"alice","password":"secret"}
+r = requests.post("https://api.example.com/login", json=payload)
 
-      <div class="concept">
-        <div class="concept-header" onclick="toggleConcept(this)">
-          <span class="badge advanced">Advanced</span>
-          <span class="concept-title">Pandas for data analysis</span>
-          <i class="ti ti-chevron-right chevron" aria-hidden="true"></i>
-        </div>
-        <div class="concept-body">
-          <p>Pandas is the #1 library in data analyst and data scientist job descriptions. It's Excel but with code — powerful, repeatable, and handles millions of rows instantly.</p>
-          <pre>import pandas as pd
+if r.status_code == 200:
+    token = r.json()["token"]
+    print(f"Logged in! Token: {token[:20]}...")</pre><h3>Session for persistent headers</h3><pre>session = requests.Session()
+session.headers.update({"Authorization":"Bearer TOKEN"})
+r1 = session.get("/users")
+r2 = session.get("/products")  # headers sent automatically</pre>`,
+exercise:"POST to https://jsonplaceholder.typicode.com/posts with a title and body, print the response.",
+answer:`import requests
+r = requests.post("https://jsonplaceholder.typicode.com/posts",
+    json={"title":"My Post","body":"Hello world","userId":1})
+print(r.status_code, r.json())`},
+{id:"6d",title:"Building a real CLI tool",duration:"25 min",
+content:`<h3>Weather CLI — your first real project</h3><pre>import requests, sys
 
-df = pd.read_csv("sales.csv")
+def get_weather(city):
+    geo = requests.get(
+        "https://geocoding-api.open-meteo.com/v1/search",
+        params={"name":city,"count":1}
+    ).json()
+    if not geo.get("results"):
+        print(f"City not found: {city}"); return
+    loc = geo["results"][0]
+    w = requests.get(
+        "https://api.open-meteo.com/v1/forecast",
+        params={"latitude":loc["latitude"],"longitude":loc["longitude"],
+                "current":"temperature_2m,wind_speed_10m"}
+    ).json()
+    curr = w["current"]
+    print(f"{loc['name']}: {curr['temperature_2m']}°C, wind {curr['wind_speed_10m']}km/h")
 
-# Filter, group, summarise — daily work for any data role
-monthly = (df[df["status"] == "completed"]
-             .groupby("month")["revenue"]
-             .sum()
-             .reset_index())
+city = sys.argv[1] if len(sys.argv)>1 else "Penang"
+get_weather(city)</pre>`,
+exercise:"Extend the weather tool to also print the 3-day max temperature forecast.",
+answer:`# Add to params: "daily":"temperature_2m_max"
+# Then: for i,temp in enumerate(weather["daily"]["temperature_2m_max"][:3]):
+#           print(f"Day {i+1}: {temp}°C")`}
+]},
+{num:7,title:"Track A — Data & Pandas",desc:"Pandas, NumPy, Matplotlib, Scikit-learn",status:"locked",lessons:[
+{id:"7a",title:"Pandas fundamentals",duration:"30 min",
+content:`<h3>Why Pandas?</h3><p>Pandas is in almost every data analyst job description. It's Excel but with code — powerful and repeatable.</p><pre>import pandas as pd
 
-top = monthly.loc[monthly["revenue"].idxmax()]
-print(f"Best month: {top['month']} — RM{top['revenue']:,.0f}")</pre>
-          <div><span class="job-tag">Data Analyst</span><span class="job-tag">ML Engineer</span><span class="job-tag">Data Scientist</span></div>
-        </div>
-      </div>
+data = {"name":["Alice","Bob","Carol"],"salary":[8000,6500,9200],"dept":["Eng","Sales","Eng"]}
+df = pd.DataFrame(data)
 
-      <div class="concept">
-        <div class="concept-header" onclick="toggleConcept(this)">
-          <span class="badge advanced">Advanced</span>
-          <span class="concept-title">FastAPI — building REST APIs</span>
-          <i class="ti ti-chevron-right chevron" aria-hidden="true"></i>
-        </div>
-        <div class="concept-body">
-          <p>FastAPI is one of the most in-demand Python frameworks for backend jobs. It's used to build APIs that mobile apps, frontends, and other services consume.</p>
-          <pre>from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+print(df.head())
+print(df.shape)       # (3, 3)
+print(df.describe())  # stats summary
 
+df[df["salary"]>7000]                # filter
+df[["name","salary"]]                # columns
+df.sort_values("salary",ascending=False)</pre>`,
+exercise:"Create a DataFrame, filter above-average earners, sort by salary descending.",
+answer:`import pandas as pd
+data={"name":["A","B","C","D"],"salary":[8000,6500,9200,5800]}
+df=pd.DataFrame(data)
+result=df[df["salary"]>df["salary"].mean()].sort_values("salary",ascending=False)
+print(result)`},
+{id:"7b",title:"GroupBy, merge, and cleaning",duration:"30 min",
+content:`<h3>GroupBy</h3><pre>dept_stats = df.groupby("dept")["salary"].agg(["mean","min","max"])
+print(dept_stats)</pre><h3>Data cleaning</h3><pre>df.isnull().sum()                        # count NaN
+df["salary"].fillna(df["salary"].mean()) # fill NaN
+df.dropna()                              # remove NaN rows
+df.drop_duplicates(subset=["email"])     # remove dupes
+df["name"] = df["name"].str.strip().str.title()</pre>`,
+exercise:"Fill NaN salaries with column mean, remove rows where name is empty.",
+answer:`import pandas as pd, numpy as np
+data={"name":["Alice","","Bob",None],"salary":[8000,None,7000,6500]}
+df=pd.DataFrame(data)
+df["salary"].fillna(df["salary"].mean(),inplace=True)
+df=df[df["name"].notna()&(df["name"]!="")]
+print(df)`},
+{id:"7c",title:"Matplotlib and Seaborn visualisation",duration:"25 min",
+content:`<h3>Charts for analyst roles</h3><pre>import matplotlib.pyplot as plt
+
+names=["A","B","C","D"]
+salaries=[8000,6500,9200,5800]
+
+plt.figure(figsize=(8,4))
+plt.bar(names, salaries, color="steelblue")
+plt.title("Employee Salaries")
+plt.ylabel("Salary (RM)")
+plt.tight_layout()
+plt.savefig("chart.png")
+plt.show()</pre><h3>Seaborn</h3><pre>import seaborn as sns
+sns.boxplot(data=df, x="dept", y="salary")
+plt.show()</pre>`,
+exercise:"Create a bar chart showing average salary by department.",
+answer:`import pandas as pd, matplotlib.pyplot as plt
+data={"dept":["Eng","Sales","Eng","HR"],"salary":[8000,6500,9200,5800]}
+df=pd.DataFrame(data)
+df.groupby("dept")["salary"].mean().plot(kind="bar",title="Avg by Dept")
+plt.tight_layout(); plt.show()`},
+{id:"7d",title:"NumPy and intro to Scikit-learn",duration:"30 min",
+content:`<h3>NumPy — fast arrays</h3><pre>import numpy as np
+arr = np.array([1,2,3,4,5])
+print(arr*2, arr.mean(), arr.std())</pre><h3>Scikit-learn — ML basics</h3><pre>from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+import numpy as np
+
+X = np.array([[1],[2],[3],[5],[7],[10]])
+y = np.array([4000,5000,6000,7500,9000,12000])
+X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.2)
+model = LinearRegression().fit(X_train, y_train)
+print(model.predict([[4]]))  # salary at 4 years</pre>`,
+exercise:"Train a LinearRegression to predict house prices from size. Use 5 data points.",
+answer:`from sklearn.linear_model import LinearRegression
+import numpy as np
+X=np.array([[500],[750],[1000],[1200],[1500]])
+y=np.array([150000,200000,280000,320000,400000])
+m=LinearRegression().fit(X,y)
+print(m.predict([[900]]))`}
+]},
+{num:8,title:"Track B — Backend with FastAPI",desc:"REST APIs, Pydantic, database, deployment",status:"locked",lessons:[
+{id:"8a",title:"FastAPI basics — your first API",duration:"30 min",
+content:`<h3>Why FastAPI?</h3><p>Used at Uber, Microsoft, Netflix, and many Malaysian tech companies. Auto-generates docs.</p><pre># pip install fastapi uvicorn
+from fastapi import FastAPI
 app = FastAPI()
+
+@app.get("/")
+def home(): return {"message":"Hello World"}
+
+@app.get("/users/{user_id}")
+def get_user(user_id: int):
+    return {"id":user_id,"name":"Alice"}
+
+# Run: uvicorn main:app --reload
+# Docs: http://127.0.0.1:8000/docs</pre>`,
+exercise:"Add a /products/{id} endpoint returning a fake product with name, price, in_stock.",
+answer:`@app.get("/products/{product_id}")
+def get_product(product_id: int):
+    return {"id":product_id,"name":"Laptop","price":3499.99,"in_stock":True}`},
+{id:"8b",title:"Pydantic models and validation",duration:"25 min",
+content:`<h3>Automatic data validation</h3><pre>from pydantic import BaseModel, validator
+from typing import Optional
 
 class User(BaseModel):
     name: str
     email: str
+    age: int
+    salary: Optional[float] = None
 
-fake_db = {}
+    @validator("age")
+    def age_positive(cls, v):
+        if v < 0: raise ValueError("Age must be positive")
+        return v
 
 @app.post("/users/")
 def create_user(user: User):
-    if user.email in fake_db:
-        raise HTTPException(400, "Email already exists")
-    fake_db[user.email] = user
-    return {"message": "Created", "user": user}
+    return {"created": user.dict()}</pre>`,
+exercise:"Create a Product model (name, price>0, category). Add POST /products/ endpoint.",
+answer:`class Product(BaseModel):
+    name: str; price: float; category: str
+    @validator("price")
+    def price_pos(cls,v):
+        if v<=0: raise ValueError("Must be positive")
+        return v
+@app.post("/products/")
+def create(p: Product): return {"created":p.dict()}`},
+{id:"8c",title:"Database with SQLAlchemy",duration:"30 min",
+content:`<h3>Connecting a real database</h3><pre>from sqlalchemy import create_engine,Column,Integer,String,Float
+from sqlalchemy.orm import declarative_base, Session
 
-@app.get("/users/{email}")
-def get_user(email: str):
-    if email not in fake_db:
-        raise HTTPException(404, "Not found")
-    return fake_db[email]</pre>
-          <div><span class="job-tag">Backend Dev</span><span class="job-tag">ML Engineer</span><span class="job-tag">API Dev</span></div>
-        </div>
-      </div>
+engine = create_engine("sqlite:///app.db")
+Base = declarative_base()
 
-    </div>
+class Employee(Base):
+    __tablename__ = "employees"
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
+    salary = Column(Float)
+
+Base.metadata.create_all(engine)
+
+with Session(engine) as s:
+    s.add(Employee(name="Alice", salary=7500))
+    s.commit()
+
+with Session(engine) as s:
+    for e in s.query(Employee).all():
+        print(e.name, e.salary)</pre>`,
+exercise:"Add DELETE /employees/{id} endpoint that removes an employee from the database.",
+answer:`@app.delete("/employees/{emp_id}")
+def delete_emp(emp_id: int):
+    with Session(engine) as s:
+        emp=s.get(Employee,emp_id)
+        if not emp: raise HTTPException(404,"Not found")
+        s.delete(emp); s.commit()
+    return {"deleted":emp_id}`},
+{id:"8d",title:"Auth and deployment",duration:"30 min",
+content:`<h3>JWT authentication</h3><pre># pip install python-jose passlib
+from jose import jwt
+from passlib.context import CryptContext
+
+SECRET = "your-secret"
+pwd_ctx = CryptContext(schemes=["bcrypt"])
+
+def hash_password(p): return pwd_ctx.hash(p)
+def create_token(data): return jwt.encode(data, SECRET)</pre><h3>Deploy to Railway (free)</h3><ul><li>Push code to GitHub</li><li>Go to railway.app, connect repo</li><li>Add Procfile: <code>web: uvicorn main:app --host 0.0.0.0 --port $PORT</code></li><li>Auto-deploys on every push</li></ul>`,
+exercise:"Add a /health endpoint returning {status: ok, timestamp: ...} — standard in production APIs.",
+answer:`import datetime
+@app.get("/health")
+def health():
+    return {"status":"ok","timestamp":datetime.datetime.utcnow().isoformat()}`}
+]},
+{num:9,title:"Databases and SQL",desc:"SQL, PostgreSQL, SQLite, Redis, migrations",status:"locked",lessons:[
+{id:"9a",title:"SQL fundamentals",duration:"25 min",
+content:`<h3>SQL is required for almost every Python job</h3><pre>-- Get data
+SELECT name, salary FROM employees;
+SELECT * FROM employees WHERE salary > 7000;
+SELECT * FROM employees ORDER BY salary DESC LIMIT 5;
+
+-- Join tables
+SELECT e.name, d.dept_name
+FROM employees e
+JOIN departments d ON e.dept_id = d.id;
+
+-- Aggregate
+SELECT dept_id, AVG(salary) as avg
+FROM employees GROUP BY dept_id HAVING AVG(salary)>7000;</pre><h3>Python + SQLite</h3><pre>import sqlite3
+conn = sqlite3.connect("company.db")
+cur = conn.cursor()
+cur.execute("SELECT name,salary FROM employees WHERE salary>?",(7000,))
+for name,salary in cur.fetchall():
+    print(name,salary)</pre>`,
+exercise:"Write a SQL query to find the 3 highest earners per department.",
+answer:`SELECT name, dept_id, salary FROM (
+  SELECT *, ROW_NUMBER() OVER (PARTITION BY dept_id ORDER BY salary DESC) as rn
+  FROM employees
+) WHERE rn <= 3;`},
+{id:"9b",title:"PostgreSQL and connection pooling",duration:"20 min",
+content:`<h3>PostgreSQL — the industry standard</h3><pre># pip install psycopg2-binary
+import psycopg2
+conn = psycopg2.connect(
+    host="localhost",database="myapp",
+    user="postgres",password="secret"
+)
+cur = conn.cursor()
+cur.execute("SELECT * FROM users WHERE active=%s",(True,))
+rows = cur.fetchall()</pre><h3>SQLAlchemy connection pool</h3><pre>from sqlalchemy import create_engine
+engine = create_engine(
+    "postgresql://user:pass@localhost/myapp",
+    pool_size=5, max_overflow=10
+)</pre>`,
+exercise:"Write a Python function that returns the row count of a given SQLite table.",
+answer:`import sqlite3
+def count_rows(db, table):
+    with sqlite3.connect(db) as conn:
+        return conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]`},
+{id:"9c",title:"Redis caching",duration:"20 min",
+content:`<h3>Cache expensive queries for speed</h3><pre># pip install redis
+import redis, json
+r = redis.Redis(host="localhost",port=6379,decode_responses=True)
+
+def get_user(user_id):
+    key = f"user:{user_id}"
+    cached = r.get(key)
+    if cached: return json.loads(cached)   # cache hit!
+
+    user = fetch_from_db(user_id)          # slow DB call
+    r.setex(key, 300, json.dumps(user))    # cache 5 mins
+    return user</pre>`,
+exercise:"Write a @cached(ttl=60) decorator that caches function results in memory for ttl seconds.",
+answer:`import time
+def cached(ttl=60):
+    cache={}
+    def decorator(fn):
+        def wrapper(*args):
+            key=str(args)
+            if key in cache and time.time()-cache[key]["t"]<ttl:
+                return cache[key]["v"]
+            result=fn(*args)
+            cache[key]={"v":result,"t":time.time()}
+            return result
+        return wrapper
+    return decorator`},
+{id:"9d",title:"Database migrations with Alembic",duration:"20 min",
+content:`<h3>Versioned schema changes</h3><p>When your database schema changes, use Alembic to manage migrations safely.</p><pre># pip install alembic
+# alembic init alembic
+# alembic revision --autogenerate -m "add email column"
+# alembic upgrade head</pre><h3>Migration file example</h3><pre>def upgrade():
+    op.add_column("users",
+        sa.Column("email", sa.String(), nullable=True)
+    )
+
+def downgrade():
+    op.drop_column("users", "email")</pre>`,
+exercise:"List the steps to add a phone_number column to an existing users table with Alembic.",
+answer:`# 1. alembic revision --autogenerate -m "add phone_number"
+# 2. Edit: op.add_column("users", sa.Column("phone_number", sa.String()))
+# 3. alembic upgrade head`}
+]},
+{num:10,title:"Testing and code quality",desc:"pytest, type hints, Git workflow, linting",status:"locked",lessons:[
+{id:"10a",title:"Testing with pytest",duration:"25 min",
+content:`<h3>Why test?</h3><p>"Experience with pytest" is in most backend and data engineering job descriptions.</p><pre># math_utils.py
+def add(a,b): return a+b
+def divide(a,b):
+    if b==0: raise ValueError("No zero division")
+    return a/b
+
+# test_math.py
+import pytest
+from math_utils import add,divide
+
+def test_add():    assert add(2,3)==5
+def test_divide(): assert divide(10,2)==5.0
+
+def test_zero():
+    with pytest.raises(ValueError):
+        divide(10,0)
+
+# Run: pytest -v</pre>`,
+exercise:"Write 3 pytest functions for is_palindrome(s) — a function checking if a string reads the same forwards and backwards.",
+answer:`def is_palindrome(s):
+    s=s.lower().replace(" ",""); return s==s[::-1]
+def test_palindrome():     assert is_palindrome("racecar")
+def test_not_palindrome(): assert not is_palindrome("hello")
+def test_spaces():         assert is_palindrome("race car")`},
+{id:"10b",title:"Type hints",duration:"20 min",
+content:`<h3>Professional Python uses type hints</h3><pre>from typing import Optional, List, Dict
+
+def greet(name: str) -> str:
+    return f"Hello, {name}!"
+
+def process(salaries: List[float]) -> Dict[str,float]:
+    return {"mean":sum(salaries)/len(salaries),"max":max(salaries)}
+
+def find_user(uid: int) -> Optional[Dict]:
+    ...  # returns dict or None</pre><h3>mypy — catch type errors</h3><pre># pip install mypy
+# mypy your_file.py</pre>`,
+exercise:"Add type hints to calculate_bmi(weight_kg, height_m) -> str that returns the BMI category.",
+answer:`def calculate_bmi(weight_kg: float, height_m: float) -> str:
+    bmi = weight_kg / (height_m**2)
+    if bmi<18.5: return "Underweight"
+    if bmi<25: return "Normal"
+    if bmi<30: return "Overweight"
+    return "Obese"`},
+{id:"10c",title:"Git workflow",duration:"20 min",
+content:`<h3>The daily Git workflow</h3><pre>git config --global user.name "Your Name"
+git config --global user.email "you@email.com"
+
+git init; git add .; git commit -m "Initial commit"
+git remote add origin https://github.com/you/repo
+git push -u origin main</pre><h3>Feature branch workflow</h3><pre>git pull origin main                  # always pull first
+git checkout -b feature/add-login     # new branch
+git add auth.py
+git commit -m "Add JWT authentication"
+git push origin feature/add-login     # create PR</pre>`,
+exercise:"List commands to create a branch 'fix/salary-bug', commit a fix, and push it.",
+answer:`git checkout -b fix/salary-bug
+git add .
+git commit -m "Fix salary rounding error"
+git push origin fix/salary-bug`},
+{id:"10d",title:"Linting and CI/CD",duration:"20 min",
+content:`<h3>Code quality tools</h3><pre># pip install black flake8 isort
+black my_file.py      # auto-format
+flake8 my_file.py     # find errors
+isort my_file.py      # sort imports</pre><h3>GitHub Actions CI</h3><pre># .github/workflows/test.yml
+name: Test
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with: {python-version: "3.11"}
+      - run: pip install -r requirements.txt
+      - run: pytest
+      - run: flake8 .</pre>`,
+exercise:"Write a GitHub Actions workflow that runs pytest on every push to main.",
+answer:`name: Test
+on: {push: {branches:[main]}}
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with: {python-version: "3.11"}
+      - run: pip install -r requirements.txt
+      - run: pytest`}
+]},
+{num:11,title:"Docker and deployment",desc:"Containers, Docker Compose, CI/CD, cloud",status:"locked",lessons:[
+{id:"11a",title:"Docker fundamentals",duration:"25 min",
+content:`<h3>Why Docker?</h3><p>Docker is in almost every backend and DevOps job description. It ensures your app runs identically everywhere.</p><pre># Dockerfile
+FROM python:3.11-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+EXPOSE 8000
+CMD ["uvicorn","main:app","--host","0.0.0.0","--port","8000"]</pre><h3>Build and run</h3><pre>docker build -t my-api .
+docker run -p 8000:8000 my-api
+docker run -p 8000:8000 -e DATABASE_URL=... my-api</pre>`,
+exercise:"Write a Dockerfile for a FastAPI app that installs dependencies and starts the server.",
+answer:`FROM python:3.11-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
+EXPOSE 8000
+CMD ["uvicorn","main:app","--host","0.0.0.0","--port","8000"]`},
+{id:"11b",title:"Docker Compose",duration:"25 min",
+content:`<h3>Multi-service apps</h3><pre>version: "3.9"
+services:
+  api:
+    build: .
+    ports: ["8000:8000"]
+    environment:
+      - DATABASE_URL=postgresql://postgres:pw@db/myapp
+    depends_on: [db]
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_PASSWORD: pw
+      POSTGRES_DB: myapp
+    volumes: [pgdata:/var/lib/postgresql/data]
+volumes:
+  pgdata:</pre><pre>docker compose up -d
+docker compose down</pre>`,
+exercise:"Add a Redis service to a docker-compose.yml.",
+answer:`# Add under services:
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+# Add to api environment:
+  - REDIS_URL=redis://redis:6379`},
+{id:"11c",title:"Deploying to Railway",duration:"20 min",
+content:`<h3>Free hosting in 2 minutes</h3><ul><li>Go to railway.app, sign up with GitHub</li><li>New Project → Deploy from GitHub repo</li><li>Add environment variables in dashboard</li><li>You get a live URL instantly</li></ul><h3>Procfile</h3><pre>web: uvicorn main:app --host 0.0.0.0 --port $PORT</pre><h3>requirements.txt — keep updated</h3><pre>pip freeze > requirements.txt</pre>`,
+exercise:"List the 5 files every deployable FastAPI project needs.",
+answer:`# 1. main.py           your FastAPI app
+# 2. requirements.txt  pip freeze > requirements.txt
+# 3. Dockerfile        for containers
+# 4. .env              local secrets (never commit)
+# 5. .gitignore        exclude .env, __pycache__, venv/`},
+{id:"11d",title:"Monitoring and logging",duration:"20 min",
+content:`<h3>Logging — essential for production</h3><pre>import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(message)s"
+)
+logger = logging.getLogger(__name__)
+
+def process_order(order_id):
+    logger.info(f"Processing order {order_id}")
+    try:
+        # ... do work
+        logger.info(f"Order {order_id} complete")
+    except Exception as e:
+        logger.error(f"Order {order_id} failed: {e}")
+        raise</pre>`,
+exercise:"Add structured logging to a function that calls an external API.",
+answer:`import logging, requests
+logger = logging.getLogger(__name__)
+def fetch_data(url):
+    logger.info(f"Fetching {url}")
+    try:
+        r = requests.get(url, timeout=10)
+        r.raise_for_status()
+        logger.info(f"Success: {r.status_code}")
+        return r.json()
+    except Exception as e:
+        logger.error(f"Failed: {e}"); return None`}
+]},
+{num:12,title:"Portfolio and interviews",desc:"Build, showcase, and get hired",status:"locked",lessons:[
+{id:"12a",title:"Choosing your portfolio project",duration:"20 min",
+content:`<h3>What makes a great portfolio project?</h3><ul><li>Solves a real problem you care about</li><li>Complete — not just started</li><li>Has a live demo URL</li><li>Clean GitHub repo with a proper README</li><li>At least a few tests</li></ul><h3>Project ideas by track</h3><ul><li><strong>Data Analyst:</strong> Malaysia salary analysis dashboard using Kaggle data + Streamlit</li><li><strong>Backend:</strong> Expense tracker API with auth, categories, monthly reports</li><li><strong>ML Engineer:</strong> Job recommendation — paste a job description, get similar ones</li><li><strong>DevOps:</strong> Automated pipeline with Docker + GitHub Actions + monitoring</li></ul>`,
+exercise:"Write a README.md outline: what it does, tech stack, how to run it, screenshots.",
+answer:`# Project Name
+## What it does
+One sentence: what problem it solves and who it's for.
+## Tech stack
+Python 3.11, FastAPI, PostgreSQL, Docker
+## How to run
+\`\`\`bash
+git clone ... && cp .env.example .env && docker compose up
+\`\`\`
+## Screenshots
+[Add screenshots]
+## Live demo
+[Railway/Render link]`},
+{id:"12b",title:"Common interview questions",duration:"30 min",
+content:`<h3>Questions you will definitely face</h3><h3>List vs Tuple?</h3><pre>my_list  = [1,2,3]   # mutable — can change
+my_tuple = (1,2,3)   # immutable — cannot change, faster</pre><h3>What is a decorator?</h3><pre>def log(func):
+    def wrapper(*args,**kwargs):
+        print(f"Calling {func.__name__}")
+        return func(*args,**kwargs)
+    return wrapper
+@log
+def add(a,b): return a+b</pre><h3>What is the GIL?</h3><p>The Global Interpreter Lock prevents multiple threads from running Python code simultaneously. For CPU tasks: use multiprocessing. For I/O tasks: use asyncio.</p>`,
+exercise:"Explain in 2 sentences each: mutable vs immutable, shallow vs deep copy, generator vs list.",
+answer:`# Mutable vs immutable: Lists/dicts can change after creation. Strings/tuples cannot.
+# Shallow vs deep copy: shallow copies the outer object but shares inner objects. deep copy duplicates everything.
+# Generator vs list: generators yield one value at a time (memory efficient). Lists store all values at once.`},
+{id:"12c",title:"Async Python",duration:"25 min",
+content:`<h3>Why async?</h3><p>When code waits for I/O (network, database), async lets other code run instead of blocking. FastAPI is built on asyncio.</p><pre>import asyncio, aiohttp
+
+async def fetch(session, url):
+    async with session.get(url) as resp:
+        return await resp.json()
+
+async def main():
+    urls = [
+        "https://api.github.com/users/python",
+        "https://api.github.com/users/guido",
+    ]
+    async with aiohttp.ClientSession() as s:
+        results = await asyncio.gather(*[fetch(s,u) for u in urls])
+    for r in results: print(r["name"])
+
+asyncio.run(main())</pre>`,
+exercise:"Write an async function that fetches 3 URLs concurrently using asyncio.gather().",
+answer:`import asyncio, aiohttp
+async def fetch_all(urls):
+    async with aiohttp.ClientSession() as s:
+        tasks=[s.get(u) for u in urls]
+        responses=await asyncio.gather(*tasks)
+        return [await r.json() for r in responses]`},
+{id:"12d",title:"Salary negotiation and what's next",duration:"15 min",
+content:`<h3>Know your market value (Malaysia 2025)</h3><ul><li><strong>Junior (0-2 yrs):</strong> RM 3,500 – 6,000</li><li><strong>Mid (2-5 yrs):</strong> RM 6,000 – 12,000</li><li><strong>Senior (5+ yrs):</strong> RM 12,000 – 25,000</li><li><strong>Lead/Principal:</strong> RM 20,000+</li></ul><h3>When asked about salary</h3><p>Don't say a number first. Say: "Based on my research and the scope of this role, I'm looking for RM X–Y. Is that aligned with your budget?"</p><h3>Negotiate beyond salary</h3><ul><li>Remote/hybrid (worth RM 500–1k/mo in savings)</li><li>Learning budget (RM 2k–5k/yr)</li><li>Extra leave, equipment allowance</li></ul>`,
+exercise:"Write a 2-sentence 'Tell me about yourself' answer for a Python developer role.",
+answer:`# Example:
+# "I'm a Python developer focused on backend APIs and data analysis.
+# I recently built [your project] — a [brief description] using FastAPI and PostgreSQL,
+# deployed live at [url], which I'm happy to walk you through."`}
+]}
+];
+
+const CONCEPTS=[
+{level:"beginner",title:"Variables & data types",desc:"str, int, float, bool, f-strings",jobs:["All jobs"],code:`name = "Alice"
+age = 28; salary = 7500.50
+print(f"{name} earns RM{salary:,.2f}")`},
+{level:"beginner",title:"Lists & dicts",desc:"Ordered collections, key-value maps, comprehensions",jobs:["All jobs"],code:`fruits = ["apple","banana","mango"]
+person = {"name":"Alice","age":28}
+evens  = [x for x in range(10) if x%2==0]`},
+{level:"beginner",title:"Functions",desc:"def, return, default params, docstrings",jobs:["All jobs"],code:`def net_pay(salary, rate=0.15):
+    """Returns take-home pay."""
+    return salary * (1 - rate)
+print(net_pay(7500))`},
+{level:"beginner",title:"Loops",desc:"for, while, enumerate, range",jobs:["All jobs"],code:`for i, name in enumerate(["Alice","Bob"]):
+    print(f"{i}: {name}")
+squares = [x**2 for x in range(5)]`},
+{level:"intermediate",title:"OOP & classes",desc:"__init__, methods, inheritance, @property",jobs:["Backend Dev","Django","ML Eng"],code:`class Employee:
+    def __init__(self, name, salary):
+        self.name = name; self.salary = salary
+    def give_raise(self, pct):
+        self.salary *= 1 + pct/100`},
+{level:"intermediate",title:"Error handling",desc:"try/except/finally, custom exceptions",jobs:["All jobs"],code:`def divide(a, b):
+    try: return a / b
+    except ZeroDivisionError: return None`},
+{level:"intermediate",title:"APIs & requests",desc:"GET/POST, JSON, headers, error handling",jobs:["Backend Dev","Data Eng"],code:`import requests
+r = requests.get("https://api.github.com/users/octocat",timeout=5)
+r.raise_for_status()
+print(r.json()["name"])`},
+{level:"intermediate",title:"File I/O",desc:"open(), with, CSV, JSON, pathlib",jobs:["Data Analyst","Automation"],code:`import json
+with open("data.json","w") as f:
+    json.dump({"name":"Alice"},f,indent=2)`},
+{level:"advanced",title:"Pandas",desc:"DataFrame, groupby, merge, cleaning",jobs:["Data Analyst","ML Eng"],code:`import pandas as pd
+df = pd.read_csv("data.csv")
+top = df[df["salary"]>8000].sort_values("salary",ascending=False)`},
+{level:"advanced",title:"FastAPI",desc:"Routes, Pydantic, validation, database",jobs:["Backend Dev","ML Eng"],code:`from fastapi import FastAPI
+app = FastAPI()
+@app.get("/users/{uid}")
+def get_user(uid: int): return {"id":uid}`},
+{level:"advanced",title:"pytest",desc:"assert, fixtures, parametrize, coverage",jobs:["All senior roles"],code:`import pytest
+def add(a,b): return a+b
+def test_add():
+    assert add(2,3)==5`},
+{level:"advanced",title:"Async / asyncio",desc:"async def, await, gather, aiohttp",jobs:["Backend Dev","Data Eng"],code:`import asyncio
+async def main():
+    await asyncio.sleep(1); print("done")
+asyncio.run(main())`}
+];
+
+const QUIZ=[
+{diff:"easy",q:"What does this print?",code:`x = [1,2,3]
+print(x[-1])`,opts:["1","3","[3]","Error"],ans:1,explain:"Negative index: -1 is the last element, which is 3."},
+{diff:"easy",q:"Which correctly creates a dictionary?",code:"",opts:['d = ["key":"val"]','d = {"key":"val"}','d = ("key","val")','d = <key:val>'],ans:1,explain:"Dicts use curly braces {} with colon-separated key:value pairs."},
+{diff:"easy",q:"What does len([1,2,3,4,5]) return?",code:"",opts:["4","5","6","Error"],ans:1,explain:"len() counts items. 5 items = 5."},
+{diff:"easy",q:"What is printed?",code:`x = 10
+if x > 5:
+    print("big")
+else:
+    print("small")`,opts:["small","big","Error","None"],ans:1,explain:"10 > 5 is True, so the if branch runs."},
+{diff:"easy",q:"Which is a Python comment?",code:"",opts:["// comment","/* comment */","# comment","-- comment"],ans:2,explain:"Python uses # for single-line comments."},
+{diff:"easy",q:"What does range(3) produce?",code:"",opts:["[1,2,3]","[0,1,2,3]","[0,1,2]","[3,4,5]"],ans:2,explain:"range(3) gives 0, 1, 2 — starts at 0, excludes the end value."},
+{diff:"easy",q:"Which converts string '42' to integer?",code:"",opts:["str(42)","float('42')","int('42')","num('42')"],ans:2,explain:"int() converts a string to integer."},
+{diff:"medium",q:"What does this output?",code:`nums=[1,2,3,4,5]
+result=[x**2 for x in nums if x%2==0]
+print(result)`,opts:["[1,4,9,16,25]","[4,16]","[1,9,25]","[2,4]"],ans:1,explain:"if x%2==0 keeps only even numbers (2,4), then squares them: [4,16]."},
+{diff:"medium",q:"Safe way to access a dict key that might not exist?",code:`d = {"name":"Alice"}`,opts:['d["age"]','d.get("age",0)','d->age','d.age'],ans:1,explain:".get() returns None or a default instead of raising KeyError."},
+{diff:"medium",q:"What is a virtual environment for?",code:"",opts:["Run Python in a VM","Isolate project dependencies","Back up code","Speed up Python"],ans:1,explain:"venv isolates each project's libraries to avoid version conflicts."},
+{diff:"medium",q:"HTTP status 404 means:",code:"",opts:["Server error","Success","Resource not found","Unauthorized"],ans:2,explain:"404 = Not Found. 200=OK, 201=Created, 401=Unauthorized, 500=Server Error."},
+{diff:"medium",q:"What does this function return?",code:`def mystery(lst):
+    return [x for x in lst if isinstance(x, int)]`,opts:["All items","Only strings","Only integers","Empty list"],ans:2,explain:"isinstance(x, int) is True only for integers."},
+{diff:"medium",q:"Correct way to define inheritance?",code:"",opts:["class Dog extends Animal:","class Dog(Animal):","class Dog inherits Animal:","class Dog::Animal:"],ans:1,explain:"Python uses class Child(Parent): for inheritance."},
+{diff:"medium",q:"What is a decorator?",code:"",opts:["A CSS styling tool","A function wrapping another function","A type of loop","A database model"],ans:1,explain:"Decorators (@something) wrap a function to add behaviour before/after it runs."},
+{diff:"hard",q:"What does this output?",code:`def counter():
+    count=0
+    def inc():
+        nonlocal count
+        count+=1; return count
+    return inc
+c=counter()
+print(c(),c(),c())`,opts:["0 0 0","1 1 1","1 2 3","Error"],ans:2,explain:"This is a closure. nonlocal lets inc() modify count in the outer scope. Each call increments."},
+{diff:"hard",q:"Which correctly uses *args?",code:"",opts:["def f(*args): return sum(args)","def f(args*): return sum(args)","def f(**args): return sum(args)","def f(args): return sum(*args)"],ans:0,explain:"*args collects any number of positional arguments into a tuple."},
+{diff:"hard",q:"What is the output?",code:`x={"a":1,"b":2,"c":3}
+print({k:v for k,v in x.items() if v>1})`,opts:["{'a':1}","{'b':2,'c':3}","{'a':1,'b':2,'c':3}","Error"],ans:1,explain:"Dict comprehension: only pairs where v>1 pass. 'a':1 is excluded."},
+{diff:"hard",q:"What does @property do?",code:"",opts:["Makes it a class method","Access method like attribute","Marks method private","Adds validation to __init__"],ans:1,explain:"@property lets you define a method accessed without parentheses: obj.value instead of obj.value()."},
+{diff:"hard",q:"Why use asyncio.gather()?",code:"",opts:["Run tasks sequentially","Run multiple async tasks concurrently","Handle exceptions","Create threads"],ans:1,explain:"asyncio.gather() runs multiple coroutines concurrently — all run at the same time."},
+{diff:"hard",q:"__str__ vs __repr__?",code:"",opts:["They are identical","__str__ for users, __repr__ for developers","__repr__ for users, __str__ for devs","Only one can be defined"],ans:1,explain:"__str__ is human-readable. __repr__ is developer/debug version — ideally shows how to recreate the object."}
+];
+
+// State
+const DONE_KEY="pyhub_done_v2";
+let completedLessons=new Set(JSON.parse(localStorage.getItem(DONE_KEY)||"[]"));
+let currentLessonId=null;
+let quizCorrect=0, quizAnswered=0;
+
+function renderWeeks(){
+  const c=document.getElementById("week-grid");
+  c.innerHTML=WEEKS.map(w=>{
+    const done=w.lessons.filter(l=>completedLessons.has(l.id)).length;
+    const pct=Math.round((done/w.lessons.length)*100);
+    const nc=w.status==="done"?"done":w.status==="active"?"curr":"locked";
+    const nl=w.status==="done"?"✓":w.num;
+    return`<div class="week-card">
+<div class="week-header" onclick="toggleWeek(this)">
+  <div class="week-num ${nc}">${nl}</div>
+  <div class="week-meta"><h3>Week ${w.num}: ${w.title}</h3><p>${w.desc}</p></div>
+  <div style="text-align:right;margin-right:8px">
+    <div style="font-size:11px;color:var(--text3)">${done}/${w.lessons.length}</div>
+    <div class="prog-wrap" style="width:70px;margin-top:4px"><div class="prog-bar" style="width:${pct}%"></div></div>
   </div>
-
-  <!-- JOBS -->
-  <div id="jobs" class="page">
-    <p class="sec">What employers actually want</p>
-    <p class="sec-sub">Real skills from real job descriptions — Jobstreet, LinkedIn, and tech companies in Malaysia & Singapore.</p>
-    <div class="job-grid">
-      <div class="job-card">
-        <h3>🤖 Data Scientist / ML Engineer</h3>
-        <div class="salary-range">RM 7,000 – 20,000</div>
-        <div class="skill-tags">
-          <span class="skill-tag">Python</span><span class="skill-tag">Pandas</span><span class="skill-tag">NumPy</span>
-          <span class="skill-tag">Scikit-learn</span><span class="skill-tag">TensorFlow / PyTorch</span>
-          <span class="skill-tag">SQL</span><span class="skill-tag">Jupyter</span><span class="skill-tag">Git</span>
-          <span class="skill-tag">Docker</span><span class="skill-tag">MLflow</span>
-        </div>
-      </div>
-      <div class="job-card">
-        <h3>🌐 Backend Python Developer</h3>
-        <div class="salary-range">RM 5,000 – 18,000</div>
-        <div class="skill-tags">
-          <span class="skill-tag">Django / FastAPI</span><span class="skill-tag">REST APIs</span>
-          <span class="skill-tag">PostgreSQL</span><span class="skill-tag">Redis</span>
-          <span class="skill-tag">Docker</span><span class="skill-tag">AWS / GCP</span>
-          <span class="skill-tag">Git</span><span class="skill-tag">pytest</span><span class="skill-tag">CI/CD</span>
-        </div>
-      </div>
-      <div class="job-card">
-        <h3>📊 Data Analyst</h3>
-        <div class="salary-range">RM 4,000 – 12,000</div>
-        <div class="skill-tags">
-          <span class="skill-tag">Python</span><span class="skill-tag">Pandas</span>
-          <span class="skill-tag">Matplotlib / Seaborn</span><span class="skill-tag">SQL</span>
-          <span class="skill-tag">Excel automation</span><span class="skill-tag">Power BI / Tableau</span>
-          <span class="skill-tag">Statistics</span><span class="skill-tag">Jupyter</span>
-        </div>
-      </div>
-      <div class="job-card">
-        <h3>⚙️ DevOps / Automation Engineer</h3>
-        <div class="salary-range">RM 6,000 – 22,000</div>
-        <div class="skill-tags">
-          <span class="skill-tag">Python scripting</span><span class="skill-tag">Bash</span>
-          <span class="skill-tag">Docker / K8s</span><span class="skill-tag">Terraform</span>
-          <span class="skill-tag">AWS / Azure</span><span class="skill-tag">GitHub Actions</span>
-          <span class="skill-tag">Ansible</span><span class="skill-tag">Monitoring</span>
-        </div>
-      </div>
-      <div class="job-card">
-        <h3>🔬 Data Engineer</h3>
-        <div class="salary-range">RM 7,000 – 18,000</div>
-        <div class="skill-tags">
-          <span class="skill-tag">Python</span><span class="skill-tag">Apache Spark</span>
-          <span class="skill-tag">Airflow</span><span class="skill-tag">dbt</span>
-          <span class="skill-tag">SQL</span><span class="skill-tag">Kafka</span>
-          <span class="skill-tag">BigQuery / Redshift</span><span class="skill-tag">ETL pipelines</span>
-        </div>
-      </div>
-      <div class="job-card">
-        <h3>🤖 AI / LLM App Developer</h3>
-        <div class="salary-range">RM 8,000 – 25,000</div>
-        <div class="skill-tags">
-          <span class="skill-tag">Python</span><span class="skill-tag">LangChain</span>
-          <span class="skill-tag">OpenAI API</span><span class="skill-tag">FastAPI</span>
-          <span class="skill-tag">Vector DBs</span><span class="skill-tag">RAG</span>
-          <span class="skill-tag">Prompt engineering</span><span class="skill-tag">Docker</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ROADMAP -->
-  <div id="roadmap" class="page">
-    <p class="sec">12-week job-ready roadmap</p>
-    <p class="sec-sub">Study 1–2 hours per day. By week 12 you'll have a portfolio project and be interview-ready.</p>
-
-    <div class="roadmap">
-      <div class="step">
-        <div class="step-dot done"></div>
-        <div class="week">Weeks 1–2</div>
-        <h4>Python fundamentals</h4>
-        <p>Variables, types, strings, lists, dicts, if/else, for loops, while loops, functions. Build a calculator and a simple quiz game.</p>
-      </div>
-      <div class="step">
-        <div class="step-dot done"></div>
-        <div class="week">Weeks 3–4</div>
-        <h4>OOP, files & modules</h4>
-        <p>Classes, inheritance, reading/writing CSV and JSON files, importing libraries. Build an employee management system.</p>
-      </div>
-      <div class="step">
-        <div class="step-dot current"></div>
-        <div class="week">Weeks 5–6</div>
-        <h4>APIs, error handling & libraries</h4>
-        <p>requests, error handling, virtual environments, pip. Build a weather app and a currency converter using real APIs.</p>
-      </div>
-      <div class="step">
-        <div class="step-dot"></div>
-        <div class="week">Weeks 7–8</div>
-        <h4>Pick your track</h4>
-        <p><strong>Data:</strong> Pandas, NumPy, Matplotlib, Jupyter — analyse a real dataset.<br>
-        <strong>Web:</strong> FastAPI or Django — build a REST API with full CRUD operations.</p>
-      </div>
-      <div class="step">
-        <div class="step-dot"></div>
-        <div class="week">Weeks 9–10</div>
-        <h4>Databases & deployment</h4>
-        <p>SQL basics, connecting Python to PostgreSQL or SQLite, Docker basics, deploying to Railway or Render for free.</p>
-      </div>
-      <div class="step">
-        <div class="step-dot"></div>
-        <div class="week">Weeks 11–12</div>
-        <h4>Portfolio project + Git + testing</h4>
-        <p>Build one complete project on your chosen track. Write tests with pytest. Push to GitHub. Write a clear README. This is what you show in interviews.</p>
-      </div>
-    </div>
-
-    <div class="tip-box">
-      <p><strong>Interview tip:</strong> Employers care more about one solid GitHub project than 10 half-finished tutorials. Build something real — even a simple expense tracker or Telegram bot — and be able to explain every line.</p>
-    </div>
-  </div>
-
-  <!-- QUIZ -->
-  <div id="quiz" class="page">
-    <p class="sec">Test your knowledge</p>
-    <p class="sec-sub">Based on real Python interview questions. Click an answer to check.</p>
-
-    <div class="quiz-q">
-      <p>1. What does this code output?</p>
-      <pre>numbers = [1, 2, 3, 4, 5]
-result = [x**2 for x in numbers if x % 2 == 0]
-print(result)</pre>
-      <button class="quiz-opt" onclick="answer(this, false, 'Close — but it only processes even numbers. All squares would be [1, 4, 9, 16, 25].')">[1, 4, 9, 16, 25]</button>
-      <button class="quiz-opt" onclick="answer(this, true, 'Correct! The condition if x % 2 == 0 filters to even numbers (2 and 4), then squares them to get 4 and 16.')">[4, 16]</button>
-      <button class="quiz-opt" onclick="answer(this, false, 'Not quite — % 2 == 0 means even, not odd. Odd squares would be [1, 9, 25].')">[1, 9, 25]</button>
-      <div class="quiz-explain"></div>
-    </div>
-
-    <div class="quiz-q">
-      <p>2. Which is the correct way to safely access a missing dictionary key?</p>
-      <pre>data = {"name": "Alice"}</pre>
-      <button class="quiz-opt" onclick="answer(this, false, 'This raises a KeyError if the key does not exist — your program will crash.')">data["age"]</button>
-      <button class="quiz-opt" onclick="answer(this, true, 'Correct! .get() returns None (or a default you specify) instead of raising an error. Very common in production code.')">data.get("age", "Unknown")</button>
-      <button class="quiz-opt" onclick="answer(this, false, 'This is JavaScript syntax — Python uses square brackets or .get(), not ->.')">data->age</button>
-      <div class="quiz-explain"></div>
-    </div>
-
-    <div class="quiz-q">
-      <p>3. What is a Python virtual environment (venv) used for?</p>
-      <button class="quiz-opt" onclick="answer(this, false, 'That describes a virtual machine (VM), which is a different concept entirely.')">Running Python on a virtual machine</button>
-      <button class="quiz-opt" onclick="answer(this, true, 'Correct! venv isolates project dependencies so different projects can use different library versions without conflicts. Every professional project uses one.')">Isolating project dependencies to avoid version conflicts</button>
-      <button class="quiz-opt" onclick="answer(this, false, 'That is what Git is for — version control and code backup.')">Backing up your code automatically</button>
-      <div class="quiz-explain"></div>
-    </div>
-
-    <div class="quiz-q">
-      <p>4. In FastAPI or Django, what does HTTP status 404 mean?</p>
-      <button class="quiz-opt" onclick="answer(this, false, 'Server errors use 5xx codes — 500 is internal server error, 503 is service unavailable.')">Server crashed</button>
-      <button class="quiz-opt" onclick="answer(this, false, '200 means OK (success). 201 means Created.')">Request succeeded</button>
-      <button class="quiz-opt" onclick="answer(this, true, 'Correct! 404 = Not Found. Key codes: 200 OK, 201 Created, 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found, 500 Server Error.')">Resource not found</button>
-      <div class="quiz-explain"></div>
-    </div>
-
-    <a class="more-btn" href="https://www.interviewbit.com/python-interview-questions/" target="_blank" rel="noopener">More interview questions →</a>
-  </div>
-
+  <i class="ti ti-chevron-right week-chevron" aria-hidden="true"></i>
 </div>
+<div class="week-body">
+  <div class="lesson-list">${w.lessons.map(l=>{
+    const ld=completedLessons.has(l.id);
+    return`<div class="lesson${ld?" done-lesson":""}" onclick="openLesson('${l.id}')">
+      <div class="lesson-check">${ld?"✓":""}</div>
+      <div class="lesson-info"><h4>${l.title}</h4><p style="font-size:12px;color:var(--text2)">${l.exercise.substring(0,55)}...</p></div>
+      <div class="lesson-duration">${l.duration}</div>
+    </div>`;}).join("")}</div>
+</div></div>`;}).join("");
+}
 
-<footer>
-  <div style="max-width:860px; margin:0 auto; padding:0 1.5rem">
-    Python Learning Hub &nbsp;·&nbsp; Covers Python 3.11+ &nbsp;·&nbsp; Salary ranges: Malaysia / Singapore market 2025
+function renderConcepts(){
+  document.getElementById("concept-list").innerHTML=CONCEPTS.map(c=>`
+<div class="concept">
+  <div class="concept-header" onclick="toggleConcept(this)">
+    <span class="badge ${c.level}">${c.level.charAt(0).toUpperCase()+c.level.slice(1)}</span>
+    <span class="concept-title">${c.title}</span>
+    <i class="ti ti-chevron-right chevron" aria-hidden="true"></i>
   </div>
-</footer>
+  <div class="concept-body">
+    <p>${c.desc}</p>
+    <pre>${c.code}</pre>
+    <div>${c.jobs.map(j=>`<span class="job-tag">${j}</span>`).join("")}</div>
+  </div>
+</div>`).join("");
+}
 
-<script>
-  function showPage(id) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    const map = { home: 0, concepts: 1, jobs: 2, roadmap: 3, quiz: 4 };
-    document.querySelectorAll('.nav-btn')[map[id]].classList.add('active');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+function renderQuiz(filter="all"){
+  const qs=filter==="all"?QUIZ:QUIZ.filter(q=>q.diff===filter);
+  document.getElementById("quiz-container").innerHTML=qs.map((q,i)=>`
+<div class="quiz-q">
+  <p class="qtext">${i+1}. ${q.q} <span class="diff-tag ${q.diff}">${q.diff}</span></p>
+  ${q.code?`<pre>${q.code}</pre>`:""}
+  ${q.opts.map((o,j)=>`<button class="quiz-opt" onclick="quizAnswer(this,${j===q.ans},'${q.explain.replace(/'/g,"\\'")}')">
+    ${String.fromCharCode(65+j)}. ${o}
+  </button>`).join("")}
+  <div class="quiz-explain"></div>
+</div>`).join("");
+}
 
-  function toggleConcept(header) {
-    const body = header.nextElementSibling;
-    const chevron = header.querySelector('.chevron');
-    body.classList.toggle('open');
-    chevron.classList.toggle('open');
-  }
+function showPage(id){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  const map={home:0,course:1,concepts:2,jobs:3,quiz:4};
+  document.querySelectorAll(".nav-btn")[map[id]].classList.add("active");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
 
-  function answer(btn, correct, explanation) {
-    const container = btn.closest('.quiz-q');
-    container.querySelectorAll('.quiz-opt').forEach(o => o.disabled = true);
-    btn.classList.add(correct ? 'correct' : 'wrong');
-    const explain = container.querySelector('.quiz-explain');
-    explain.textContent = explanation;
-    explain.style.display = 'block';
-  }
+function toggleWeek(h){
+  h.nextElementSibling.classList.toggle("open");
+  h.querySelector(".week-chevron").classList.toggle("open");
+}
+function toggleConcept(h){
+  h.nextElementSibling.classList.toggle("open");
+  h.querySelector(".chevron").classList.toggle("open");
+}
+
+function openLesson(id){
+  const lesson=WEEKS.flatMap(w=>w.lessons).find(l=>l.id===id);
+  if(!lesson)return;
+  currentLessonId=id;
+  document.getElementById("modal-title").textContent=lesson.title;
+  document.getElementById("modal-body").innerHTML=lesson.content+`
+<div class="exercise-box">
+  <h4>✏️ Practice exercise</h4>
+  <p>${lesson.exercise}</p>
+  <textarea placeholder="Try writing your answer here..."></textarea>
+  <div style="margin-top:.5rem;display:flex;gap:8px">
+    <button class="btn" onclick="toggleAnswer(this)">Show answer</button>
+  </div>
+  <div class="exercise-answer">${lesson.answer}</div>
+</div>`;
+  const btn=document.getElementById("modal-complete-btn");
+  btn.textContent=completedLessons.has(id)?"✓ Completed":"Mark as complete ✓";
+  btn.style.opacity=completedLessons.has(id)?.6:1;
+  document.getElementById("modal-overlay").classList.add("open");
+}
+
+function toggleAnswer(btn){
+  const box=btn.closest(".exercise-box").querySelector(".exercise-answer");
+  box.style.display=box.style.display==="block"?"none":"block";
+  btn.textContent=box.style.display==="block"?"Hide answer":"Show answer";
+}
+
+function closeModal(){
+  document.getElementById("modal-overlay").classList.remove("open");
+  currentLessonId=null;
+}
+function closeModalOutside(e){
+  if(e.target===document.getElementById("modal-overlay"))closeModal();
+}
+
+function markCurrentDone(){
+  if(!currentLessonId)return;
+  completedLessons.add(currentLessonId);
+  localStorage.setItem(DONE_KEY,JSON.stringify([...completedLessons]));
+  updateProgress(); renderWeeks();
+  const btn=document.getElementById("modal-complete-btn");
+  btn.textContent="✓ Completed"; btn.style.opacity=.6;
+}
+
+function updateProgress(){
+  const total=WEEKS.reduce((a,w)=>a+w.lessons.length,0);
+  const done=completedLessons.size;
+  document.getElementById("global-progress").textContent=done;
+  document.getElementById("prog-label").textContent=`${done} / ${total} lessons`;
+  document.getElementById("prog-bar").style.width=Math.round((done/total)*100)+"%";
+}
+
+function quizAnswer(btn,correct,explanation){
+  btn.closest(".quiz-q").querySelectorAll(".quiz-opt").forEach(o=>o.disabled=true);
+  btn.classList.add(correct?"correct":"wrong");
+  const ex=btn.closest(".quiz-q").querySelector(".quiz-explain");
+  ex.textContent=explanation; ex.style.display="block";
+  quizAnswered++; if(correct)quizCorrect++;
+  document.getElementById("q-correct").textContent=quizCorrect;
+  document.getElementById("q-total").textContent=quizAnswered;
+  document.getElementById("quiz-prog").style.width=Math.round((quizAnswered/QUIZ.length)*100)+"%";
+}
+
+function filterQuiz(diff,btn){
+  document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  quizCorrect=0; quizAnswered=0;
+  document.getElementById("q-correct").textContent=0;
+  document.getElementById("q-total").textContent=0;
+  document.getElementById("quiz-prog").style.width="0%";
+  renderQuiz(diff);
+}
+
+function resetProgress(){
+  if(!confirm("Reset all progress? This cannot be undone."))return;
+  completedLessons=new Set();
+  localStorage.removeItem(DONE_KEY);
+  updateProgress(); renderWeeks();
+}
+
+renderWeeks(); renderConcepts(); renderQuiz(); updateProgress();
 </script>
 </body>
 </html>
