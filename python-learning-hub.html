@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python Learning Hub — Job-Ready in 12 Weeks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/iconfont/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #fafaf8;
+    --surface: #ffffff;
+    --surface2: #f4f3ef;
+    --border: rgba(0,0,0,0.1);
+    --border-strong: rgba(0,0,0,0.2);
+    --text: #1a1a18;
+    --text2: #5a5a55;
+    --text3: #9a9a94;
+    --blue: #185FA5;
+    --blue-bg: #E6F1FB;
+    --blue-text: #042C53;
+    --green: #1D9E75;
+    --green-bg: #EAF3DE;
+    --green-text: #27500A;
+    --amber-bg: #FAEEDA;
+    --amber-text: #854F0B;
+    --coral-bg: #FAECE7;
+    --coral-text: #993C1D;
+    --radius: 10px;
+    --radius-sm: 6px;
+    --mono: 'DM Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* Layout */
+  .wrapper { max-width: 860px; margin: 0 auto; padding: 0 1.5rem 4rem; }
+
+  /* Header */
+  header {
+    background: var(--surface);
+    border-bottom: 0.5px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-inner {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+  }
+  .logo { font-size: 15px; font-weight: 500; color: var(--text); display: flex; align-items: center; gap: 8px; }
+  .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+
+  /* Nav */
+  nav { display: flex; gap: 4px; flex-wrap: wrap; padding: 1.25rem 0 0; }
+  .nav-btn {
+    padding: 7px 15px;
+    border-radius: 20px;
+    border: 0.5px solid var(--border);
+    font-size: 13px;
+    font-family: var(--sans);
+    cursor: pointer;
+    background: transparent;
+    color: var(--text2);
+    transition: all 0.15s;
+  }
+  .nav-btn:hover { background: var(--surface2); }
+  .nav-btn.active { background: #042C53; color: #E6F1FB; border-color: transparent; }
+
+  /* Pages */
+  .page { display: none; padding-top: 1.5rem; }
+  .page.active { display: block; }
+
+  /* Hero */
+  .hero { padding: 2rem 0 1.5rem; }
+  .hero h1 { font-size: 28px; font-weight: 500; margin-bottom: 8px; letter-spacing: -0.3px; }
+  .hero p { font-size: 15px; color: var(--text2); max-width: 560px; }
+
+  /* Section headings */
+  .sec { font-size: 15px; font-weight: 500; color: var(--text); margin: 1.5rem 0 0.4rem; }
+  .sec-sub { font-size: 13px; color: var(--text2); margin-bottom: 1rem; }
+
+  /* Track grid */
+  .track-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-top: 0.75rem; }
+  .track-card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .track-card:hover { border-color: var(--border-strong); transform: translateY(-1px); }
+  .track-card .icon { font-size: 24px; margin-bottom: 10px; }
+  .track-card h3 { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+  .track-card p { font-size: 12px; color: var(--text2); line-height: 1.5; }
+  .track-card .salary { font-size: 11px; margin-top: 10px; color: var(--blue); font-weight: 500; }
+
+  /* Overview chips */
+  .chip-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 6px; margin-top: 0.5rem; }
+  .chip { padding: 9px 14px; border-radius: var(--radius-sm); border: 0.5px solid var(--border); font-size: 12px; color: var(--text2); }
+  .chip .dot { margin-right: 6px; }
+
+  /* Concepts */
+  .concept-list { display: flex; flex-direction: column; gap: 8px; }
+  .concept { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .concept-header { display: flex; align-items: center; gap: 10px; padding: 0.875rem 1rem; cursor: pointer; user-select: none; }
+  .concept-header:hover { background: var(--surface2); }
+  .badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 500; white-space: nowrap; }
+  .badge.beginner { background: var(--green-bg); color: var(--green-text); }
+  .badge.intermediate { background: var(--amber-bg); color: var(--amber-text); }
+  .badge.advanced { background: var(--coral-bg); color: var(--coral-text); }
+  .concept-title { font-size: 14px; font-weight: 500; flex: 1; }
+  .chevron { font-size: 16px; color: var(--text3); transition: transform 0.2s; }
+  .chevron.open { transform: rotate(90deg); }
+  .concept-body { padding: 0 1rem 1rem; display: none; }
+  .concept-body.open { display: block; }
+  .concept-body p { font-size: 13px; color: var(--text2); line-height: 1.6; margin-bottom: 8px; }
+  .concept-body pre {
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    font-size: 12px;
+    font-family: var(--mono);
+    line-height: 1.7;
+    overflow-x: auto;
+    color: var(--text);
+    margin: 8px 0 12px;
+    border: 0.5px solid var(--border);
+  }
+  .job-tag { display: inline-block; font-size: 11px; padding: 2px 8px; background: var(--blue-bg); color: var(--blue); border-radius: 10px; margin: 2px; }
+
+  /* Jobs */
+  .job-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+  .job-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 1.25rem; }
+  .job-card h3 { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+  .job-card .salary-range { font-size: 13px; color: var(--blue); font-weight: 500; margin-bottom: 12px; }
+  .skill-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+  .skill-tag { font-size: 11px; padding: 2px 8px; border-radius: 10px; border: 0.5px solid var(--border-strong); color: var(--text2); }
+
+  /* Roadmap */
+  .roadmap { position: relative; padding-left: 1.5rem; }
+  .roadmap::before { content: ''; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 1px; background: var(--border-strong); }
+  .step { position: relative; margin-bottom: 1.5rem; }
+  .step-dot { position: absolute; left: -1.5rem; top: 4px; width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--border-strong); background: var(--bg); }
+  .step-dot.done { background: var(--green); border-color: var(--green); }
+  .step-dot.current { background: var(--blue); border-color: var(--blue); }
+  .step .week { font-size: 11px; color: var(--green-text); font-weight: 500; margin-bottom: 2px; }
+  .step h4 { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+  .step p { font-size: 13px; color: var(--text2); line-height: 1.6; }
+  .tip-box { margin-top: 2rem; padding: 1rem 1.25rem; background: var(--green-bg); border-radius: var(--radius); border-left: 3px solid var(--green); }
+  .tip-box p { font-size: 13px; color: var(--green-text); line-height: 1.6; }
+
+  /* Quiz */
+  .quiz-q { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1rem; }
+  .quiz-q > p { font-size: 14px; font-weight: 500; margin-bottom: 10px; }
+  .quiz-q pre { font-family: var(--mono); font-size: 12px; color: var(--text); background: var(--surface2); border: 0.5px solid var(--border); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 12px; }
+  .quiz-opt {
+    display: block; width: 100%; text-align: left;
+    padding: 9px 14px; margin-bottom: 6px;
+    border-radius: var(--radius-sm); border: 0.5px solid var(--border-strong);
+    font-size: 13px; font-family: var(--sans); cursor: pointer;
+    background: var(--bg); color: var(--text);
+    transition: all 0.12s;
+  }
+  .quiz-opt:hover:not(:disabled) { background: var(--blue-bg); border-color: var(--blue); }
+  .quiz-opt.correct { background: var(--green-bg); border-color: var(--green); color: var(--green-text); }
+  .quiz-opt.wrong { background: #FCEBEB; border-color: #A32D2D; color: #501313; }
+  .quiz-explain { font-size: 12px; margin-top: 8px; padding: 10px 14px; border-radius: var(--radius-sm); background: var(--surface2); border: 0.5px solid var(--border); color: var(--text2); display: none; line-height: 1.6; }
+  .more-btn { margin-top: 0.5rem; padding: 10px 18px; border-radius: var(--radius-sm); border: 0.5px solid var(--border-strong); font-size: 13px; font-family: var(--sans); cursor: pointer; background: transparent; color: var(--text); text-decoration: none; display: inline-block; }
+  .more-btn:hover { background: var(--surface2); }
+
+  /* Footer */
+  footer { text-align: center; padding: 2rem 0 1rem; font-size: 12px; color: var(--text3); border-top: 0.5px solid var(--border); margin-top: 3rem; }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 22px; }
+    .track-grid { grid-template-columns: 1fr 1fr; }
+    .job-grid { grid-template-columns: 1fr; }
+    .header-inner { padding: 0 1rem; }
+    .wrapper { padding: 0 1rem 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-dot"></div>
+      Python Learning Hub
+    </div>
+    <span style="font-size:12px; color:var(--text3)">Job-ready in 12 weeks</span>
+  </div>
+</header>
+
+<div class="wrapper">
+
+  <nav>
+    <button class="nav-btn active" onclick="showPage('home')">🏠 Start here</button>
+    <button class="nav-btn" onclick="showPage('concepts')">📖 Concepts</button>
+    <button class="nav-btn" onclick="showPage('jobs')">💼 Job tracks</button>
+    <button class="nav-btn" onclick="showPage('roadmap')">🗺 Roadmap</button>
+    <button class="nav-btn" onclick="showPage('quiz')">⚡ Quiz yourself</button>
+  </nav>
+
+  <!-- HOME -->
+  <div id="home" class="page active">
+    <div class="hero">
+      <h1>Learn Python the right way</h1>
+      <p>Simple explanations, real code examples, and exactly what employers ask for — from first line to first job.</p>
+    </div>
+
+    <p class="sec">Pick your career track</p>
+    <p class="sec-sub">Each track shows you which Python skills employers actually look for.</p>
+    <div class="track-grid">
+      <div class="track-card" onclick="showPage('jobs')">
+        <div class="icon">🤖</div>
+        <h3>Data / ML Engineer</h3>
+        <p>Pandas, NumPy, Scikit-learn, SQL, model deployment</p>
+        <div class="salary">RM 7k – 20k / month</div>
+      </div>
+      <div class="track-card" onclick="showPage('jobs')">
+        <div class="icon">🌐</div>
+        <h3>Backend Developer</h3>
+        <p>Django, FastAPI, REST APIs, databases, Docker</p>
+        <div class="salary">RM 5k – 18k / month</div>
+      </div>
+      <div class="track-card" onclick="showPage('jobs')">
+        <div class="icon">⚙️</div>
+        <h3>DevOps / Automation</h3>
+        <p>Scripts, CI/CD, cloud, infrastructure as code</p>
+        <div class="salary">RM 6k – 22k / month</div>
+      </div>
+      <div class="track-card" onclick="showPage('jobs')">
+        <div class="icon">📊</div>
+        <h3>Data Analyst</h3>
+        <p>Pandas, Matplotlib, Seaborn, Excel automation, BI</p>
+        <div class="salary">RM 4k – 12k / month</div>
+      </div>
+    </div>
+
+    <p class="sec" style="margin-top:2rem">Core topics covered</p>
+    <div class="chip-grid">
+      <div class="chip"><span class="dot" style="color:#3B6D11">●</span>Variables & types</div>
+      <div class="chip"><span class="dot" style="color:#3B6D11">●</span>Functions & scope</div>
+      <div class="chip"><span class="dot" style="color:#185FA5">●</span>OOP & classes</div>
+      <div class="chip"><span class="dot" style="color:#185FA5">●</span>Error handling</div>
+      <div class="chip"><span class="dot" style="color:#185FA5">●</span>File & API work</div>
+      <div class="chip"><span class="dot" style="color:#D85A30">●</span>Libraries & pip</div>
+      <div class="chip"><span class="dot" style="color:#D85A30">●</span>Testing & Git</div>
+      <div class="chip"><span class="dot" style="color:#D85A30">●</span>Async & concurrency</div>
+    </div>
+    <div style="font-size:12px; color:var(--text3); margin-top:8px">
+      <span style="color:#3B6D11">●</span> Beginner &nbsp;
+      <span style="color:#185FA5">●</span> Intermediate &nbsp;
+      <span style="color:#D85A30">●</span> Advanced
+    </div>
+  </div>
+
+  <!-- CONCEPTS -->
+  <div id="concepts" class="page">
+    <p class="sec">Python concepts — plain & clear</p>
+    <p class="sec-sub">Click any topic to see an explanation, real code, and which jobs use it.</p>
+
+    <div class="concept-list">
+
+      <div class="concept">
+        <div class="concept-header" onclick="toggleConcept(this)">
+          <span class="badge beginner">Beginner</span>
+          <span class="concept-title">Variables, data types & operators</span>
+          <i class="ti ti-chevron-right chevron" aria-hidden="true"></i>
+        </div>
+        <div class="concept-body">
+          <p>Variables are like labelled boxes that store information. Python figures out the type automatically — no need to declare it.</p>
+          <pre>name = "Alice"        # string (text)
+age = 28              # integer (whole number)
+salary = 7500.50      # float (decimal)
+is_employed = True    # boolean (True/False)
+
+# f-strings — used constantly in real code
+print(f"{name} is {age} years old, earning RM{salary}")</pre>
+          <p><strong>Why it matters:</strong> Every program starts here. Analysts store data in variables. Developers use them to hold API responses, user inputs, config values.</p>
+          <div><span class="job-tag">All jobs</span><span class="job-tag">Data Analyst</span><span class="job-tag">Backend Dev</span></div>
+        </div>
+      </div>
+
+      <div class="concept">
+        <div class="concept-header" onclick="toggleConcept(this)">
+          <span class="badge beginner">Beginner</span>
+          <span class="concept-title">Lists, dicts & loops</span>
+          <i class="ti ti-chevron-right chevron" aria-hidden="true"></i>
+        </div>
+        <div class="concept-body">
+          <p>Lists hold ordered items. Dicts hold key-value pairs. Loops let you repeat actions over data — you'll do this every single day.</p>
+          <pre>employees = ["Alice", "Bob", "Carol"]
+salary_map = {"Alice": 7500, "Bob": 6000, "Carol": 8200}
+
+for emp in employees:
+    pay = salary_map[emp]
+    print(f"{emp}: RM{pay}")
+
+# List comprehension — clean, industry-standard style
+high_earners = [e for e in employees if salary_map[e] > 7000]
+print(high_earners)  # ['Alice', 'Carol']</pre>
+          <div><span class="job-tag">Data Analyst</span><span class="job-tag">Backend Dev</span><span class="job-tag">ML Engineer</span></div>
+        </div>
+      </div>
+
+      <div class="concept">
+        <div class="concept-header" onclick="toggleConcept(this)">
+          <span class="badge beginner">Beginner</span>
+          <span class="concept-title">Functions & reusable code</span>
+          <i class="ti ti-chevron-right chevron" aria-hidden="true"></i>
+        </div>
+        <div class="concept-body">
+          <p>Functions are reusable blocks of code. Good developers never copy-paste — they write a function once and call it many times. "Write clean, maintainable code" in job descriptions = this.</p>
+          <pre>def calculate_tax(salary, rate=0.15):
+    """Returns tax amount for a given salary."""
+    return salary * rate
+
+def net_pay(salary):
+    tax = calculate_tax(salary)
+    return salary - tax
+
+print(net_pay(7500))   # 6375.0
+print(net_pay(10000))  # 8500.0</pre>
+          <div><span class="job-tag">All jobs</span><span class="job-tag">Code quality</span></div>
+        </div>
+      </div>
+
+      <div class="concept">
+        <div class="concept-header" onclick="toggleConcept(this)">
+          <span class="badge intermediate">Intermediate</span>
+          <span class="concept-title">Classes & Object-Oriented Programming</span>
+          <i class="ti ti-chevron-right chevron" aria-hidden="true"></i>
+        </div>
+        <div class="concept-body">
+          <p>OOP lets you model real things as objects with properties and actions. Almost every developer interview asks about this. Frameworks like Django are built entirely on classes.</p>
+          <pre>class Employee:
+    def __init__(self, name, salary):
+        self.name = name
+        self.salary = salary
+
+    def give_raise(self, percent):
+        self.salary *= (1 + percent / 100)
+        return self.salary
+
+    def __repr__(self):
+        return f"Employee({self.name}, RM{self.salary:.0f})"
+
+alice = Employee("Alice", 7500)
+alice.give_raise(10)
+print(alice)  # Employee(Alice, RM8250)</pre>
+          <div><span class="job-tag">Backend Dev</span><span class="job-tag">Django</span><span class="job-tag">ML Engineer</span></div>
+        </div>
+      </div>
+
+      <div class="concept">
+        <div class="concept-header" onclick="toggleConcept(this)">
+          <span class="badge intermediate">Intermediate</span>
+          <span class="concept-title">Error handling & exceptions</span>
+          <i class="ti ti-chevron-right chevron" aria-hidden="true"></i>
+        </div>
+        <div class="concept-body">
+          <p>Real programs encounter errors — bad input, network failures, missing files. Professional code handles these gracefully instead of crashing. Common interview topic.</p>
+          <pre>import requests
+
+def get_user_data(user_id):
+    try:
+        response = requests.get(f"/api/users/{user_id}", timeout=5)
+        response.raise_for_status()   # raises if 4xx/5xx
+        return response.json()
+    except requests.exceptions.Timeout:
+        print("Server too slow, try again")
+    except requests.exceptions.HTTPError as e:
+        print(f"HTTP error: {e}")
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+    return None</pre>
+          <div><span class="job-tag">Backend Dev</span><span class="job-tag">Data Engineer</span><span class="job-tag">DevOps</span></div>
+        </div>
+      </div>
+
+      <div class="concept">
+        <div class="concept-header" onclick="toggleConcept(this)">
+          <span class="badge intermediate">Intermediate</span>
+          <span class="concept-title">Working with APIs & JSON</span>
+          <i class="ti ti-chevron-right chevron" aria-hidden="true"></i>
+        </div>
+        <div class="concept-body">
+          <p>Most modern software talks to other systems via APIs. Every job involving data, web, or automation requires this. JSON is the universal language of data exchange.</p>
+          <pre>import requests, json
+
+# Fetch data from a public API
+r = requests.get("https://api.github.com/users/octocat")
+data = r.json()   # auto-parses JSON into a Python dict
+
+print(data["name"])          # The Octocat
+print(data["public_repos"])  # number of repos
+
+# Save to file
+with open("user.json", "w") as f:
+    json.dump(data, f, indent=2)</pre>
+          <div><span class="job-tag">Backend Dev</span><span class="job-tag">Data Engineer</span><span class="job-tag">Automation</span></div>
+        </div>
+      </div>
+
+      <div class="concept">
+        <div class="concept-header" onclick="toggleConcept(this)">
+          <span class="badge advanced">Advanced</span>
+          <span class="concept-title">Pandas for data analysis</span>
+          <i class="ti ti-chevron-right chevron" aria-hidden="true"></i>
+        </div>
+        <div class="concept-body">
+          <p>Pandas is the #1 library in data analyst and data scientist job descriptions. It's Excel but with code — powerful, repeatable, and handles millions of rows instantly.</p>
+          <pre>import pandas as pd
+
+df = pd.read_csv("sales.csv")
+
+# Filter, group, summarise — daily work for any data role
+monthly = (df[df["status"] == "completed"]
+             .groupby("month")["revenue"]
+             .sum()
+             .reset_index())
+
+top = monthly.loc[monthly["revenue"].idxmax()]
+print(f"Best month: {top['month']} — RM{top['revenue']:,.0f}")</pre>
+          <div><span class="job-tag">Data Analyst</span><span class="job-tag">ML Engineer</span><span class="job-tag">Data Scientist</span></div>
+        </div>
+      </div>
+
+      <div class="concept">
+        <div class="concept-header" onclick="toggleConcept(this)">
+          <span class="badge advanced">Advanced</span>
+          <span class="concept-title">FastAPI — building REST APIs</span>
+          <i class="ti ti-chevron-right chevron" aria-hidden="true"></i>
+        </div>
+        <div class="concept-body">
+          <p>FastAPI is one of the most in-demand Python frameworks for backend jobs. It's used to build APIs that mobile apps, frontends, and other services consume.</p>
+          <pre>from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+
+app = FastAPI()
+
+class User(BaseModel):
+    name: str
+    email: str
+
+fake_db = {}
+
+@app.post("/users/")
+def create_user(user: User):
+    if user.email in fake_db:
+        raise HTTPException(400, "Email already exists")
+    fake_db[user.email] = user
+    return {"message": "Created", "user": user}
+
+@app.get("/users/{email}")
+def get_user(email: str):
+    if email not in fake_db:
+        raise HTTPException(404, "Not found")
+    return fake_db[email]</pre>
+          <div><span class="job-tag">Backend Dev</span><span class="job-tag">ML Engineer</span><span class="job-tag">API Dev</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- JOBS -->
+  <div id="jobs" class="page">
+    <p class="sec">What employers actually want</p>
+    <p class="sec-sub">Real skills from real job descriptions — Jobstreet, LinkedIn, and tech companies in Malaysia & Singapore.</p>
+    <div class="job-grid">
+      <div class="job-card">
+        <h3>🤖 Data Scientist / ML Engineer</h3>
+        <div class="salary-range">RM 7,000 – 20,000</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Python</span><span class="skill-tag">Pandas</span><span class="skill-tag">NumPy</span>
+          <span class="skill-tag">Scikit-learn</span><span class="skill-tag">TensorFlow / PyTorch</span>
+          <span class="skill-tag">SQL</span><span class="skill-tag">Jupyter</span><span class="skill-tag">Git</span>
+          <span class="skill-tag">Docker</span><span class="skill-tag">MLflow</span>
+        </div>
+      </div>
+      <div class="job-card">
+        <h3>🌐 Backend Python Developer</h3>
+        <div class="salary-range">RM 5,000 – 18,000</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Django / FastAPI</span><span class="skill-tag">REST APIs</span>
+          <span class="skill-tag">PostgreSQL</span><span class="skill-tag">Redis</span>
+          <span class="skill-tag">Docker</span><span class="skill-tag">AWS / GCP</span>
+          <span class="skill-tag">Git</span><span class="skill-tag">pytest</span><span class="skill-tag">CI/CD</span>
+        </div>
+      </div>
+      <div class="job-card">
+        <h3>📊 Data Analyst</h3>
+        <div class="salary-range">RM 4,000 – 12,000</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Python</span><span class="skill-tag">Pandas</span>
+          <span class="skill-tag">Matplotlib / Seaborn</span><span class="skill-tag">SQL</span>
+          <span class="skill-tag">Excel automation</span><span class="skill-tag">Power BI / Tableau</span>
+          <span class="skill-tag">Statistics</span><span class="skill-tag">Jupyter</span>
+        </div>
+      </div>
+      <div class="job-card">
+        <h3>⚙️ DevOps / Automation Engineer</h3>
+        <div class="salary-range">RM 6,000 – 22,000</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Python scripting</span><span class="skill-tag">Bash</span>
+          <span class="skill-tag">Docker / K8s</span><span class="skill-tag">Terraform</span>
+          <span class="skill-tag">AWS / Azure</span><span class="skill-tag">GitHub Actions</span>
+          <span class="skill-tag">Ansible</span><span class="skill-tag">Monitoring</span>
+        </div>
+      </div>
+      <div class="job-card">
+        <h3>🔬 Data Engineer</h3>
+        <div class="salary-range">RM 7,000 – 18,000</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Python</span><span class="skill-tag">Apache Spark</span>
+          <span class="skill-tag">Airflow</span><span class="skill-tag">dbt</span>
+          <span class="skill-tag">SQL</span><span class="skill-tag">Kafka</span>
+          <span class="skill-tag">BigQuery / Redshift</span><span class="skill-tag">ETL pipelines</span>
+        </div>
+      </div>
+      <div class="job-card">
+        <h3>🤖 AI / LLM App Developer</h3>
+        <div class="salary-range">RM 8,000 – 25,000</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Python</span><span class="skill-tag">LangChain</span>
+          <span class="skill-tag">OpenAI API</span><span class="skill-tag">FastAPI</span>
+          <span class="skill-tag">Vector DBs</span><span class="skill-tag">RAG</span>
+          <span class="skill-tag">Prompt engineering</span><span class="skill-tag">Docker</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROADMAP -->
+  <div id="roadmap" class="page">
+    <p class="sec">12-week job-ready roadmap</p>
+    <p class="sec-sub">Study 1–2 hours per day. By week 12 you'll have a portfolio project and be interview-ready.</p>
+
+    <div class="roadmap">
+      <div class="step">
+        <div class="step-dot done"></div>
+        <div class="week">Weeks 1–2</div>
+        <h4>Python fundamentals</h4>
+        <p>Variables, types, strings, lists, dicts, if/else, for loops, while loops, functions. Build a calculator and a simple quiz game.</p>
+      </div>
+      <div class="step">
+        <div class="step-dot done"></div>
+        <div class="week">Weeks 3–4</div>
+        <h4>OOP, files & modules</h4>
+        <p>Classes, inheritance, reading/writing CSV and JSON files, importing libraries. Build an employee management system.</p>
+      </div>
+      <div class="step">
+        <div class="step-dot current"></div>
+        <div class="week">Weeks 5–6</div>
+        <h4>APIs, error handling & libraries</h4>
+        <p>requests, error handling, virtual environments, pip. Build a weather app and a currency converter using real APIs.</p>
+      </div>
+      <div class="step">
+        <div class="step-dot"></div>
+        <div class="week">Weeks 7–8</div>
+        <h4>Pick your track</h4>
+        <p><strong>Data:</strong> Pandas, NumPy, Matplotlib, Jupyter — analyse a real dataset.<br>
+        <strong>Web:</strong> FastAPI or Django — build a REST API with full CRUD operations.</p>
+      </div>
+      <div class="step">
+        <div class="step-dot"></div>
+        <div class="week">Weeks 9–10</div>
+        <h4>Databases & deployment</h4>
+        <p>SQL basics, connecting Python to PostgreSQL or SQLite, Docker basics, deploying to Railway or Render for free.</p>
+      </div>
+      <div class="step">
+        <div class="step-dot"></div>
+        <div class="week">Weeks 11–12</div>
+        <h4>Portfolio project + Git + testing</h4>
+        <p>Build one complete project on your chosen track. Write tests with pytest. Push to GitHub. Write a clear README. This is what you show in interviews.</p>
+      </div>
+    </div>
+
+    <div class="tip-box">
+      <p><strong>Interview tip:</strong> Employers care more about one solid GitHub project than 10 half-finished tutorials. Build something real — even a simple expense tracker or Telegram bot — and be able to explain every line.</p>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="quiz" class="page">
+    <p class="sec">Test your knowledge</p>
+    <p class="sec-sub">Based on real Python interview questions. Click an answer to check.</p>
+
+    <div class="quiz-q">
+      <p>1. What does this code output?</p>
+      <pre>numbers = [1, 2, 3, 4, 5]
+result = [x**2 for x in numbers if x % 2 == 0]
+print(result)</pre>
+      <button class="quiz-opt" onclick="answer(this, false, 'Close — but it only processes even numbers. All squares would be [1, 4, 9, 16, 25].')">[1, 4, 9, 16, 25]</button>
+      <button class="quiz-opt" onclick="answer(this, true, 'Correct! The condition if x % 2 == 0 filters to even numbers (2 and 4), then squares them to get 4 and 16.')">[4, 16]</button>
+      <button class="quiz-opt" onclick="answer(this, false, 'Not quite — % 2 == 0 means even, not odd. Odd squares would be [1, 9, 25].')">[1, 9, 25]</button>
+      <div class="quiz-explain"></div>
+    </div>
+
+    <div class="quiz-q">
+      <p>2. Which is the correct way to safely access a missing dictionary key?</p>
+      <pre>data = {"name": "Alice"}</pre>
+      <button class="quiz-opt" onclick="answer(this, false, 'This raises a KeyError if the key does not exist — your program will crash.')">data["age"]</button>
+      <button class="quiz-opt" onclick="answer(this, true, 'Correct! .get() returns None (or a default you specify) instead of raising an error. Very common in production code.')">data.get("age", "Unknown")</button>
+      <button class="quiz-opt" onclick="answer(this, false, 'This is JavaScript syntax — Python uses square brackets or .get(), not ->.')">data->age</button>
+      <div class="quiz-explain"></div>
+    </div>
+
+    <div class="quiz-q">
+      <p>3. What is a Python virtual environment (venv) used for?</p>
+      <button class="quiz-opt" onclick="answer(this, false, 'That describes a virtual machine (VM), which is a different concept entirely.')">Running Python on a virtual machine</button>
+      <button class="quiz-opt" onclick="answer(this, true, 'Correct! venv isolates project dependencies so different projects can use different library versions without conflicts. Every professional project uses one.')">Isolating project dependencies to avoid version conflicts</button>
+      <button class="quiz-opt" onclick="answer(this, false, 'That is what Git is for — version control and code backup.')">Backing up your code automatically</button>
+      <div class="quiz-explain"></div>
+    </div>
+
+    <div class="quiz-q">
+      <p>4. In FastAPI or Django, what does HTTP status 404 mean?</p>
+      <button class="quiz-opt" onclick="answer(this, false, 'Server errors use 5xx codes — 500 is internal server error, 503 is service unavailable.')">Server crashed</button>
+      <button class="quiz-opt" onclick="answer(this, false, '200 means OK (success). 201 means Created.')">Request succeeded</button>
+      <button class="quiz-opt" onclick="answer(this, true, 'Correct! 404 = Not Found. Key codes: 200 OK, 201 Created, 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found, 500 Server Error.')">Resource not found</button>
+      <div class="quiz-explain"></div>
+    </div>
+
+    <a class="more-btn" href="https://www.interviewbit.com/python-interview-questions/" target="_blank" rel="noopener">More interview questions →</a>
+  </div>
+
+</div>
+
+<footer>
+  <div style="max-width:860px; margin:0 auto; padding:0 1.5rem">
+    Python Learning Hub &nbsp;·&nbsp; Covers Python 3.11+ &nbsp;·&nbsp; Salary ranges: Malaysia / Singapore market 2025
+  </div>
+</footer>
+
+<script>
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    const map = { home: 0, concepts: 1, jobs: 2, roadmap: 3, quiz: 4 };
+    document.querySelectorAll('.nav-btn')[map[id]].classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function toggleConcept(header) {
+    const body = header.nextElementSibling;
+    const chevron = header.querySelector('.chevron');
+    body.classList.toggle('open');
+    chevron.classList.toggle('open');
+  }
+
+  function answer(btn, correct, explanation) {
+    const container = btn.closest('.quiz-q');
+    container.querySelectorAll('.quiz-opt').forEach(o => o.disabled = true);
+    btn.classList.add(correct ? 'correct' : 'wrong');
+    const explain = container.querySelector('.quiz-explain');
+    explain.textContent = explanation;
+    explain.style.display = 'block';
+  }
+</script>
+</body>
+</html>
