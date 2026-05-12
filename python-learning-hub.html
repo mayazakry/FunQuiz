@@ -137,6 +137,16 @@ nav{display:flex;gap:4px;flex-wrap:wrap;padding:1.25rem 0 0}
 .diff-tag.medium{background:var(--amber-bg);color:var(--amber-dark)}
 .diff-tag.hard{background:var(--coral-bg);color:var(--coral-dark)}
 footer{text-align:center;padding:2rem 0 1rem;font-size:12px;color:var(--text3);border-top:.5px solid var(--border);margin-top:3rem}
+.rw-flow{display:flex;flex-direction:column;gap:10px}
+.rw-step{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);overflow:hidden}
+.rw-step-head{display:flex;align-items:center;flex-wrap:wrap;gap:6px;padding:.875rem 1.25rem;border-bottom:.5px solid var(--border);background:var(--surface2)}
+.rw-num{width:24px;height:24px;border-radius:50%;background:var(--blue-dark);color:#fff;font-size:12px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rw-step-body{padding:1rem 1.25rem}
+.rw-step-body p{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:.75rem}
+.rw-step-body pre{background:var(--surface2);border-radius:var(--rs);padding:14px;font-size:11.5px;font-family:var(--mono);line-height:1.7;overflow-x:auto;color:var(--text);margin:.5rem 0 .75rem;border:.5px solid var(--border);white-space:pre}
+.rw-why{font-size:12px;color:var(--text2);padding:10px 12px;background:var(--amber-bg);border-radius:var(--rs);border-left:3px solid #D4900A;line-height:1.6}
+.rw-tag{font-size:10px;padding:2px 8px;border-radius:10px;border:.5px solid var(--border2);color:var(--text2)}
+.rw-tag.python{background:var(--blue-bg);color:var(--blue-dark);border-color:rgba(24,95,165,.3)}
 @media(max-width:600px){.hero h1{font-size:22px}.track-grid{grid-template-columns:1fr 1fr}.job-grid{grid-template-columns:1fr}.modal{padding:1rem}.stats{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
@@ -159,6 +169,7 @@ footer{text-align:center;padding:2rem 0 1rem;font-size:12px;color:var(--text3);b
     <button class="nav-btn" onclick="showPage('concepts')">📖 Quick ref</button>
     <button class="nav-btn" onclick="showPage('jobs')">💼 Job tracks</button>
     <button class="nav-btn" onclick="showPage('quiz')">⚡ Quiz</button>
+    <button class="nav-btn" onclick="showPage('realworld')">🌍 Real world</button>
   </nav>
 
   <!-- HOME -->
@@ -247,6 +258,685 @@ footer{text-align:center;padding:2rem 0 1rem;font-size:12px;color:var(--text3);b
       <button class="filter-btn" onclick="filterQuiz('hard',this)">Hard (6)</button>
     </div>
     <div id="quiz-container"></div>
+  </div>
+</div>
+
+<!-- REAL WORLD -->
+<div id="realworld" class="page">
+  <p class="sec">Python in the real world</p>
+  <p class="sec-sub">How Python fits into actual tech stacks — based on real job descriptions from Grab, Shopee, TNG Digital, and regional tech companies.</p>
+
+  <!-- Stack switcher -->
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.5rem" id="stack-tabs">
+    <button class="filter-btn active" onclick="showStack('ml',this)">🤖 ML Engineer</button>
+    <button class="filter-btn" onclick="showStack('backend',this)">🌐 Backend Dev</button>
+    <button class="filter-btn" onclick="showStack('data',this)">📊 Data Analyst</button>
+    <button class="filter-btn" onclick="showStack('devops',this)">⚙️ DevOps</button>
+    <button class="filter-btn" onclick="showStack('llm',this)">🧠 LLM / AI App</button>
+  </div>
+
+  <!-- ML STACK -->
+  <div id="stack-ml" class="stack-panel">
+    <div style="background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);padding:1.25rem;margin-bottom:1rem">
+      <div style="font-size:13px;font-weight:500;margin-bottom:4px">What ML Engineers actually work on at companies like Grab, Shopee, AirAsia</div>
+      <div style="font-size:12px;color:var(--text2)">You are the bridge between data scientists (who experiment) and engineers (who ship). You own the full pipeline — from raw data to a model running in production serving real users.</div>
+    </div>
+
+    <div class="rw-flow">
+      <div class="rw-step">
+        <div class="rw-step-head"><span class="rw-num">1</span><strong>Data ingestion</strong><span class="rw-tag python">Python</span><span class="rw-tag">Airflow</span><span class="rw-tag">Kafka</span></div>
+        <div class="rw-step-body">
+          <p>Raw data arrives from databases, APIs, and event streams. Python scripts pull, clean, and store it.</p>
+          <pre>from airflow import DAG
+from airflow.operators.python import PythonOperator
+import pandas as pd, sqlalchemy
+
+def extract_orders():
+    engine = sqlalchemy.create_engine(DB_URL)
+    df = pd.read_sql("SELECT * FROM orders WHERE date >= CURRENT_DATE - 7", engine)
+    df.to_parquet("/data/raw/orders_week.parquet")
+
+dag = DAG("weekly_orders", schedule_interval="@weekly")
+task = PythonOperator(task_id="extract", python_callable=extract_orders, dag=dag)</pre>
+          <div class="rw-why">💼 <strong>Why this matters:</strong> Grab processes millions of ride/food orders daily. Bad data = bad model predictions. The pipeline code is often more important than the model itself.</div>
+        </div>
+      </div>
+
+      <div class="rw-step">
+        <div class="rw-step-head"><span class="rw-num">2</span><strong>Feature engineering</strong><span class="rw-tag python">Python</span><span class="rw-tag">Pandas</span><span class="rw-tag">NumPy</span><span class="rw-tag">Spark</span></div>
+        <div class="rw-step-body">
+          <p>Raw data is transformed into features that a model can learn from. This is where 80% of ML time is spent.</p>
+          <pre>import pandas as pd
+
+df = pd.read_parquet("/data/raw/orders_week.parquet")
+
+# Feature engineering
+df["hour_of_day"]     = pd.to_datetime(df["created_at"]).dt.hour
+df["is_weekend"]      = pd.to_datetime(df["created_at"]).dt.dayofweek >= 5
+df["order_value_log"] = np.log1p(df["order_value"])   # normalise skewed values
+df["user_order_count"] = df.groupby("user_id")["id"].transform("count")
+
+features = ["hour_of_day","is_weekend","order_value_log","user_order_count"]
+X = df[features]</pre>
+          <div class="rw-why">💼 <strong>Real example:</strong> Shopee's recommendation model uses 200+ features including time-since-last-purchase, category affinity, and price sensitivity score — all engineered in Python.</div>
+        </div>
+      </div>
+
+      <div class="rw-step">
+        <div class="rw-step-head"><span class="rw-num">3</span><strong>Model training & tracking</strong><span class="rw-tag python">Python</span><span class="rw-tag">Scikit-learn</span><span class="rw-tag">PyTorch</span><span class="rw-tag">MLflow</span></div>
+        <div class="rw-step-body">
+          <p>Train the model and track every experiment so you can compare runs and reproduce results.</p>
+          <pre>import mlflow, mlflow.sklearn
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.metrics import roc_auc_score
+
+mlflow.set_experiment("churn-prediction-v2")
+
+with mlflow.start_run():
+    model = GradientBoostingClassifier(n_estimators=200, max_depth=5)
+    model.fit(X_train, y_train)
+
+    auc = roc_auc_score(y_test, model.predict_proba(X_test)[:,1])
+    mlflow.log_metric("auc", auc)
+    mlflow.log_params(model.get_params())
+    mlflow.sklearn.log_model(model, "model")
+    print(f"AUC: {auc:.4f}")</pre>
+          <div class="rw-why">💼 <strong>Why MLflow:</strong> TNG Digital (Touch 'n Go) runs dozens of model experiments per week. Without tracking, you can't know which version of a model is live or why it changed.</div>
+        </div>
+      </div>
+
+      <div class="rw-step">
+        <div class="rw-step-head"><span class="rw-num">4</span><strong>Model serving API</strong><span class="rw-tag python">Python</span><span class="rw-tag">FastAPI</span><span class="rw-tag">Docker</span><span class="rw-tag">Redis</span></div>
+        <div class="rw-step-body">
+          <p>The model is wrapped in a FastAPI endpoint so other services can call it in real time.</p>
+          <pre>import mlflow.pyfunc, redis, json
+from fastapi import FastAPI
+from pydantic import BaseModel
+
+app   = FastAPI()
+model = mlflow.pyfunc.load_model("models:/churn-prediction/Production")
+cache = redis.Redis(decode_responses=True)
+
+class PredictRequest(BaseModel):
+    user_id: int
+    features: dict
+
+@app.post("/predict/churn")
+def predict(req: PredictRequest):
+    key = f"churn:{req.user_id}"
+    cached = cache.get(key)
+    if cached: return json.loads(cached)    # return cache hit
+
+    prob = model.predict([list(req.features.values())])[0]
+    result = {"user_id": req.user_id, "churn_probability": float(prob)}
+    cache.setex(key, 300, json.dumps(result))   # cache 5 mins
+    return result</pre>
+          <div class="rw-why">💼 <strong>Scale:</strong> Grab's ML serving layer handles ~50,000 prediction requests per second at peak. Caching with Redis is not optional — it's survival.</div>
+        </div>
+      </div>
+
+      <div class="rw-step">
+        <div class="rw-step-head"><span class="rw-num">5</span><strong>Monitoring in production</strong><span class="rw-tag python">Python</span><span class="rw-tag">Prometheus</span><span class="rw-tag">Grafana</span><span class="rw-tag">Evidently</span></div>
+        <div class="rw-step-body">
+          <p>Models degrade over time as the real world changes (data drift). You need automated monitoring.</p>
+          <pre>from evidently.report import Report
+from evidently.metric_preset import DataDriftPreset
+import pandas as pd
+
+reference = pd.read_parquet("data/reference_jan.parquet")
+current   = pd.read_parquet("data/current_week.parquet")
+
+report = Report(metrics=[DataDriftPreset()])
+report.run(reference_data=reference, current_data=current)
+report.save_html("drift_report.html")
+
+# Alert if drift detected
+if report.as_dict()["metrics"][0]["result"]["dataset_drift"]:
+    send_slack_alert("⚠️ Data drift detected in churn model!")</pre>
+          <div class="rw-why">💼 <strong>Real cost:</strong> A drifted fraud detection model at a fintech company can miss millions in fraudulent transactions before anyone notices. Monitoring catches this early.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--blue-bg);border-radius:var(--r);padding:1rem 1.25rem;margin-top:1rem;border:.5px solid rgba(24,95,165,.2)">
+      <div style="font-size:13px;font-weight:500;color:var(--blue-dark);margin-bottom:6px">🗺️ Full ML stack at a glance</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.8">
+        <strong>Data storage:</strong> PostgreSQL, S3, BigQuery, Parquet files<br>
+        <strong>Orchestration:</strong> Apache Airflow, Prefect, Dagster<br>
+        <strong>Experiment tracking:</strong> MLflow, Weights &amp; Biases<br>
+        <strong>Serving:</strong> FastAPI + Docker + Kubernetes<br>
+        <strong>Monitoring:</strong> Evidently, Prometheus, Grafana<br>
+        <strong>Cloud:</strong> AWS SageMaker, GCP Vertex AI, Azure ML<br>
+        <strong>Python's role:</strong> Every single layer above uses Python as the primary language
+      </div>
+    </div>
+  </div>
+
+  <!-- BACKEND STACK -->
+  <div id="stack-backend" class="stack-panel" style="display:none">
+    <div style="background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);padding:1.25rem;margin-bottom:1rem">
+      <div style="font-size:13px;font-weight:500;margin-bottom:4px">What Backend Python Devs build at companies like Lalamove, PropertyGuru, Carro</div>
+      <div style="font-size:12px;color:var(--text2)">You build the APIs and services that power mobile apps, websites, and internal tools. Your code runs 24/7 and must handle traffic spikes without breaking.</div>
+    </div>
+
+    <div class="rw-flow">
+      <div class="rw-step">
+        <div class="rw-step-head"><span class="rw-num">1</span><strong>REST API with FastAPI</strong><span class="rw-tag python">Python</span><span class="rw-tag">FastAPI</span><span class="rw-tag">Pydantic</span></div>
+        <div class="rw-step-body">
+          <p>The API layer receives requests from mobile apps or frontend, validates input, and returns data.</p>
+          <pre>from fastapi import FastAPI, Depends, HTTPException
+from pydantic import BaseModel
+from typing import Optional
+
+app = FastAPI()
+
+class ListingCreate(BaseModel):
+    title: str
+    price: float
+    location: str
+    bedrooms: int
+    description: Optional[str] = None
+
+@app.post("/listings/", status_code=201)
+async def create_listing(listing: ListingCreate, user=Depends(get_current_user)):
+    db_listing = await Listing.create(**listing.dict(), owner_id=user.id)
+    await notify_matching_users(db_listing)   # async background task
+    return db_listing</pre>
+          <div class="rw-why">💼 <strong>Real scale:</strong> PropertyGuru serves property listings to 23M+ users monthly. A single slow endpoint degrades the entire user experience — async matters.</div>
+        </div>
+      </div>
+
+      <div class="rw-step">
+        <div class="rw-step-head"><span class="rw-num">2</span><strong>Database layer</strong><span class="rw-tag python">Python</span><span class="rw-tag">PostgreSQL</span><span class="rw-tag">SQLAlchemy</span><span class="rw-tag">Redis</span></div>
+        <div class="rw-step-body">
+          <p>Your API talks to a database. PostgreSQL for persistent data, Redis for fast caching.</p>
+          <pre>from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+
+# Async DB query (non-blocking)
+async def get_listings(db: AsyncSession, city: str, max_price: float):
+    result = await db.execute(
+        select(Listing)
+        .where(Listing.city == city, Listing.price <= max_price)
+        .order_by(Listing.created_at.desc())
+        .limit(20)
+    )
+    return result.scalars().all()
+
+# Redis for hot data (millisecond response)
+async def get_listing_cached(listing_id: int):
+    key = f"listing:{listing_id}"
+    cached = await redis.get(key)
+    if cached: return json.loads(cached)
+    listing = await Listing.get(listing_id)
+    await redis.setex(key, 600, listing.json())
+    return listing</pre>
+          <div class="rw-why">💼 <strong>Why async DB:</strong> Synchronous DB calls block the entire server. Async lets your API handle hundreds of concurrent requests on a single process.</div>
+        </div>
+      </div>
+
+      <div class="rw-step">
+        <div class="rw-step-head"><span class="rw-num">3</span><strong>Message queues</strong><span class="rw-tag python">Python</span><span class="rw-tag">Celery</span><span class="rw-tag">RabbitMQ</span><span class="rw-tag">Redis</span></div>
+        <div class="rw-step-body">
+          <p>Heavy work (sending emails, generating PDFs, calling slow APIs) happens in background workers — never in the API request itself.</p>
+          <pre>from celery import Celery
+
+celery = Celery("tasks", broker="redis://localhost:6379")
+
+@celery.task(retry_backoff=True, max_retries=3)
+def send_booking_confirmation(booking_id: int):
+    booking = Booking.get(booking_id)
+    email_client.send(
+        to=booking.user.email,
+        template="booking_confirmed",
+        data=booking.dict()
+    )
+    sms_client.send(booking.user.phone, f"Booking #{booking_id} confirmed!")
+
+# In your API endpoint:
+@app.post("/bookings/")
+async def create_booking(data: BookingCreate):
+    booking = await Booking.create(**data.dict())
+    send_booking_confirmation.delay(booking.id)   # runs in background
+    return {"id": booking.id, "status": "confirmed"}</pre>
+          <div class="rw-why">💼 <strong>Lalamove pattern:</strong> When a driver accepts a delivery, the system triggers ~15 background tasks (notify sender, update tracking, charge card, update ETA). None of these block the API response.</div>
+        </div>
+      </div>
+
+      <div class="rw-step">
+        <div class="rw-step-head"><span class="rw-num">4</span><strong>Auth and security</strong><span class="rw-tag python">Python</span><span class="rw-tag">JWT</span><span class="rw-tag">OAuth2</span><span class="rw-tag">bcrypt</span></div>
+        <div class="rw-step-body">
+          <pre>from jose import jwt
+from passlib.context import CryptContext
+from datetime import datetime, timedelta
+
+pwd_ctx = CryptContext(schemes=["bcrypt"])
+
+def create_access_token(user_id: int) -> str:
+    payload = {
+        "sub": str(user_id),
+        "exp": datetime.utcnow() + timedelta(hours=24),
+        "iat": datetime.utcnow()
+    }
+    return jwt.encode(payload, SECRET_KEY, algorithm="HS256")
+
+async def get_current_user(token: str = Depends(oauth2_scheme)):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        user = await User.get(int(payload["sub"]))
+        if not user: raise HTTPException(401, "User not found")
+        return user
+    except JWTError:
+        raise HTTPException(401, "Invalid token")</pre>
+          <div class="rw-why">💼 <strong>Standard:</strong> Every backend role you interview for will ask how JWT auth works. This exact pattern is used in 90% of Python APIs.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--blue-bg);border-radius:var(--r);padding:1rem 1.25rem;margin-top:1rem;border:.5px solid rgba(24,95,165,.2)">
+      <div style="font-size:13px;font-weight:500;color:var(--blue-dark);margin-bottom:6px">🗺️ Full backend stack</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.8">
+        <strong>API:</strong> FastAPI or Django REST Framework<br>
+        <strong>Database:</strong> PostgreSQL (primary), Redis (cache), Elasticsearch (search)<br>
+        <strong>Background jobs:</strong> Celery + RabbitMQ or Redis<br>
+        <strong>Auth:</strong> JWT + OAuth2 (Google, Facebook login)<br>
+        <strong>Infra:</strong> Docker → Kubernetes → AWS/GCP<br>
+        <strong>Monitoring:</strong> Sentry (errors), Datadog (performance), Grafana (metrics)
+      </div>
+    </div>
+  </div>
+
+  <!-- DATA ANALYST STACK -->
+  <div id="stack-data" class="stack-panel" style="display:none">
+    <div style="background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);padding:1.25rem;margin-bottom:1rem">
+      <div style="font-size:13px;font-weight:500;margin-bottom:4px">What Data Analysts do at companies like CIMB, Maxis, AirAsia, Lazada</div>
+      <div style="font-size:12px;color:var(--text2)">You turn raw business data into decisions. You answer questions like "Why did sales drop last month?" and "Which customer segment churns the most?" using Python + SQL + dashboards.</div>
+    </div>
+
+    <div class="rw-flow">
+      <div class="rw-step">
+        <div class="rw-step-head"><span class="rw-num">1</span><strong>Pull data with SQL + Python</strong><span class="rw-tag python">Python</span><span class="rw-tag">Pandas</span><span class="rw-tag">PostgreSQL</span><span class="rw-tag">BigQuery</span></div>
+        <div class="rw-step-body">
+          <pre>import pandas as pd
+from google.cloud import bigquery
+
+client = bigquery.Client()
+
+query = """
+    SELECT
+        DATE_TRUNC(created_at, MONTH) as month,
+        product_category,
+        SUM(revenue) as total_revenue,
+        COUNT(DISTINCT user_id) as unique_buyers,
+        AVG(order_value) as avg_order_value
+    FROM `mycompany.sales.orders`
+    WHERE created_at >= DATE_SUB(CURRENT_DATE(), INTERVAL 6 MONTH)
+    GROUP BY 1, 2
+    ORDER BY 1, 3 DESC
+"""
+df = client.query(query).to_dataframe()
+print(df.head(10))</pre>
+          <div class="rw-why">💼 <strong>AirAsia context:</strong> Analysts query billions of rows of flight booking data in BigQuery to understand which routes are most profitable and when prices should be adjusted.</div>
+        </div>
+      </div>
+
+      <div class="rw-step">
+        <div class="rw-step-head"><span class="rw-num">2</span><strong>Clean and analyse</strong><span class="rw-tag python">Python</span><span class="rw-tag">Pandas</span><span class="rw-tag">NumPy</span><span class="rw-tag">SciPy</span></div>
+        <div class="rw-step-body">
+          <pre>import pandas as pd
+import numpy as np
+
+# Clean
+df["revenue"] = pd.to_numeric(df["revenue"], errors="coerce")
+df.dropna(subset=["revenue","user_id"], inplace=True)
+df["month"] = pd.to_datetime(df["month"])
+
+# Month-over-month growth
+df = df.sort_values("month")
+df["mom_growth"] = df.groupby("product_category")["total_revenue"].pct_change() * 100
+
+# Find categories with declining revenue
+declining = df[df["mom_growth"] < -10][["month","product_category","mom_growth"]]
+print(declining)</pre>
+          <div class="rw-why">💼 <strong>Real task:</strong> "Sales dropped 15% in March — find out why." An analyst at Lazada would segment by category, region, device type, and user cohort to isolate the cause.</div>
+        </div>
+      </div>
+
+      <div class="rw-step">
+        <div class="rw-step-head"><span class="rw-num">3</span><strong>Visualise and present</strong><span class="rw-tag python">Python</span><span class="rw-tag">Matplotlib</span><span class="rw-tag">Plotly</span><span class="rw-tag">Streamlit</span></div>
+        <div class="rw-step-body">
+          <pre>import streamlit as st
+import plotly.express as px
+
+st.title("Revenue Dashboard — Q1 2025")
+
+# Interactive chart
+fig = px.line(df, x="month", y="total_revenue",
+              color="product_category",
+              title="Revenue by Category")
+st.plotly_chart(fig)
+
+# KPI cards
+col1, col2, col3 = st.columns(3)
+col1.metric("Total Revenue", f"RM{df['total_revenue'].sum():,.0f}")
+col2.metric("Unique Buyers", f"{df['unique_buyers'].sum():,}")
+col3.metric("Avg Order Value", f"RM{df['avg_order_value'].mean():.2f}")
+
+# Show raw data toggle
+if st.checkbox("Show raw data"):
+    st.dataframe(df)</pre>
+          <div class="rw-why">💼 <strong>Streamlit is free to deploy</strong> — you can share a live dashboard with your manager without needing a frontend developer. This is a huge skill gap most analysts don't have.</div>
+        </div>
+      </div>
+
+      <div class="rw-step">
+        <div class="rw-step-head"><span class="rw-num">4</span><strong>Automate Excel/PowerPoint reports</strong><span class="rw-tag python">Python</span><span class="rw-tag">openpyxl</span><span class="rw-tag">python-pptx</span></div>
+        <div class="rw-step-body">
+          <p>Most companies still run on Excel. Python can auto-generate reports that used to take 2 hours in 10 seconds.</p>
+          <pre>import openpyxl
+from openpyxl.chart import BarChart, Reference
+from openpyxl.styles import Font, PatternFill
+
+wb = openpyxl.Workbook()
+ws = wb.active
+ws.title = "Monthly Report"
+
+# Write headers with styling
+headers = ["Month","Category","Revenue","Growth %"]
+for col, header in enumerate(headers, 1):
+    cell = ws.cell(row=1, column=col, value=header)
+    cell.font = Font(bold=True, color="FFFFFF")
+    cell.fill = PatternFill("solid", fgColor="042C53")
+
+# Write data from DataFrame
+for row_idx, row in df.iterrows():
+    ws.append([str(row["month"].date()), row["product_category"],
+               row["total_revenue"], round(row["mom_growth"], 1)])
+
+wb.save("monthly_report.xlsx")</pre>
+          <div class="rw-why">💼 <strong>CIMB example:</strong> A data analyst who can auto-generate the monthly branch performance Excel report instead of manually copy-pasting every month is immediately more valuable.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--blue-bg);border-radius:var(--r);padding:1rem 1.25rem;margin-top:1rem;border:.5px solid rgba(24,95,165,.2)">
+      <div style="font-size:13px;font-weight:500;color:var(--blue-dark);margin-bottom:6px">🗺️ Full analyst stack</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.8">
+        <strong>Query:</strong> SQL (PostgreSQL, BigQuery, Redshift, Snowflake)<br>
+        <strong>Analysis:</strong> Python + Pandas + NumPy + SciPy<br>
+        <strong>Visualisation:</strong> Matplotlib, Seaborn, Plotly, Streamlit<br>
+        <strong>Reporting:</strong> openpyxl, python-pptx, Jupyter notebooks<br>
+        <strong>BI tools:</strong> Power BI, Tableau (connect Python scripts)<br>
+        <strong>Version control:</strong> Git (yes, analysts need this too)
+      </div>
+    </div>
+  </div>
+
+  <!-- DEVOPS STACK -->
+  <div id="stack-devops" class="stack-panel" style="display:none">
+    <div style="background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);padding:1.25rem;margin-bottom:1rem">
+      <div style="font-size:13px;font-weight:500;margin-bottom:4px">What DevOps/Platform Engineers do at companies like Axiata, RHB, Astro</div>
+      <div style="font-size:12px;color:var(--text2)">You build the infrastructure that other engineers deploy to. Python scripts automate everything — server provisioning, deployments, monitoring, and incident response.</div>
+    </div>
+
+    <div class="rw-flow">
+      <div class="rw-step">
+        <div class="rw-step-head"><span class="rw-num">1</span><strong>Infrastructure automation</strong><span class="rw-tag python">Python</span><span class="rw-tag">Boto3</span><span class="rw-tag">Terraform</span><span class="rw-tag">AWS</span></div>
+        <div class="rw-step-body">
+          <pre>import boto3
+
+ec2 = boto3.client("ec2", region_name="ap-southeast-1")
+
+# Spin up a server with one Python call
+response = ec2.run_instances(
+    ImageId="ami-0c55b159cbfafe1f0",
+    InstanceType="t3.medium",
+    MinCount=1, MaxCount=1,
+    KeyName="my-keypair",
+    SecurityGroupIds=["sg-0abc123"],
+    TagSpecifications=[{
+        "ResourceType":"instance",
+        "Tags":[{"Key":"Name","Value":"api-server-prod-3"}]
+    }]
+)
+instance_id = response["Instances"][0]["InstanceId"]
+print(f"Launched: {instance_id}")</pre>
+          <div class="rw-why">💼 <strong>Scale:</strong> Axiata manages hundreds of AWS instances. Without automation, provisioning a new server takes hours. With Python + boto3, it takes seconds.</div>
+        </div>
+      </div>
+
+      <div class="rw-step">
+        <div class="rw-step-head"><span class="rw-num">2</span><strong>CI/CD pipeline scripting</strong><span class="rw-tag python">Python</span><span class="rw-tag">GitHub Actions</span><span class="rw-tag">Docker</span><span class="rw-tag">Kubernetes</span></div>
+        <div class="rw-step-body">
+          <pre># deploy.py — runs in GitHub Actions
+import subprocess, sys, boto3
+
+def deploy(image_tag: str, environment: str):
+    print(f"Deploying {image_tag} to {environment}...")
+
+    # Push Docker image to ECR
+    subprocess.run(["docker","push",f"123456.ecr.amazonaws.com/myapp:{image_tag}"],check=True)
+
+    # Update Kubernetes deployment
+    subprocess.run(["kubectl","set","image",
+        f"deployment/api","api=123456.ecr.amazonaws.com/myapp:{image_tag}",
+        f"--namespace={environment}"], check=True)
+
+    # Wait for rollout
+    result = subprocess.run(["kubectl","rollout","status",
+        "deployment/api", f"--namespace={environment}"], capture_output=True)
+
+    if result.returncode != 0:
+        print("Rollout failed! Rolling back...")
+        subprocess.run(["kubectl","rollout","undo","deployment/api"])
+        sys.exit(1)
+    print("Deploy successful!")</pre>
+          <div class="rw-why">💼 <strong>Real pattern:</strong> Every production deploy at a tech company goes through a script like this. The DevOps engineer owns this pipeline and is on-call when it breaks.</div>
+        </div>
+      </div>
+
+      <div class="rw-step">
+        <div class="rw-step-head"><span class="rw-num">3</span><strong>Monitoring and alerting</strong><span class="rw-tag python">Python</span><span class="rw-tag">Prometheus</span><span class="rw-tag">Slack API</span></div>
+        <div class="rw-step-body">
+          <pre>import requests, time
+
+SLACK_WEBHOOK = "https://hooks.slack.com/services/..."
+SERVICES = [
+    {"name":"API","url":"https://api.myapp.com/health"},
+    {"name":"Dashboard","url":"https://app.myapp.com"},
+]
+
+def check_services():
+    for svc in SERVICES:
+        try:
+            r = requests.get(svc["url"], timeout=5)
+            if r.status_code != 200:
+                alert(svc["name"], f"HTTP {r.status_code}")
+        except requests.exceptions.Timeout:
+            alert(svc["name"], "TIMEOUT after 5s")
+
+def alert(service, reason):
+    requests.post(SLACK_WEBHOOK, json={
+        "text": f"🚨 *{service} is DOWN* — {reason}"
+    })
+
+while True:
+    check_services()
+    time.sleep(60)   # check every minute</pre>
+          <div class="rw-why">💼 <strong>On-call reality:</strong> This runs 24/7. A DevOps engineer gets paged at 3am when this fires. Understanding the alert code means faster debugging.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LLM STACK -->
+  <div id="stack-llm" class="stack-panel" style="display:none">
+    <div style="background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);padding:1.25rem;margin-bottom:1rem">
+      <div style="font-size:13px;font-weight:500;margin-bottom:4px">What LLM/AI App Developers build — the hottest Python jobs right now (2025)</div>
+      <div style="font-size:12px;color:var(--text2)">You build applications that use large language models (ChatGPT, Claude, Gemini) as a core component — chatbots, document analysis tools, code assistants, and AI-powered automations.</div>
+    </div>
+
+    <div class="rw-flow">
+      <div class="rw-step">
+        <div class="rw-step-head"><span class="rw-num">1</span><strong>Calling LLM APIs</strong><span class="rw-tag python">Python</span><span class="rw-tag">OpenAI</span><span class="rw-tag">Anthropic</span><span class="rw-tag">FastAPI</span></div>
+        <div class="rw-step-body">
+          <pre>from anthropic import Anthropic
+from fastapi import FastAPI
+from pydantic import BaseModel
+
+client = Anthropic()
+app    = FastAPI()
+
+class ChatRequest(BaseModel):
+    message: str
+    language: str = "English"
+
+@app.post("/chat")
+def chat(req: ChatRequest):
+    response = client.messages.create(
+        model="claude-sonnet-4-20250514",
+        max_tokens=1024,
+        system=f"You are a helpful assistant. Always respond in {req.language}.",
+        messages=[{"role":"user","content":req.message}]
+    )
+    return {"reply": response.content[0].text}
+
+# Cost tracking (important for production!)
+# response.usage.input_tokens, response.usage.output_tokens</pre>
+          <div class="rw-why">💼 <strong>Most in-demand skill of 2025:</strong> Almost every company is building AI features. Knowing how to call LLM APIs properly (with streaming, error handling, cost tracking) makes you immediately hireable.</div>
+        </div>
+      </div>
+
+      <div class="rw-step">
+        <div class="rw-step-head"><span class="rw-num">2</span><strong>RAG — making AI know your data</strong><span class="rw-tag python">Python</span><span class="rw-tag">LangChain</span><span class="rw-tag">pgvector</span><span class="rw-tag">Embeddings</span></div>
+        <div class="rw-step-body">
+          <p>RAG (Retrieval-Augmented Generation) lets an AI answer questions about YOUR company's documents — not just its training data.</p>
+          <pre>from anthropic import Anthropic
+from sentence_transformers import SentenceTransformer
+import psycopg2, numpy as np
+
+model  = SentenceTransformer("all-MiniLM-L6-v2")
+client = Anthropic()
+
+def get_relevant_docs(question: str, top_k: int = 3):
+    embedding = model.encode(question).tolist()
+    conn = psycopg2.connect(DB_URL)
+    cur  = conn.cursor()
+    # pgvector cosine similarity search
+    cur.execute("""
+        SELECT content, title FROM documents
+        ORDER BY embedding <=> %s::vector
+        LIMIT %s
+    """, (embedding, top_k))
+    return cur.fetchall()
+
+def answer_question(question: str) -> str:
+    docs = get_relevant_docs(question)
+    context = "\n\n".join([f"[{title}]\n{content}" for content, title in docs])
+
+    response = client.messages.create(
+        model="claude-sonnet-4-20250514", max_tokens=1024,
+        system=f"Answer based only on these documents:\n\n{context}",
+        messages=[{"role":"user","content":question}]
+    )
+    return response.content[0].text</pre>
+          <div class="rw-why">💼 <strong>Real use case:</strong> A Malaysian bank built a RAG system over 10,000 pages of banking regulations. Customer service agents now get instant, accurate answers instead of manually searching documents.</div>
+        </div>
+      </div>
+
+      <div class="rw-step">
+        <div class="rw-step-head"><span class="rw-num">3</span><strong>AI agents with tool use</strong><span class="rw-tag python">Python</span><span class="rw-tag">LangChain</span><span class="rw-tag">Function calling</span></div>
+        <div class="rw-step-body">
+          <p>Agents can use tools — search the web, query databases, send emails — autonomously based on the task.</p>
+          <pre>import anthropic
+
+client = anthropic.Anthropic()
+
+tools = [
+    {
+        "name": "search_products",
+        "description": "Search the product database",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "query": {"type":"string","description":"Search query"},
+                "max_price": {"type":"number","description":"Max price in RM"}
+            },
+            "required": ["query"]
+        }
+    }
+]
+
+def run_agent(user_message: str):
+    messages = [{"role":"user","content":user_message}]
+    while True:
+        response = client.messages.create(
+            model="claude-sonnet-4-20250514",max_tokens=1024,
+            tools=tools, messages=messages
+        )
+        if response.stop_reason == "end_turn": break
+        if response.stop_reason == "tool_use":
+            # Execute the tool and feed result back
+            tool_use = next(b for b in response.content if b.type=="tool_use")
+            result = execute_tool(tool_use.name, tool_use.input)
+            messages += [{"role":"assistant","content":response.content},
+                         {"role":"user","content":[{"type":"tool_result","tool_use_id":tool_use.id,"content":result}]}]
+    return response.content[0].text</pre>
+          <div class="rw-why">💼 <strong>Emerging role:</strong> "AI Engineer" or "LLM App Developer" is now one of the highest-paying Python roles (RM 8k–25k). The skill gap is huge — most companies need this but few developers know how to build it.</div>
+        </div>
+      </div>
+
+      <div class="rw-step">
+        <div class="rw-step-head"><span class="rw-num">4</span><strong>Prompt engineering that actually works</strong><span class="rw-tag python">Python</span><span class="rw-tag">Jinja2</span><span class="rw-tag">Pydantic</span></div>
+        <div class="rw-step-body">
+          <pre>from jinja2 import Template
+from pydantic import BaseModel
+import json
+
+# Structured output extraction
+class JobAnalysis(BaseModel):
+    required_skills: list[str]
+    nice_to_have: list[str]
+    seniority: str
+    estimated_salary_rm: str
+
+PROMPT = Template("""
+Analyze this job description and extract structured information.
+
+Job Description:
+{{ job_description }}
+
+Respond ONLY with valid JSON matching this schema:
+{{ schema }}
+""")
+
+def analyze_job(description: str) -> JobAnalysis:
+    prompt = PROMPT.render(
+        job_description=description,
+        schema=JobAnalysis.schema_json(indent=2)
+    )
+    response = client.messages.create(
+        model="claude-sonnet-4-20250514", max_tokens=1024,
+        messages=[{"role":"user","content":prompt}]
+    )
+    return JobAnalysis(**json.loads(response.content[0].text))</pre>
+          <div class="rw-why">💼 <strong>Production tip:</strong> Getting reliable structured output from LLMs is the #1 challenge in production AI apps. Pydantic validation + clear prompts = reliable parsing.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--blue-bg);border-radius:var(--r);padding:1rem 1.25rem;margin-top:1rem;border:.5px solid rgba(24,95,165,.2)">
+      <div style="font-size:13px;font-weight:500;color:var(--blue-dark);margin-bottom:6px">🗺️ Full LLM app stack</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.8">
+        <strong>LLM APIs:</strong> Anthropic Claude, OpenAI GPT-4, Google Gemini<br>
+        <strong>Orchestration:</strong> LangChain, LlamaIndex, raw API calls<br>
+        <strong>Vector search:</strong> pgvector, Pinecone, Chroma, Weaviate<br>
+        <strong>Embeddings:</strong> OpenAI text-embedding-3, sentence-transformers<br>
+        <strong>Serving:</strong> FastAPI + Docker (same as backend)<br>
+        <strong>Evaluation:</strong> LangSmith, Promptfoo, custom evals<br>
+        <strong>Cost control:</strong> Caching, prompt compression, model routing
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1398,7 +2088,7 @@ function showPage(id){
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
   document.getElementById(id).classList.add("active");
-  const map={home:0,course:1,concepts:2,jobs:3,quiz:4};
+  const map={home:0,course:1,concepts:2,jobs:3,quiz:4,realworld:5};
   document.querySelectorAll(".nav-btn")[map[id]].classList.add("active");
   window.scrollTo({top:0,behavior:"smooth"});
 }
@@ -1483,6 +2173,13 @@ function filterQuiz(diff,btn){
   document.getElementById("q-total").textContent=0;
   document.getElementById("quiz-prog").style.width="0%";
   renderQuiz(diff);
+}
+
+function showStack(id, btn){
+  document.querySelectorAll(".stack-panel").forEach(p=>p.style.display="none");
+  document.querySelectorAll("#stack-tabs .filter-btn").forEach(b=>b.classList.remove("active"));
+  document.getElementById("stack-"+id).style.display="block";
+  btn.classList.add("active");
 }
 
 function resetProgress(){
